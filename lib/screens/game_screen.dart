@@ -1,5 +1,6 @@
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/screens/game_summary_screen.dart';
+import 'package:chaos_wheel_party_game/screens/picked_reveal_screen.dart';
 import 'package:chaos_wheel_party_game/screens/target_selection_screen.dart';
 import 'package:chaos_wheel_party_game/widgets/action_panel.dart';
 import 'package:chaos_wheel_party_game/widgets/neon_card.dart';
@@ -77,14 +78,17 @@ class GameScreen extends StatelessWidget {
                   onSpinRequested: () async {
                     return context.read<GameProvider>().prepareSpinSelection();
                   },
-                  onSpinCompleted: (_) {
+                  onSpinCompleted: (_) async {
                     final message = context
                         .read<GameProvider>()
                         .completeSpinSelection();
                     if (message.isNotEmpty && context.mounted) {
-                      ScaffoldMessenger.of(
-                        context,
-                      ).showSnackBar(SnackBar(content: Text(message)));
+                      final player = context
+                          .read<GameProvider>()
+                          .selectedPlayer;
+                      if (player != null) {
+                        await PickedRevealScreen.show(context, player.name);
+                      }
                     }
                   },
                 ),
@@ -147,6 +151,10 @@ class GameScreen extends StatelessWidget {
                 );
                 if (result is String && context.mounted) {
                   _handleAction(context, result);
+                  final player = context.read<GameProvider>().selectedPlayer;
+                  if (player != null) {
+                    await PickedRevealScreen.show(context, player.name);
+                  }
                 }
               },
             ),
