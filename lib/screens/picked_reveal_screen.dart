@@ -12,8 +12,8 @@ class PickedRevealScreen extends StatefulWidget {
     return Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: true,
-        transitionDuration: const Duration(milliseconds: 260),
-        reverseTransitionDuration: const Duration(milliseconds: 220),
+        transitionDuration: const Duration(milliseconds: 420),
+        reverseTransitionDuration: const Duration(milliseconds: 320),
         pageBuilder: (_, animation, _) {
           return FadeTransition(
             opacity: animation,
@@ -40,12 +40,12 @@ class _PickedRevealScreenState extends State<PickedRevealScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 1200),
     )..forward();
     _scale = CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
 
-    _timer = Timer(const Duration(milliseconds: 1850), () {
+    _timer = Timer(const Duration(seconds: 3), () {
       if (mounted) {
         Navigator.of(context).pop();
       }

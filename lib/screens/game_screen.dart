@@ -1,18 +1,27 @@
+import 'dart:async';
+
+import 'package:chaos_wheel_party_game/core/player_colors.dart';
+import 'package:chaos_wheel_party_game/models/player.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
+import 'package:chaos_wheel_party_game/screens/fate_choice_screen.dart';
 import 'package:chaos_wheel_party_game/screens/game_summary_screen.dart';
 import 'package:chaos_wheel_party_game/screens/picked_reveal_screen.dart';
-import 'package:chaos_wheel_party_game/screens/target_selection_screen.dart';
-import 'package:chaos_wheel_party_game/widgets/action_panel.dart';
-import 'package:chaos_wheel_party_game/widgets/neon_card.dart';
-import 'package:chaos_wheel_party_game/widgets/player_status_card.dart';
+import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:chaos_wheel_party_game/widgets/spinning_wheel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class GameScreen extends StatelessWidget {
+class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
 
   static const routeName = '/game';
+
+  @override
+  State<GameScreen> createState() => _GameScreenState();
+}
+
+class _GameScreenState extends State<GameScreen> {
+  final _wheelController = SpinningWheelController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,147 +38,403 @@ class GameScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chaos Wheel')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          NeonCard(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Round ${state.currentRound} / ${state.totalRounds}',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900),
-                ),
-                Text(
-                  state.selectedPlayer == null ? 'Spin to pick' : 'Fate chosen',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            height: 188,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: state.players.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final player = state.players[index];
-                return PlayerStatusCard(
-                  player: player,
-                  isActive: player.id == state.selectedPlayer?.id,
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 18),
-          NeonCard(
+      body: ChaosBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(26, 16, 26, 18),
             child: Column(
               children: [
-                SpinningWheel(
-                  players: state.players,
-                  isSpinning: state.isSpinning,
-                  onSpinRequested: () async {
-                    return context.read<GameProvider>().prepareSpinSelection();
-                  },
-                  onSpinCompleted: (_) async {
-                    final message = context
-                        .read<GameProvider>()
-                        .completeSpinSelection();
-                    if (message.isNotEmpty && context.mounted) {
-                      final player = context
-                          .read<GameProvider>()
-                          .selectedPlayer;
-                      if (player != null) {
-                        await PickedRevealScreen.show(context, player.name);
-                      }
-                    }
-                  },
+                _TopControls(
+                  currentRound: state.currentRound,
+                  totalRounds: state.totalRounds,
+                  progress: state.totalRounds == 0
+                      ? 0
+                      : state.currentRound / state.totalRounds,
                 ),
-                const SizedBox(height: 16),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: Text(
-                    state.selectedPlayer == null
-                        ? 'Spin the wheel to pick the next victim.'
-                        : '${state.selectedPlayer!.name} is picked 💀',
-                    key: ValueKey(state.selectedPlayer?.id ?? 'none'),
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
+                const SizedBox(height: 26),
+                Text(
+                  'TAP SPIN TO DRAW',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.48),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 5,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "Who's next?",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    height: 0.95,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: Center(
+                    child: SpinningWheel(
+                      controller: _wheelController,
+                      players: state.players,
+                      isSpinning: state.isSpinning,
+                      soundEnabled: provider.soundEnabled,
+                      onSpinRequested: () async {
+                        return context
+                            .read<GameProvider>()
+                            .prepareSpinSelection();
+                      },
+                      onSpinCompleted: (_) async {
+                        final message = context
+                            .read<GameProvider>()
+                            .completeSpinSelection();
+                        if (message.isEmpty || !context.mounted) {
+                          return;
+                        }
+
+                        final player = context
+                            .read<GameProvider>()
+                            .selectedPlayer;
+                        if (player == null) {
+                          return;
+                        }
+
+                        await PickedRevealScreen.show(context, player.name);
+                        if (context.mounted) {
+                          await FateChoiceScreen.show(context, player: player);
+                        }
+                      },
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                _AutoRosterStrip(players: state.players),
+                const SizedBox(height: 14),
+                _SpinBar(
+                  isSpinning: state.isSpinning,
+                  hasSelection: state.selectedPlayer != null,
+                  enabled:
+                      state.players.length >= 2 && state.selectedPlayer == null,
+                  onTap: () => _wheelController.spin(),
+                ),
               ],
             ),
           ),
-          const SizedBox(height: 18),
-          if (state.selectedPlayer != null)
-            ActionPanel(
-              player: state.selectedPlayer!,
-              randomEnabled: state.randomButtonEnabled,
-              truthLocked: provider.truthLocked,
-              passAvailable: state.selectedPlayer!.passRights > 0,
-              targetAvailable: provider.canUseTarget() == null,
-              passMessage: state.selectedPlayer!.passRights > 0
-                  ? null
-                  : 'No passes left.',
-              targetMessage: provider.canUseTarget(),
-              onTruth: () => _handleAction(
-                context,
-                context.read<GameProvider>().chooseTruth(),
-              ),
-              onDare: () => _handleAction(
-                context,
-                context.read<GameProvider>().chooseDare(),
-              ),
-              onRandom: () => _handleAction(
-                context,
-                context.read<GameProvider>().chooseRandom(),
-              ),
-              onPass: () => _handleAction(
-                context,
-                context.read<GameProvider>().usePass(),
-              ),
-              onTarget: () async {
-                final blockMessage = context
-                    .read<GameProvider>()
-                    .canUseTarget();
-                if (blockMessage != null) {
-                  _handleAction(context, blockMessage);
-                  return;
-                }
-                final result = await Navigator.pushNamed(
-                  context,
-                  TargetSelectionScreen.routeName,
-                );
-                if (result is String && context.mounted) {
-                  _handleAction(context, result);
-                  final player = context.read<GameProvider>().selectedPlayer;
-                  if (player != null) {
-                    await PickedRevealScreen.show(context, player.name);
-                  }
-                }
-              },
+        ),
+      ),
+    );
+  }
+}
+
+class _TopControls extends StatelessWidget {
+  const _TopControls({
+    required this.currentRound,
+    required this.totalRounds,
+    required this.progress,
+  });
+
+  final int currentRound;
+  final int totalRounds;
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            _RoundIconButton(
+              icon: Icons.chevron_left_rounded,
+              onTap: () => Navigator.maybePop(context),
             ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(999),
+                color: Colors.white.withValues(alpha: 0.08),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+              ),
+              child: RichText(
+                text: TextSpan(
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 3,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'R${currentRound.toString().padLeft(2, '0')}',
+                      style: const TextStyle(color: Color(0xFFA86CFF)),
+                    ),
+                    TextSpan(text: ' / $totalRounds'),
+                  ],
+                ),
+              ),
+            ),
+            const Spacer(),
+            _RoundIconButton(icon: Icons.tune_rounded, onTap: () {}),
+          ],
+        ),
+        const SizedBox(height: 18),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            minHeight: 4,
+            value: progress.clamp(0, 1),
+            backgroundColor: Colors.white.withValues(alpha: 0.08),
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF3D81)),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RoundIconButton extends StatelessWidget {
+  const _RoundIconButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Ink(
+        width: 50,
+        height: 50,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.07),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        ),
+        child: Icon(icon, color: Colors.white, size: 26),
+      ),
+    );
+  }
+}
+
+class _AutoRosterStrip extends StatefulWidget {
+  const _AutoRosterStrip({required this.players});
+
+  final List<Player> players;
+
+  @override
+  State<_AutoRosterStrip> createState() => _AutoRosterStripState();
+}
+
+class _AutoRosterStripState extends State<_AutoRosterStrip> {
+  final _controller = ScrollController();
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(milliseconds: 36), (_) {
+      if (!_controller.hasClients || widget.players.length < 4) {
+        return;
+      }
+
+      final next = _controller.offset + 0.55;
+      if (next >= _controller.position.maxScrollExtent) {
+        _controller.jumpTo(0);
+        return;
+      }
+      _controller.jumpTo(next);
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final players = widget.players.length < 4
+        ? widget.players
+        : [...widget.players, ...widget.players];
+
+    return SizedBox(
+      height: 72,
+      child: ListView.separated(
+        controller: _controller,
+        scrollDirection: Axis.horizontal,
+        physics: widget.players.length < 4
+            ? const BouncingScrollPhysics()
+            : const NeverScrollableScrollPhysics(),
+        itemCount: players.length,
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final player = players[index];
+          final playerIndex = widget.players.indexWhere(
+            (candidate) => candidate.id == player.id,
+          );
+          return _MiniPlayerCard(
+            player: player,
+            colors: playerColorsForIndex(playerIndex < 0 ? index : playerIndex),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _MiniPlayerCard extends StatelessWidget {
+  const _MiniPlayerCard({required this.player, required this.colors});
+
+  final Player player;
+  final PlayerColorSet colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 146,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: colors.primary.withValues(alpha: 0.08),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            player.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 7),
+          Row(
+            children: [
+              _MiniRight(
+                icon: Icons.local_bar_outlined,
+                label: '${player.passRights}',
+                color: colors.primary,
+              ),
+              const SizedBox(width: 10),
+              _MiniRight(
+                icon: Icons.gps_fixed_rounded,
+                label: '${player.targetRights}',
+                color: colors.secondary,
+              ),
+            ],
+          ),
         ],
       ),
     );
   }
+}
 
-  void _handleAction(BuildContext context, String message) {
-    if (message.isEmpty) {
-      return;
-    }
-    // Placeholder: trigger haptic + action sound effect here.
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+class _MiniRight extends StatelessWidget {
+  const _MiniRight({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 15, color: color),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: color,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SpinBar extends StatelessWidget {
+  const _SpinBar({
+    required this.isSpinning,
+    required this.hasSelection,
+    required this.enabled,
+    required this.onTap,
+  });
+
+  final bool isSpinning;
+  final bool hasSelection;
+  final bool enabled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final canSpin = enabled && !isSpinning;
+    final label = hasSelection ? 'CHOOSE FATE' : 'SPIN';
+    final icon = hasSelection ? Icons.bolt_rounded : Icons.casino_rounded;
+
+    return GestureDetector(
+      onTap: canSpin ? onTap : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: double.infinity,
+        height: 68,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(999),
+          gradient: canSpin
+              ? const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xFFFF7B2F), Color(0xFFFF3D81)],
+                )
+              : LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.white.withValues(alpha: 0.14),
+                    Colors.white.withValues(alpha: 0.08),
+                  ],
+                ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+          boxShadow: canSpin
+              ? [
+                  BoxShadow(
+                    color: const Color(0x99FF3D81).withValues(alpha: 0.38),
+                    blurRadius: 24,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 10),
+                  ),
+                ]
+              : null,
+        ),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: Colors.white, size: 24),
+              const SizedBox(width: 12),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.6,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

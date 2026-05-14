@@ -1,7 +1,6 @@
 import 'package:chaos_wheel_party_game/screens/add_players_screen.dart';
 import 'package:chaos_wheel_party_game/screens/how_to_play_screen.dart';
 import 'package:chaos_wheel_party_game/screens/premium_screen.dart';
-import 'package:chaos_wheel_party_game/screens/settings_screen.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:chaos_wheel_party_game/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +17,11 @@ class HomeScreen extends StatelessWidget {
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final heroGap = (constraints.maxHeight * 0.32).clamp(88.0, 260.0);
+              final heroGap = (constraints.maxHeight * 0.40).clamp(
+                180.0,
+                340.0,
+              );
+
               return SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(28, 28, 28, 18),
                 child: ConstrainedBox(
@@ -27,8 +30,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      const _EditionPill(),
-                      const SizedBox(height: 38),
+                      const SizedBox(height: 54),
                       Text(
                         'CHAOS\nWHEEL',
                         textAlign: TextAlign.center,
@@ -50,7 +52,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'TRUTH  ·  DARE  ·  DRINK  ·  NO ESCAPE',
+                        'TRUTH  .  DARE  .  DRINK  .  NO ESCAPE',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: Colors.white.withValues(alpha: 0.56),
@@ -77,7 +79,7 @@ class HomeScreen extends StatelessWidget {
                       _HomeMenuButton(
                         title: 'How to Play',
                         subtitle: 'Rules of chaos',
-                        icon: Icons.menu_book_rounded,
+                        icon: Icons.chevron_right_rounded,
                         onTap: () {
                           Navigator.pushNamed(
                             context,
@@ -89,22 +91,27 @@ class HomeScreen extends StatelessWidget {
                       _HomeMenuButton(
                         title: 'Premium',
                         subtitle: 'Unlock chaos mode',
-                        icon: Icons.workspace_premium_rounded,
-                        iconColor: const Color(0xFFFFC83D),
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.workspace_premium_rounded,
+                              color: Color(0xFFFFC83D),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'Premium',
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                            ),
+                          ],
+                        ),
                         onTap: () {
                           Navigator.pushNamed(context, PremiumScreen.routeName);
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                      _HomeMenuButton(
-                        title: 'Settings',
-                        subtitle: 'Sound, vibration, defaults',
-                        icon: Icons.tune_rounded,
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            SettingsScreen.routeName,
-                          );
                         },
                       ),
                     ],
@@ -119,66 +126,20 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _EditionPill extends StatelessWidget {
-  const _EditionPill();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 9),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(999),
-        color: Colors.white.withValues(alpha: 0.08),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.13)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Theme.of(context).colorScheme.tertiary,
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.tertiary.withValues(alpha: 0.8),
-                  blurRadius: 12,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            'V1.0  ·  PARTY EDITION',
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Colors.white.withValues(alpha: 0.76),
-              fontWeight: FontWeight.w900,
-              letterSpacing: 3,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _HomeMenuButton extends StatelessWidget {
   const _HomeMenuButton({
-    required this.title,
     required this.subtitle,
-    required this.icon,
     required this.onTap,
-    this.iconColor,
+    this.title,
+    this.leading,
+    this.icon,
   });
 
-  final String title;
   final String subtitle;
-  final IconData icon;
   final VoidCallback onTap;
-  final Color? iconColor;
+  final String? title;
+  final Widget? leading;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
@@ -195,19 +156,20 @@ class _HomeMenuButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: iconColor ?? Colors.white, size: 22),
-            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                  if (leading != null)
+                    leading!
+                  else
+                    Text(
+                      title ?? '',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 5),
                   Text(
                     subtitle,
@@ -220,7 +182,7 @@ class _HomeMenuButton extends StatelessWidget {
               ),
             ),
             Icon(
-              Icons.chevron_right_rounded,
+              icon ?? Icons.chevron_right_rounded,
               color: Colors.white.withValues(alpha: 0.75),
             ),
           ],
