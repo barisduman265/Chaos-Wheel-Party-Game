@@ -2,17 +2,33 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Chaos Wheel",
+      "name": "Chaos Wheel (Chrome debug)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart"
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "env": {
+        "CHROME_EXECUTABLE": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+      },
+      "toolArgs": [
+        "--web-port",
+        "52530"
+      ]
     },
     {
       "name": "Chaos Wheel (profile)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile",
-      "program": "lib/main.dart"
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "env": {
+        "CHROME_EXECUTABLE": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+      },
+      "toolArgs": [
+        "--web-port",
+        "52531"
+      ]
     }
   ]
 }

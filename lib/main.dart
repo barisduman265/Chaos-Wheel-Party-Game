@@ -10,6 +10,7 @@ import 'package:chaos_wheel_party_game/screens/settings_screen.dart';
 import 'package:chaos_wheel_party_game/screens/splash_screen.dart';
 import 'package:chaos_wheel_party_game/screens/target_selection_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -55,7 +56,7 @@ class ChaosWheelApp extends StatelessWidget {
     final base = ThemeData(
       useMaterial3: true,
       brightness: brightness,
-      fontFamily: 'sans-serif',
+      fontFamily: GoogleFonts.fredoka().fontFamily,
     );
 
     const background = Color(0xFF090411);
@@ -74,13 +75,99 @@ class ChaosWheelApp extends StatelessWidget {
       surface: isDark ? surface : Colors.white,
     );
 
+    final bodyColor = isDark ? Colors.white : const Color(0xFF130D1D);
+    final baseTextTheme = GoogleFonts.fredokaTextTheme(base.textTheme);
+    final textTheme = baseTextTheme
+        .copyWith(
+          displayLarge: GoogleFonts.fredoka(
+            textStyle: base.textTheme.displayLarge,
+            fontSize: 64,
+            fontWeight: FontWeight.w700,
+            height: 0.92,
+            letterSpacing: -0.4,
+          ),
+          displayMedium: GoogleFonts.fredoka(
+            textStyle: base.textTheme.displayMedium,
+            fontWeight: FontWeight.w800,
+            height: 0.96,
+            letterSpacing: -0.3,
+          ),
+          displaySmall: GoogleFonts.fredoka(
+            textStyle: base.textTheme.displaySmall,
+            fontWeight: FontWeight.w800,
+            height: 0.98,
+            letterSpacing: -0.2,
+          ),
+          headlineLarge: GoogleFonts.fredoka(
+            textStyle: base.textTheme.headlineLarge,
+            fontWeight: FontWeight.w800,
+            height: 1,
+            letterSpacing: -0.1,
+          ),
+          headlineMedium: GoogleFonts.fredoka(
+            textStyle: base.textTheme.headlineMedium,
+            fontWeight: FontWeight.w800,
+            height: 1.02,
+            letterSpacing: -0.1,
+          ),
+          headlineSmall: GoogleFonts.fredoka(
+            textStyle: base.textTheme.headlineSmall,
+            fontWeight: FontWeight.w800,
+            height: 1.02,
+            letterSpacing: 0,
+          ),
+          titleLarge: GoogleFonts.fredoka(
+            textStyle: base.textTheme.titleLarge,
+            fontWeight: FontWeight.w800,
+            height: 1.04,
+            letterSpacing: 0,
+          ),
+          titleMedium: GoogleFonts.fredoka(
+            textStyle: base.textTheme.titleMedium,
+            fontWeight: FontWeight.w800,
+            height: 1.04,
+            letterSpacing: 0,
+          ),
+          titleSmall: GoogleFonts.fredoka(
+            textStyle: base.textTheme.titleSmall,
+            fontWeight: FontWeight.w800,
+            height: 1.04,
+            letterSpacing: 0,
+          ),
+          bodyLarge: GoogleFonts.fredoka(
+            textStyle: base.textTheme.bodyLarge,
+            fontWeight: FontWeight.w600,
+          ),
+          bodyMedium: GoogleFonts.fredoka(
+            textStyle: base.textTheme.bodyMedium,
+            fontWeight: FontWeight.w600,
+          ),
+          bodySmall: GoogleFonts.fredoka(
+            textStyle: base.textTheme.bodySmall,
+            fontWeight: FontWeight.w600,
+          ),
+          labelLarge: GoogleFonts.fredoka(
+            textStyle: base.textTheme.labelLarge,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.2,
+          ),
+          labelMedium: GoogleFonts.fredoka(
+            textStyle: base.textTheme.labelMedium,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.1,
+          ),
+          labelSmall: GoogleFonts.fredoka(
+            textStyle: base.textTheme.labelSmall,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1,
+          ),
+        )
+        .apply(bodyColor: bodyColor, displayColor: bodyColor);
+
     return base.copyWith(
       scaffoldBackgroundColor: isDark ? background : const Color(0xFFF4F3FA),
       colorScheme: scheme,
-      textTheme: base.textTheme.apply(
-        bodyColor: isDark ? Colors.white : const Color(0xFF130D1D),
-        displayColor: isDark ? Colors.white : const Color(0xFF130D1D),
-      ),
+      textTheme: textTheme,
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: isDark ? Colors.white : const Color(0xFF130D1D),
@@ -93,7 +180,10 @@ class ChaosWheelApp extends StatelessWidget {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: accent,
-        contentTextStyle: const TextStyle(color: Colors.white),
+        contentTextStyle: GoogleFonts.fredoka(
+          color: Colors.white,
+          fontWeight: FontWeight.w700,
+        ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),

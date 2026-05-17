@@ -31,24 +31,40 @@ class HomeScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const SizedBox(height: 54),
-                      Text(
-                        'CHAOS\nWHEEL',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.displayLarge
-                            ?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              height: 0.86,
-                              letterSpacing: 0,
-                              shadows: [
-                                Shadow(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.58),
-                                  blurRadius: 32,
-                                ),
-                              ],
-                            ),
+                      ShaderMask(
+                        blendMode: BlendMode.srcIn,
+                        shaderCallback: (bounds) {
+                          return const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFFFFFFFF),
+                              Color(0xFFEAD8FF),
+                              Color(0xFFB985FF),
+                              Color(0xFFD64CFF),
+                            ],
+                            stops: [0.0, 0.38, 0.74, 1.0],
+                          ).createShader(bounds);
+                        },
+                        child: Text(
+                          'CHAOS\nWHEEL',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.displayLarge
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                height: 0.86,
+                                letterSpacing: 0,
+                                shadows: [
+                                  Shadow(
+                                    color: const Color(
+                                      0xFFA85BFF,
+                                    ).withValues(alpha: 0.42),
+                                    blurRadius: 32,
+                                  ),
+                                ],
+                              ),
+                        ),
                       ),
                       const SizedBox(height: 24),
                       Text(

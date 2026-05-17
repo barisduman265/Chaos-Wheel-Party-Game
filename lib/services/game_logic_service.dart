@@ -10,27 +10,26 @@ class GameLogicService {
 
   int calculatePassRights(int roundCount) {
     switch (roundCount) {
-      case 5:
-        return 2;
-      case 10:
-        return 4;
       case 15:
-        return 5;
+        return 1;
+      case 25:
+        return 2;
+      case 40:
+        return 3;
       default:
-        return (roundCount * 0.4).ceil();
+        return 1;
     }
   }
 
   int calculateTargetRights(int roundCount) {
     switch (roundCount) {
-      case 5:
-        return 1;
-      case 10:
-        return 2;
       case 15:
-        return 3;
+      case 25:
+        return 1;
+      case 40:
+        return 2;
       default:
-        return max(1, (roundCount * 0.2).floor());
+        return max(1, (roundCount * 0.08).ceil());
     }
   }
 
@@ -65,6 +64,10 @@ class GameLogicService {
     return players.last;
   }
 
+  bool rollChance(double probability) {
+    return _random.nextDouble() < probability;
+  }
+
   Player chooseTruth(Player player) {
     return player.copyWith(
       truthStreak: player.truthStreak + 1,
@@ -79,8 +82,10 @@ class GameLogicService {
   ({Player player, String choice}) chooseRandom(
     Player player, {
     required bool truthLocked,
+    double dareChance = 0.50,
   }) {
-    final chooseTruthAction = !truthLocked && _random.nextBool();
+    final chooseTruthAction =
+        !truthLocked && _random.nextDouble() >= dareChance;
     return chooseTruthAction
         ? (player: chooseTruth(player), choice: 'Truth')
         : (player: chooseDare(player), choice: 'Dare');
@@ -90,6 +95,7 @@ class GameLogicService {
     return player.copyWith(
       passRights: player.passRights - 1,
       passUsed: player.passUsed + 1,
+      truthStreak: 0,
     );
   }
 
@@ -97,7 +103,12 @@ class GameLogicService {
     return player.copyWith(
       targetRights: player.targetRights - 1,
       targetUsed: player.targetUsed + 1,
+      truthStreak: 0,
     );
+  }
+
+  Player receiveTarget(Player player) {
+    return player.copyWith(targetedCount: player.targetedCount + 1);
   }
 
   GameStateModel endRound(GameStateModel state) {

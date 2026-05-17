@@ -1,6 +1,7 @@
 import 'package:chaos_wheel_party_game/models/player.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/screens/action_feedback_screen.dart';
+import 'package:chaos_wheel_party_game/screens/game_summary_screen.dart';
 import 'package:chaos_wheel_party_game/screens/target_selection_screen.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class ChoiceRevealScreen extends StatelessWidget {
         opaque: true,
         transitionDuration: const Duration(milliseconds: 260),
         reverseTransitionDuration: const Duration(milliseconds: 220),
-        pageBuilder: (_, animation, __) {
+        pageBuilder: (_, animation, _) {
           return FadeTransition(
             opacity: animation,
             child: ChoiceRevealScreen(player: player, choice: choice),
@@ -60,9 +61,10 @@ class ChoiceRevealScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final activePlayer = provider.selectedPlayer ?? player;
-    final canPass = activePlayer.passRights > 0;
+    final noEscape = provider.isNoEscapeActive;
+    final canPass = !noEscape && activePlayer.passRights > 0;
     final targetMessage = provider.canUseTarget();
-    final canTarget = targetMessage == null;
+    final canTarget = !noEscape && targetMessage == null;
 
     return PopScope(
       canPop: false,
@@ -216,14 +218,14 @@ class ChoiceRevealScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (!isTargeted) ...[
+                    if (!isTargeted && !noEscape) ...[
                       const SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
                             child: _MiniStatusCard(
                               icon: Icons.local_bar_outlined,
-                              title: 'Take Shot',
+                              title: 'Drink',
                               value: '${activePlayer.passRights}',
                               accent: const Color(0xFF71D2FF),
                               subtitle: canPass
@@ -244,7 +246,7 @@ class ChoiceRevealScreen extends StatelessWidget {
                                   ? '${activePlayer.targetRights} left'
                                   : targetMessage ?? 'Unavailable',
                               enabled: canTarget,
-                              onTap: () => _useTarget(context),
+                              onTap: () => _useTarget(context, activePlayer),
                             ),
                           ),
                         ],
@@ -265,18 +267,52 @@ class ChoiceRevealScreen extends StatelessWidget {
     Player activePlayer,
   ) async {
     final provider = context.read<GameProvider>();
+    final wasNoEscapeActive = provider.isNoEscapeActive;
     final message = _isTruth ? provider.chooseTruth() : provider.chooseDare();
     if (message.isEmpty || !context.mounted) {
+      return;
+    }
+
+    final actionSummary = '${activePlayer.name} chose $_label.';
+    final shortActionSummary = 'chose $_label.';
+    final nextTurnMessage = message == actionSummary
+        ? shortActionSummary
+        : '$shortActionSummary $message';
+
+    final nextRound = provider.state.currentRound;
+    final totalRounds = provider.state.totalRounds;
+    final enteredNoEscape = await _showNoEscapeIntroIfNeeded(
+      context,
+      provider,
+      wasNoEscapeActive: wasNoEscapeActive,
+    );
+    if (!context.mounted) {
+      return;
+    }
+    if (enteredNoEscape) {
+      Navigator.of(context).pop();
       return;
     }
 
     await ActionFeedbackScreen.show(
       context,
       type: ActionFeedbackType.nextTurn,
-      title: 'NEXT TURN',
-      subtitle: '${activePlayer.name} locked in ${_label.toLowerCase()}.',
+      title: nextRound > totalRounds ? 'GAME COMPLETE' : 'NEXT TURN',
+      highlight: activePlayer.name,
+      subtitle: nextTurnMessage,
+      nextRound: nextRound,
+      totalRounds: totalRounds,
     );
     if (!context.mounted) {
+      return;
+    }
+
+    if (nextRound > totalRounds) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        GameSummaryScreen.routeName,
+        (route) => false,
+      );
       return;
     }
 
@@ -284,7 +320,9 @@ class ChoiceRevealScreen extends StatelessWidget {
   }
 
   Future<void> _usePass(BuildContext context, Player activePlayer) async {
-    final message = context.read<GameProvider>().usePass();
+    final provider = context.read<GameProvider>();
+    final wasNoEscapeActive = provider.isNoEscapeActive;
+    final message = provider.usePass();
     if (message.isEmpty || !context.mounted) {
       return;
     }
@@ -299,10 +337,44 @@ class ChoiceRevealScreen extends StatelessWidget {
       return;
     }
 
+    final enteredNoEscape = await _showNoEscapeIntroIfNeeded(
+      context,
+      provider,
+      wasNoEscapeActive: wasNoEscapeActive,
+    );
+    if (!context.mounted) {
+      return;
+    }
+    if (enteredNoEscape) {
+      Navigator.of(context).pop();
+      return;
+    }
+
     Navigator.of(context).pop();
   }
 
-  Future<void> _useTarget(BuildContext context) async {
+  Future<bool> _showNoEscapeIntroIfNeeded(
+    BuildContext context,
+    GameProvider provider, {
+    required bool wasNoEscapeActive,
+  }) async {
+    final enteredNoEscape = !wasNoEscapeActive && provider.isNoEscapeActive;
+    if (!enteredNoEscape || !context.mounted) {
+      return false;
+    }
+
+    await ActionFeedbackScreen.show(
+      context,
+      type: ActionFeedbackType.noEscape,
+      title: 'NO ESCAPE',
+      subtitle: 'Shots and targets are locked. Survive the final rounds.',
+      nextRound: provider.state.currentRound,
+      totalRounds: provider.state.totalRounds,
+    );
+    return true;
+  }
+
+  Future<void> _useTarget(BuildContext context, Player actingPlayer) async {
     final provider = context.read<GameProvider>();
     final blockMessage = provider.canUseTarget();
     if (blockMessage != null) {
@@ -327,8 +399,9 @@ class ChoiceRevealScreen extends StatelessWidget {
           context,
           type: ActionFeedbackType.target,
           title: 'TARGET LOCKED',
+          highlight: selected.name,
           subtitle:
-              '${selected.name} must handle this ${_label.toLowerCase()}.',
+              'Targeted by ${actingPlayer.name}. Must handle this ${_label.toLowerCase()}.',
         );
         if (!context.mounted) {
           return;
@@ -339,7 +412,7 @@ class ChoiceRevealScreen extends StatelessWidget {
               opaque: true,
               transitionDuration: const Duration(milliseconds: 260),
               reverseTransitionDuration: const Duration(milliseconds: 220),
-              pageBuilder: (_, animation, __) {
+              pageBuilder: (_, animation, _) {
                 return FadeTransition(
                   opacity: animation,
                   child: ChoiceRevealScreen(

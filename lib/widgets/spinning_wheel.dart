@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chaos_wheel_party_game/core/player_colors.dart';
 import 'package:chaos_wheel_party_game/models/player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,8 @@ class SpinningWheel extends StatefulWidget {
     required this.onSpinCompleted,
     required this.isSpinning,
     required this.soundEnabled,
+    this.suspenseSpin = false,
+    this.dangerMode = false,
     this.controller,
   });
 
@@ -38,6 +41,8 @@ class SpinningWheel extends StatefulWidget {
   final ValueChanged<Player> onSpinCompleted;
   final bool isSpinning;
   final bool soundEnabled;
+  final bool suspenseSpin;
+  final bool dangerMode;
   final SpinningWheelController? controller;
 
   @override
@@ -50,15 +55,6 @@ class _SpinningWheelState extends State<SpinningWheel>
   late Animation<double> _rotationAnimation;
   double _rotation = 0;
   int _lastSoundTick = -1;
-
-  final List<Color> _segmentColors = const [
-    Color(0xFF2B87F0),
-    Color(0xFF8757E8),
-    Color(0xFFE44B92),
-    Color(0xFFF1C340),
-    Color(0xFF55B76A),
-    Color(0xFFE76E3C),
-  ];
 
   @override
   void initState() {
@@ -130,7 +126,11 @@ class _SpinningWheelState extends State<SpinningWheel>
         (2 * pi);
     final currentMod = _rotation % (2 * pi);
     final delta = (desiredMod - currentMod + (2 * pi)) % (2 * pi);
-    final targetRotation = _rotation + (2 * pi * 5) + delta;
+    _controller.duration = Duration(
+      milliseconds: widget.suspenseSpin ? 5600 : 3600,
+    );
+    final targetRotation =
+        _rotation + (2 * pi * (widget.suspenseSpin ? 6 : 5)) + delta;
 
     _rotationAnimation = Tween<double>(
       begin: _rotation,
@@ -175,20 +175,17 @@ class _SpinningWheelState extends State<SpinningWheel>
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(
-                            0x66FFB347,
-                          ).withValues(alpha: 0.22),
-                          blurRadius: 34,
-                          spreadRadius: 4,
+                          color:
+                              (widget.dangerMode
+                                      ? const Color(0xFFFF3D81)
+                                      : const Color(0xFFFFB347))
+                                  .withValues(
+                                    alpha: widget.dangerMode ? 0.10 : 0.22,
+                                  ),
+                          blurRadius: widget.dangerMode ? 18 : 34,
+                          spreadRadius: widget.dangerMode ? 1 : 4,
                         ),
                       ],
-                    ),
-                  ),
-                  Positioned(
-                    top: wheelSize * 0.04,
-                    child: CustomPaint(
-                      size: Size(wheelSize * 0.10, wheelSize * 0.08),
-                      painter: const _PointerTrianglePainter(),
                     ),
                   ),
                   AnimatedBuilder(
@@ -206,6 +203,10 @@ class _SpinningWheelState extends State<SpinningWheel>
                       );
                     },
                   ),
+                  CustomPaint(
+                    size: Size.square(wheelSize * 0.94),
+                    painter: _WheelFramePainter(dangerMode: widget.dangerMode),
+                  ),
                   AnimatedBuilder(
                     animation: _rotationAnimation,
                     builder: (context, child) {
@@ -215,13 +216,21 @@ class _SpinningWheelState extends State<SpinningWheel>
                           size: Size.square(wheelSize * 0.9),
                           painter: _WheelPainter(
                             players: widget.players,
-                            segmentColors: _segmentColors,
+                            labelStyle: Theme.of(context).textTheme.labelLarge,
+                            dangerMode: widget.dangerMode,
                           ),
                         ),
                       );
                     },
                   ),
                   const _WheelHub(),
+                  Positioned(
+                    top: wheelSize * 0.008,
+                    child: CustomPaint(
+                      size: Size(wheelSize * 0.18, wheelSize * 0.12),
+                      painter: const _PointerTrianglePainter(),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -239,19 +248,31 @@ class _PointerTrianglePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final path = Path()
       ..moveTo(size.width / 2, size.height)
-      ..lineTo(0, 0)
-      ..lineTo(size.width, 0)
+      ..lineTo(size.width * 0.06, 0)
+      ..quadraticBezierTo(
+        size.width / 2,
+        size.height * 0.22,
+        size.width * 0.94,
+        0,
+      )
       ..close();
 
     final paint = Paint()
       ..shader = const LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [Color(0xFFFFF0A0), Color(0xFFFF8A34)],
+        colors: [Color(0xFFFFE8A4), Color(0xFFD8A334)],
       ).createShader(Offset.zero & size);
 
-    canvas.drawShadow(path, const Color(0xAAFF8A34), 8, false);
+    canvas.drawShadow(path, const Color(0xAAFFD66B), 12, false);
     canvas.drawPath(path, paint);
+
+    final dotPaint = Paint()..color = Colors.white.withValues(alpha: 0.88);
+    canvas.drawCircle(
+      Offset(size.width / 2, size.height * 0.22),
+      2.4,
+      dotPaint,
+    );
   }
 
   @override
@@ -271,9 +292,9 @@ class _WheelHub extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFFFD64A), Color(0xFFFFA23C)],
+          colors: [Color(0xFF251135), Color(0xFF0F0719)],
         ),
-        border: Border.all(color: const Color(0xFFFFF2A8), width: 3),
+        border: Border.all(color: const Color(0xFFFFD66B), width: 3),
         boxShadow: [
           BoxShadow(
             color: const Color(0x66FFC44D).withValues(alpha: 0.22),
@@ -282,7 +303,94 @@ class _WheelHub extends StatelessWidget {
           ),
         ],
       ),
+      child: Center(
+        child: Container(
+          width: 18,
+          height: 18,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [Color(0xFFFFE08A), Color(0xFFFF9D42)],
+            ),
+          ),
+        ),
+      ),
     );
+  }
+}
+
+class _WheelFramePainter extends CustomPainter {
+  const _WheelFramePainter({required this.dangerMode});
+
+  final bool dangerMode;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final center = rect.center;
+    final radius = size.width / 2;
+
+    final glowPaint = Paint()
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, dangerMode ? 10 : 26)
+      ..color = (dangerMode ? const Color(0xFFFF3D81) : const Color(0xFFFFB347))
+          .withValues(alpha: dangerMode ? 0.07 : 0.24);
+    canvas.drawCircle(center, radius * 0.93, glowPaint);
+
+    final outerRimPaint = Paint()
+      ..shader = SweepGradient(
+        colors: dangerMode
+            ? const [
+                Color(0xFFFF5D98),
+                Color(0xFF7A214D),
+                Color(0xFFFFB55C),
+                Color(0xFF2A0C20),
+                Color(0xFFFF5D98),
+              ]
+            : const [
+                Color(0xFFFFD66B),
+                Color(0xFF9B642E),
+                Color(0xFFFFE08A),
+                Color(0xFFB97732),
+                Color(0xFFFFD66B),
+              ],
+      ).createShader(rect);
+    canvas.drawCircle(center, radius * 0.935, outerRimPaint);
+
+    final innerCutPaint = Paint()..color = const Color(0xFF12091C);
+    canvas.drawCircle(center, radius * 0.875, innerCutPaint);
+
+    final lipPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = dangerMode ? 1.8 : 1.4
+      ..color = (dangerMode ? const Color(0xFFFF7AB3) : Colors.white)
+          .withValues(alpha: dangerMode ? 0.34 : 0.20);
+    canvas.drawCircle(center, radius * 0.93, lipPaint);
+    canvas.drawCircle(center, radius * 0.875, lipPaint);
+
+    if (dangerMode) {
+      final warningPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.2
+        ..strokeCap = StrokeCap.round
+        ..color = const Color(0xFFFF4E92).withValues(alpha: 0.36);
+      const dashCount = 28;
+      const gapRatio = 0.44;
+      for (var i = 0; i < dashCount; i++) {
+        final start = (2 * pi / dashCount) * i;
+        canvas.drawArc(
+          Rect.fromCircle(center: center, radius: radius * 0.955),
+          start,
+          (2 * pi / dashCount) * gapRatio,
+          false,
+          warningPaint,
+        );
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _WheelFramePainter oldDelegate) {
+    return oldDelegate.dangerMode != dangerMode;
   }
 }
 
@@ -320,10 +428,15 @@ class _SpinEffectPainter extends CustomPainter {
 }
 
 class _WheelPainter extends CustomPainter {
-  const _WheelPainter({required this.players, required this.segmentColors});
+  const _WheelPainter({
+    required this.players,
+    required this.labelStyle,
+    required this.dangerMode,
+  });
 
   final List<Player> players;
-  final List<Color> segmentColors;
+  final TextStyle? labelStyle;
+  final bool dangerMode;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -337,47 +450,59 @@ class _WheelPainter extends CustomPainter {
     final segmentAngle = (2 * pi) / players.length;
     var startAngle = -pi / 2;
 
-    final outerRingPaint = Paint()
+    final separatorPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = radius * 0.035
-      ..shader = const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFFFFD85A), Color(0xFFFF9A3C)],
-      ).createShader(rect);
+      ..strokeWidth = dangerMode ? 4.6 : 3.6
+      ..strokeCap = StrokeCap.round
+      ..color = (dangerMode ? const Color(0xFF2B0716) : const Color(0xFF12091C))
+          .withValues(alpha: 0.84);
 
-    final innerBorderPaint = Paint()
+    final highlightPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..color = const Color(0xFF130D1D);
+      ..strokeWidth = 1.2
+      ..color = Colors.white.withValues(alpha: 0.18);
 
     final wheelShadowPaint = Paint()
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14)
       ..color = const Color(0x66251335);
 
-    canvas.drawCircle(center, radius - (radius * 0.07), wheelShadowPaint);
-
-    canvas.drawCircle(center, radius - (radius * 0.05), outerRingPaint);
+    canvas.drawCircle(center, radius * 0.82, wheelShadowPaint);
 
     for (var index = 0; index < players.length; index++) {
+      final colors = playerColorsForIndex(index);
       final paint = Paint()
         ..style = PaintingStyle.fill
-        ..color = segmentColors[index % segmentColors.length];
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: dangerMode
+              ? [
+                  Color.lerp(colors.primary, const Color(0xFFFF3D81), 0.24)!,
+                  Color.lerp(colors.secondary, const Color(0xFFFF7B2F), 0.18)!,
+                ]
+              : [colors.primary, colors.secondary],
+        ).createShader(rect);
 
       final sectorRect = Rect.fromCircle(
         center: center,
-        radius: radius - (radius * 0.05),
+        radius: radius * 0.835,
       );
 
       canvas.drawArc(sectorRect, startAngle, segmentAngle, true, paint);
-
       canvas.drawArc(
         sectorRect,
         startAngle,
         segmentAngle,
         true,
-        innerBorderPaint,
+        highlightPaint,
       );
+
+      final separatorAngle = -pi / 2 + (segmentAngle * index);
+      final separatorEnd = Offset(
+        center.dx + cos(separatorAngle) * (radius * 0.835),
+        center.dy + sin(separatorAngle) * (radius * 0.835),
+      );
+      canvas.drawLine(center, separatorEnd, separatorPaint);
 
       _paintLabel(
         canvas,
@@ -390,24 +515,11 @@ class _WheelPainter extends CustomPainter {
       startAngle += segmentAngle;
     }
 
-    _paintBulbs(canvas, center, radius - (radius * 0.03), players.length * 2);
-  }
-
-  void _paintBulbs(Canvas canvas, Offset center, double radius, int count) {
-    final bulbPaint = Paint()..color = const Color(0xFFFFF0A0);
-    final glowPaint = Paint()
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6)
-      ..color = const Color(0x99FFD85A);
-
-    for (var index = 0; index < count; index++) {
-      final angle = (-pi / 2) + ((2 * pi / count) * index);
-      final offset = Offset(
-        center.dx + cos(angle) * radius,
-        center.dy + sin(angle) * radius,
-      );
-      canvas.drawCircle(offset, 4, glowPaint);
-      canvas.drawCircle(offset, 2.4, bulbPaint);
-    }
+    final innerLinePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2
+      ..color = Colors.white.withValues(alpha: 0.18);
+    canvas.drawCircle(center, radius * 0.835, innerLinePaint);
   }
 
   void _paintLabel(
@@ -420,16 +532,18 @@ class _WheelPainter extends CustomPainter {
     canvas.save();
     canvas.translate(center.dx, center.dy);
     canvas.rotate(angle);
-    canvas.translate(radius * 0.52, 0);
+    canvas.translate(radius * 0.49, 0);
     canvas.rotate(pi / 2);
 
     final textPainter = TextPainter(
       text: TextSpan(
         text: name,
-        style: const TextStyle(
-          color: Colors.white,
+        style: labelStyle?.copyWith(
+          color: Colors.white.withValues(alpha: 0.92),
           fontSize: 13,
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.1,
+          shadows: const [Shadow(color: Color(0xAA08020F), blurRadius: 6)],
         ),
       ),
       maxLines: 1,
@@ -446,6 +560,8 @@ class _WheelPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _WheelPainter oldDelegate) {
-    return oldDelegate.players != players;
+    return oldDelegate.players != players ||
+        oldDelegate.labelStyle != labelStyle ||
+        oldDelegate.dangerMode != dangerMode;
   }
 }

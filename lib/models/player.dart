@@ -10,6 +10,7 @@ class Player {
     this.pickedCount = 0,
     this.truthCount = 0,
     this.dareCount = 0,
+    this.targetedCount = 0,
   });
 
   final String id;
@@ -22,6 +23,7 @@ class Player {
   final int pickedCount;
   final int truthCount;
   final int dareCount;
+  final int targetedCount;
 
   Player copyWith({
     String? id,
@@ -34,6 +36,7 @@ class Player {
     int? pickedCount,
     int? truthCount,
     int? dareCount,
+    int? targetedCount,
   }) {
     return Player(
       id: id ?? this.id,
@@ -46,6 +49,7 @@ class Player {
       pickedCount: pickedCount ?? this.pickedCount,
       truthCount: truthCount ?? this.truthCount,
       dareCount: dareCount ?? this.dareCount,
+      targetedCount: targetedCount ?? this.targetedCount,
     );
   }
 

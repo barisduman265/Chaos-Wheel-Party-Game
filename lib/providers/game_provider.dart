@@ -34,6 +34,53 @@ class GameProvider extends ChangeNotifier {
     return _gameLogicService.calculateTargetRights(roundCount);
   }
 
+  int noEscapeRoundCountFor(int totalRounds) {
+    return switch (totalRounds) {
+      15 => 5,
+      25 => 7,
+      40 => 10,
+      _ => (totalRounds * 0.25).ceil().clamp(3, 10),
+    };
+  }
+
+  int noEscapeStartRoundFor(int totalRounds) {
+    if (totalRounds <= 0) {
+      return 0;
+    }
+    return totalRounds - noEscapeRoundCountFor(totalRounds) + 1;
+  }
+
+  bool get isNoEscapeActive {
+    if (!_state.hasActiveGame || _state.isGameOver) {
+      return false;
+    }
+    return _state.currentRound >= noEscapeStartRoundFor(_state.totalRounds);
+  }
+
+  bool get isNoEscapeStartRound {
+    if (!_state.hasActiveGame || _state.isGameOver) {
+      return false;
+    }
+    return _state.currentRound == noEscapeStartRoundFor(_state.totalRounds);
+  }
+
+  bool get isFinalSpin {
+    if (!_state.hasActiveGame || _state.isGameOver) {
+      return false;
+    }
+    return _state.currentRound > _state.totalRounds - 3;
+  }
+
+  bool randomShouldChooseDare() {
+    if (truthLocked) {
+      return true;
+    }
+    if (isNoEscapeActive) {
+      return _gameLogicService.rollChance(0.70);
+    }
+    return _gameLogicService.rollChance(0.50);
+  }
+
   String? addPlayer(String rawName) {
     final name = rawName.trim();
     if (name.isEmpty) {
@@ -157,7 +204,11 @@ class GameProvider extends ChangeNotifier {
     if (player == null) {
       return false;
     }
-    return _state.balanceRuleEnabled && player.truthStreak >= 2;
+    return isTruthLockedFor(player);
+  }
+
+  bool isTruthLockedFor(Player player) {
+    return player.truthStreak >= 2;
   }
 
   String chooseTruth() {
@@ -166,12 +217,12 @@ class GameProvider extends ChangeNotifier {
       return '';
     }
     if (truthLocked) {
-      return 'Truth locked. Dare is mandatory 😈';
+      return 'Truth locked. Dare is mandatory.';
     }
 
     final updated = _gameLogicService.chooseTruth(player);
     final message = updated.truthStreak == 2
-        ? 'Careful… next time Truth is locked.'
+        ? 'Careful... next time Truth is locked.'
         : '${updated.name} chose Truth.';
     _replaceSelectedPlayer(updated);
     _finishRound();
@@ -199,6 +250,7 @@ class GameProvider extends ChangeNotifier {
     final result = _gameLogicService.chooseRandom(
       player,
       truthLocked: truthLocked,
+      dareChance: isNoEscapeActive ? 0.70 : 0.50,
     );
     _replaceSelectedPlayer(result.player);
     _finishRound();
@@ -210,20 +262,26 @@ class GameProvider extends ChangeNotifier {
     if (player == null) {
       return '';
     }
+    if (isNoEscapeActive) {
+      return 'No Escape is active. Drinks are locked.';
+    }
     if (player.passRights <= 0) {
-      return 'No passes left.';
+      return 'No drinks left.';
     }
 
     final updated = _gameLogicService.usePass(player);
     _replaceSelectedPlayer(updated);
     _finishRound();
-    return 'Pass used. No escape forever.';
+    return 'Drink used. No escape forever.';
   }
 
   String? canUseTarget() {
     final player = selectedPlayer;
     if (player == null) {
       return 'Spin the wheel first.';
+    }
+    if (isNoEscapeActive) {
+      return 'No Escape is active. Target is locked.';
     }
     if (player.targetRights <= 0) {
       return 'No targets left.';
@@ -247,7 +305,9 @@ class GameProvider extends ChangeNotifier {
             return actingPlayer;
           }
           if (player.id == targetPlayerId) {
-            return player.copyWith(pickedCount: player.pickedCount + 1);
+            return _gameLogicService
+                .receiveTarget(player)
+                .copyWith(pickedCount: player.pickedCount + 1);
           }
           return player;
         })

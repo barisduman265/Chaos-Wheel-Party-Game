@@ -15,7 +15,7 @@ class GameSetupScreen extends StatefulWidget {
 }
 
 class _GameSetupScreenState extends State<GameSetupScreen> {
-  int _roundCount = 10;
+  int _roundCount = 15;
   bool _balanceRuleEnabled = true;
   bool _randomButtonEnabled = true;
   bool _didLoadDefaults = false;
@@ -33,15 +33,17 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
     _didLoadDefaults = true;
   }
 
-  bool get _isQuick => _roundCount == 5;
-  bool get _isParty => _roundCount == 10;
-  bool get _isLong => _roundCount == 15;
+  bool get _isQuick => _roundCount == 15;
+  bool get _isParty => _roundCount == 25;
+  bool get _isTotal => _roundCount == 40;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final passRights = provider.calculatePassRights(_roundCount);
     final targetRights = provider.calculateTargetRights(_roundCount);
+    final playerRange = _playerRangeFor(_roundCount);
+    final playerCount = provider.players.length;
 
     return Scaffold(
       body: ChaosBackground(
@@ -78,9 +80,9 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                           childAspectRatio: 1.14,
                           children: [
                             _ModeCard(
-                              leading: '5',
-                              label: 'QUICK',
-                              subtitle: 'Just a taste',
+                              leading: '15',
+                              label: 'QUICK CHAOS',
+                              subtitle: '3-5 players - 1 shot - 1 target',
                               icon: Icons.bolt_rounded,
                               selected: _isQuick,
                               colors: const [
@@ -88,12 +90,12 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 Color(0xFF092A55),
                               ],
                               accent: const Color(0xFF52D6FF),
-                              onTap: () => setState(() => _roundCount = 5),
+                              onTap: () => setState(() => _roundCount = 15),
                             ),
                             _ModeCard(
-                              leading: '10',
-                              label: 'PARTY',
-                              subtitle: 'The classic',
+                              leading: '25',
+                              label: 'PARTY CHAOS',
+                              subtitle: '5-7 players - 2 shots - 1 target',
                               icon: Icons.local_fire_department_rounded,
                               selected: _isParty,
                               colors: const [
@@ -101,20 +103,20 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 Color(0xFF742048),
                               ],
                               accent: Colors.white,
-                              onTap: () => setState(() => _roundCount = 10),
+                              onTap: () => setState(() => _roundCount = 25),
                             ),
                             _ModeCard(
-                              leading: '15',
-                              label: 'LONG',
-                              subtitle: 'Go all night',
+                              leading: '40',
+                              label: 'TOTAL CHAOS',
+                              subtitle: '7-10 players - 3 shots - 2 targets',
                               icon: Icons.workspace_premium_rounded,
-                              selected: _isLong,
+                              selected: _isTotal,
                               colors: const [
                                 Color(0xFF5430A8),
                                 Color(0xFF2A176A),
                               ],
                               accent: const Color(0xFFA85BFF),
-                              onTap: () => setState(() => _roundCount = 15),
+                              onTap: () => setState(() => _roundCount = 40),
                             ),
                             _LockedModeCard(
                               label: 'CUSTOM',
@@ -133,6 +135,11 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                               },
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 14),
+                        _NoEscapeRuleCard(
+                          rounds: provider.noEscapeRoundCountFor(_roundCount),
+                          totalRounds: _roundCount,
                         ),
                         const SizedBox(height: 22),
                         const _SectionLabel('PER-PLAYER RIGHTS'),
@@ -169,7 +176,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                         const SizedBox(height: 12),
                         _SettingCard(
                           title: 'Balance Rule',
-                          subtitle: 'Lock Truth after 2-streak',
+                          subtitle: 'Lock Truth only after 2 Truths in a row',
                           value: _balanceRuleEnabled,
                           onChanged: (value) {
                             setState(() => _balanceRuleEnabled = value);
@@ -203,6 +210,19 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                 _StartChaosButton(
                   roundCount: _roundCount,
                   onPressed: () {
+                    if (playerCount < playerRange.min ||
+                        playerCount > playerRange.max) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          behavior: SnackBarBehavior.floating,
+                          backgroundColor: const Color(0xFF23142D),
+                          content: Text(
+                            'This mode is built for ${playerRange.min}-${playerRange.max} players.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
                     context.read<GameProvider>().initializeGame(
                       roundCount: _roundCount,
                       balanceRuleEnabled: _balanceRuleEnabled,
@@ -221,6 +241,15 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
         ),
       ),
     );
+  }
+
+  ({int min, int max}) _playerRangeFor(int roundCount) {
+    return switch (roundCount) {
+      15 => (min: 3, max: 5),
+      25 => (min: 5, max: 7),
+      40 => (min: 7, max: 10),
+      _ => (min: 2, max: 10),
+    };
   }
 }
 
@@ -361,6 +390,8 @@ class _ModeCard extends StatelessWidget {
             const Spacer(),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: accent,
                 fontWeight: FontWeight.w900,
@@ -462,6 +493,89 @@ class _LockedModeCard extends StatelessWidget {
             _PremiumPill(accent: accent),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _NoEscapeRuleCard extends StatelessWidget {
+  const _NoEscapeRuleCard({required this.rounds, required this.totalRounds});
+
+  final int rounds;
+  final int totalRounds;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            const Color(0xFFFF3D81).withValues(alpha: 0.18),
+            const Color(0xFF8A55FF).withValues(alpha: 0.14),
+            const Color(0xFF39D2FF).withValues(alpha: 0.08),
+          ],
+        ),
+        border: Border.all(
+          color: const Color(0xFFFF5D98).withValues(alpha: 0.24),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFF3D81).withValues(alpha: 0.10),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFFF3D81).withValues(alpha: 0.16),
+              border: Border.all(
+                color: const Color(0xFFFF5D98).withValues(alpha: 0.40),
+              ),
+            ),
+            child: const Icon(
+              Icons.warning_amber_rounded,
+              color: Color(0xFFFF5D98),
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'NO ESCAPE STARTS IN THE FINAL $rounds ROUNDS',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.6,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Applies to every mode. From round ${totalRounds - rounds + 1}, shots and targets are locked.',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.66),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -573,7 +687,7 @@ class _SettingCard extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeColor: const Color(0xFFD8C5F2),
+            activeThumbColor: const Color(0xFFD8C5F2),
             activeTrackColor: const Color(0xFF7357A8),
             inactiveThumbColor: const Color(0xFF8B7C96),
             inactiveTrackColor: Colors.white.withValues(alpha: 0.12),

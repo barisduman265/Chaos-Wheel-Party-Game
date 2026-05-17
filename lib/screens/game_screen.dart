@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:chaos_wheel_party_game/core/player_colors.dart';
 import 'package:chaos_wheel_party_game/models/player.dart';
@@ -27,6 +28,8 @@ class _GameScreenState extends State<GameScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final state = provider.state;
+    final noEscape = provider.isNoEscapeActive;
+    final finalSpin = provider.isFinalSpin;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.mounted) {
@@ -38,88 +41,126 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     return Scaffold(
-      body: ChaosBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(26, 16, 26, 18),
-            child: Column(
-              children: [
-                _TopControls(
-                  currentRound: state.currentRound,
-                  totalRounds: state.totalRounds,
-                  progress: state.totalRounds == 0
-                      ? 0
-                      : state.currentRound / state.totalRounds,
-                ),
-                const SizedBox(height: 26),
-                Text(
-                  'TAP SPIN TO DRAW',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.48),
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 5,
+      body: Stack(
+        children: [
+          const ChaosBackground(child: SizedBox.expand()),
+          if (noEscape)
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFFFF3D81).withValues(alpha: 0.08),
+                      Colors.transparent,
+                      const Color(0xFF09030F).withValues(alpha: 0.18),
+                    ],
+                    stops: const [0, 0.42, 1],
                   ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  "Who's next?",
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    height: 0.95,
+              ),
+            ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(26, 16, 26, 18),
+              child: Column(
+                children: [
+                  _TopControls(
+                    currentRound: state.currentRound,
+                    totalRounds: state.totalRounds,
+                    progress: state.totalRounds == 0
+                        ? 0
+                        : state.currentRound / state.totalRounds,
+                    noEscape: noEscape,
                   ),
-                ),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: Center(
-                    child: SpinningWheel(
-                      controller: _wheelController,
-                      players: state.players,
-                      isSpinning: state.isSpinning,
-                      soundEnabled: provider.soundEnabled,
-                      onSpinRequested: () async {
-                        return context
-                            .read<GameProvider>()
-                            .prepareSpinSelection();
-                      },
-                      onSpinCompleted: (_) async {
-                        final message = context
-                            .read<GameProvider>()
-                            .completeSpinSelection();
-                        if (message.isEmpty || !context.mounted) {
-                          return;
-                        }
-
-                        final player = context
-                            .read<GameProvider>()
-                            .selectedPlayer;
-                        if (player == null) {
-                          return;
-                        }
-
-                        await PickedRevealScreen.show(context, player.name);
-                        if (context.mounted) {
-                          await FateChoiceScreen.show(context, player: player);
-                        }
-                      },
+                  const SizedBox(height: 26),
+                  Text(
+                    noEscape
+                        ? 'NO ESCAPE MODE'
+                        : finalSpin
+                        ? 'FINAL SPIN'
+                        : 'TAP SPIN TO DRAW',
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.48),
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 5,
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                _AutoRosterStrip(players: state.players),
-                const SizedBox(height: 14),
-                _SpinBar(
-                  isSpinning: state.isSpinning,
-                  hasSelection: state.selectedPlayer != null,
-                  enabled:
-                      state.players.length >= 2 && state.selectedPlayer == null,
-                  onTap: () => _wheelController.spin(),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  Text(
+                    "Who's next?",
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      height: 0.95,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: Center(
+                      child: SpinningWheel(
+                        controller: _wheelController,
+                        players: state.players,
+                        isSpinning: state.isSpinning,
+                        soundEnabled: provider.soundEnabled,
+                        suspenseSpin: finalSpin,
+                        dangerMode: noEscape,
+                        onSpinRequested: () async {
+                          return context
+                              .read<GameProvider>()
+                              .prepareSpinSelection();
+                        },
+                        onSpinCompleted: (_) async {
+                          final message = context
+                              .read<GameProvider>()
+                              .completeSpinSelection();
+                          if (message.isEmpty || !context.mounted) {
+                            return;
+                          }
+
+                          final player = context
+                              .read<GameProvider>()
+                              .selectedPlayer;
+                          if (player == null) {
+                            return;
+                          }
+
+                          await PickedRevealScreen.show(context, player.name);
+                          if (context.mounted) {
+                            await FateChoiceScreen.show(
+                              context,
+                              player: player,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _AutoRosterStrip(players: state.players),
+                  const SizedBox(height: 14),
+                  _SpinBar(
+                    isSpinning: state.isSpinning,
+                    hasSelection: state.selectedPlayer != null,
+                    enabled: state.players.length >= 2,
+                    onTap: () {
+                      final selected = context
+                          .read<GameProvider>()
+                          .selectedPlayer;
+                      if (selected != null) {
+                        FateChoiceScreen.show(context, player: selected);
+                        return;
+                      }
+                      _wheelController.spin();
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -130,11 +171,13 @@ class _TopControls extends StatelessWidget {
     required this.currentRound,
     required this.totalRounds,
     required this.progress,
+    required this.noEscape,
   });
 
   final int currentRound;
   final int totalRounds;
   final double progress;
+  final bool noEscape;
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +207,11 @@ class _TopControls extends StatelessWidget {
                   children: [
                     TextSpan(
                       text: 'R${currentRound.toString().padLeft(2, '0')}',
-                      style: const TextStyle(color: Color(0xFFA86CFF)),
+                      style: TextStyle(
+                        color: noEscape
+                            ? const Color(0xFFFF5D98)
+                            : const Color(0xFFA86CFF),
+                      ),
                     ),
                     TextSpan(text: ' / $totalRounds'),
                   ],
@@ -182,7 +229,9 @@ class _TopControls extends StatelessWidget {
             minHeight: 4,
             value: progress.clamp(0, 1),
             backgroundColor: Colors.white.withValues(alpha: 0.08),
-            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFFF3D81)),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              noEscape ? const Color(0xFFFF5D98) : const Color(0xFFA86CFF),
+            ),
           ),
         ),
       ],
@@ -296,8 +345,22 @@ class _MiniPlayerCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
-        color: colors.primary.withValues(alpha: 0.08),
-        border: Border.all(color: colors.primary.withValues(alpha: 0.22)),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            colors.primary.withValues(alpha: 0.18),
+            colors.secondary.withValues(alpha: 0.10),
+          ],
+        ),
+        border: Border.all(color: colors.primary.withValues(alpha: 0.30)),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 7),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -381,7 +444,6 @@ class _SpinBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final canSpin = enabled && !isSpinning;
     final label = hasSelection ? 'CHOOSE FATE' : 'SPIN';
-    final icon = hasSelection ? Icons.bolt_rounded : Icons.casino_rounded;
 
     return GestureDetector(
       onTap: canSpin ? onTap : null,
@@ -421,7 +483,14 @@ class _SpinBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: Colors.white, size: 24),
+              if (hasSelection)
+                const Icon(Icons.bolt_rounded, color: Colors.white, size: 24)
+              else
+                const SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CustomPaint(painter: _SpinGlyphPainter()),
+                ),
               const SizedBox(width: 12),
               Text(
                 label,
@@ -437,4 +506,61 @@ class _SpinBar extends StatelessWidget {
       ),
     );
   }
+}
+
+class _SpinGlyphPainter extends CustomPainter {
+  const _SpinGlyphPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final center = rect.center;
+    final radius = size.width * 0.36;
+    final glowPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round
+      ..color = Colors.white.withValues(alpha: 0.20)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
+    final arcPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round
+      ..shader = SweepGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.10),
+          Colors.white,
+          Colors.white.withValues(alpha: 0.65),
+          Colors.white.withValues(alpha: 0.10),
+        ],
+      ).createShader(rect);
+
+    final orbit = Rect.fromCircle(center: center, radius: radius);
+    canvas.drawArc(orbit, -1.25, 4.7, false, glowPaint);
+    canvas.drawArc(orbit, -1.25, 4.7, false, arcPaint);
+
+    final arrowPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    final angle = 3.45;
+    final arrowCenter = Offset(
+      center.dx + cos(angle) * radius,
+      center.dy + sin(angle) * radius,
+    );
+    final arrow = Path()
+      ..moveTo(arrowCenter.dx, arrowCenter.dy)
+      ..lineTo(arrowCenter.dx + size.width * 0.16, arrowCenter.dy - 1)
+      ..lineTo(
+        arrowCenter.dx + size.width * 0.06,
+        arrowCenter.dy + size.height * 0.13,
+      )
+      ..close();
+    canvas.drawPath(arrow, arrowPaint);
+
+    final dotPaint = Paint()..color = Colors.white.withValues(alpha: 0.92);
+    canvas.drawCircle(center, size.width * 0.09, dotPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

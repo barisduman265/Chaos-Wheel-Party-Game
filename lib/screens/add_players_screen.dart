@@ -398,15 +398,48 @@ class _AddPlayerBar extends StatelessWidget {
             child: Ink(
               width: 56,
               height: 56,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: addEnabled ? 0.12 : 0.06),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-              ),
-              child: Icon(
-                Icons.add_rounded,
-                color: Colors.white.withValues(alpha: addEnabled ? 1 : 0.35),
-                size: 28,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: Center(
+                child: Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: addEnabled
+                        ? const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFFFF7A2F), Color(0xFFFF3D81)],
+                          )
+                        : null,
+                    color: addEnabled
+                        ? null
+                        : Colors.white.withValues(alpha: 0.06),
+                    border: Border.all(
+                      color: addEnabled
+                          ? Colors.white.withValues(alpha: 0.24)
+                          : Colors.white.withValues(alpha: 0.10),
+                    ),
+                    boxShadow: addEnabled
+                        ? [
+                            BoxShadow(
+                              color: const Color(
+                                0xFFFF4B76,
+                              ).withValues(alpha: 0.34),
+                              blurRadius: 14,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: Icon(
+                    Icons.add_rounded,
+                    color: Colors.white.withValues(
+                      alpha: addEnabled ? 1 : 0.36,
+                    ),
+                    size: 24,
+                  ),
+                ),
               ),
             ),
           ),

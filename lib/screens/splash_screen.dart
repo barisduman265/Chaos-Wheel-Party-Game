@@ -27,11 +27,13 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1800),
     )..repeat();
 
-    _timer = Timer(const Duration(seconds: 3), () {
-      if (!mounted) {
-        return;
-      }
-      Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _timer = Timer(const Duration(seconds: 3), () {
+        if (!mounted) {
+          return;
+        }
+        Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+      });
     });
   }
 
@@ -186,75 +188,62 @@ class _SkullPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final skullPaint = Paint()..color = const Color(0xFFEFEAF2);
+    final skullPaint = Paint()..color = const Color(0xFFF3EDF5);
     final shadowPaint = Paint()
-      ..color = const Color(0x5539D2FF)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8);
-    final darkPaint = Paint()..color = const Color(0xFF2A2930);
-    final toothPaint = Paint()
-      ..color = const Color(0xFF8FDFFF)
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round;
+      ..color = const Color(0x70FF6AA8)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
+    final darkPaint = Paint()..color = const Color(0xFF231826);
 
-    final head = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        size.width * 0.22,
-        size.height * 0.18,
-        size.width * 0.56,
-        size.height * 0.52,
+    final w = size.width;
+    final h = size.height;
+    final skull = Path()
+      ..moveTo(w * 0.50, h * 0.12)
+      ..cubicTo(w * 0.28, h * 0.12, w * 0.16, h * 0.28, w * 0.16, h * 0.43)
+      ..cubicTo(w * 0.16, h * 0.58, w * 0.27, h * 0.67, w * 0.39, h * 0.69)
+      ..lineTo(w * 0.61, h * 0.69)
+      ..cubicTo(w * 0.73, h * 0.67, w * 0.84, h * 0.58, w * 0.84, h * 0.43)
+      ..cubicTo(w * 0.84, h * 0.28, w * 0.72, h * 0.12, w * 0.50, h * 0.12)
+      ..close();
+
+    canvas.drawPath(skull.shift(const Offset(0, 3)), shadowPaint);
+    canvas.drawPath(skull, skullPaint);
+
+    for (final x in [0.38, 0.50, 0.62]) {
+      final tooth = RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(w * x, h * 0.74),
+          width: w * 0.11,
+          height: h * 0.22,
+        ),
+        Radius.circular(w * 0.045),
+      );
+      canvas.drawRRect(tooth.shift(const Offset(0, 3)), shadowPaint);
+      canvas.drawRRect(tooth, skullPaint);
+    }
+
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(w * 0.38, h * 0.42),
+        width: w * 0.23,
+        height: h * 0.21,
       ),
-      Radius.circular(size.width * 0.22),
-    );
-    final jaw = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        size.width * 0.30,
-        size.height * 0.56,
-        size.width * 0.40,
-        size.height * 0.24,
-      ),
-      Radius.circular(size.width * 0.10),
-    );
-
-    canvas.drawRRect(head.shift(const Offset(0, 3)), shadowPaint);
-    canvas.drawRRect(jaw.shift(const Offset(0, 3)), shadowPaint);
-    canvas.drawRRect(head, skullPaint);
-    canvas.drawRRect(jaw, skullPaint);
-
-    canvas.drawCircle(
-      Offset(size.width * 0.39, size.height * 0.43),
-      size.width * 0.095,
       darkPaint,
     );
-    canvas.drawCircle(
-      Offset(size.width * 0.61, size.height * 0.43),
-      size.width * 0.095,
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(w * 0.62, h * 0.42),
+        width: w * 0.23,
+        height: h * 0.21,
+      ),
       darkPaint,
     );
 
     final nose = Path()
-      ..moveTo(size.width * 0.50, size.height * 0.52)
-      ..quadraticBezierTo(
-        size.width * 0.40,
-        size.height * 0.68,
-        size.width * 0.58,
-        size.height * 0.68,
-      )
-      ..quadraticBezierTo(
-        size.width * 0.57,
-        size.height * 0.56,
-        size.width * 0.50,
-        size.height * 0.52,
-      )
+      ..moveTo(w * 0.50, h * 0.53)
+      ..lineTo(w * 0.43, h * 0.66)
+      ..quadraticBezierTo(w * 0.50, h * 0.70, w * 0.57, h * 0.66)
       ..close();
     canvas.drawPath(nose, darkPaint);
-
-    for (final x in [0.39, 0.50, 0.61]) {
-      canvas.drawLine(
-        Offset(size.width * x, size.height * 0.70),
-        Offset(size.width * x, size.height * 0.80),
-        toothPaint,
-      );
-    }
   }
 
   @override

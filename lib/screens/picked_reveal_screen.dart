@@ -77,10 +77,10 @@ class _PickedRevealScreenState extends State<PickedRevealScreen>
                     children: [
                       ScaleTransition(
                         scale: _scale,
-                        child: Text(
-                          '💀',
-                          style: Theme.of(context).textTheme.displayLarge
-                              ?.copyWith(fontSize: 92, height: 1),
+                        child: const SizedBox(
+                          width: 112,
+                          height: 112,
+                          child: CustomPaint(painter: _PickedSkullPainter()),
                         ),
                       ),
                       const SizedBox(height: 22),
@@ -129,6 +129,73 @@ class _PickedRevealScreenState extends State<PickedRevealScreen>
       ),
     );
   }
+}
+
+class _PickedSkullPainter extends CustomPainter {
+  const _PickedSkullPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final skullPaint = Paint()..color = const Color(0xFFF3EDF5);
+    final shadowPaint = Paint()
+      ..color = const Color(0x70FF6AA8)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
+    final darkPaint = Paint()..color = const Color(0xFF231826);
+
+    final w = size.width;
+    final h = size.height;
+    final skull = Path()
+      ..moveTo(w * 0.50, h * 0.12)
+      ..cubicTo(w * 0.28, h * 0.12, w * 0.16, h * 0.28, w * 0.16, h * 0.43)
+      ..cubicTo(w * 0.16, h * 0.58, w * 0.27, h * 0.67, w * 0.39, h * 0.69)
+      ..lineTo(w * 0.61, h * 0.69)
+      ..cubicTo(w * 0.73, h * 0.67, w * 0.84, h * 0.58, w * 0.84, h * 0.43)
+      ..cubicTo(w * 0.84, h * 0.28, w * 0.72, h * 0.12, w * 0.50, h * 0.12)
+      ..close();
+
+    canvas.drawPath(skull.shift(const Offset(0, 3)), shadowPaint);
+    canvas.drawPath(skull, skullPaint);
+
+    for (final x in [0.38, 0.50, 0.62]) {
+      final tooth = RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(w * x, h * 0.74),
+          width: w * 0.11,
+          height: h * 0.22,
+        ),
+        Radius.circular(w * 0.045),
+      );
+      canvas.drawRRect(tooth.shift(const Offset(0, 3)), shadowPaint);
+      canvas.drawRRect(tooth, skullPaint);
+    }
+
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(w * 0.38, h * 0.42),
+        width: w * 0.23,
+        height: h * 0.21,
+      ),
+      darkPaint,
+    );
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: Offset(w * 0.62, h * 0.42),
+        width: w * 0.23,
+        height: h * 0.21,
+      ),
+      darkPaint,
+    );
+
+    final nose = Path()
+      ..moveTo(w * 0.50, h * 0.53)
+      ..lineTo(w * 0.43, h * 0.66)
+      ..quadraticBezierTo(w * 0.50, h * 0.70, w * 0.57, h * 0.66)
+      ..close();
+    canvas.drawPath(nose, darkPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _RevealBackgroundPainter extends CustomPainter {
