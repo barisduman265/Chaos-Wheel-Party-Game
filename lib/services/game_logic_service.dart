@@ -115,6 +115,7 @@ class GameLogicService {
     return state.copyWith(
       currentRound: state.currentRound + 1,
       targetChainCount: 0,
+      revengeUsedThisRound: false,
       clearSelectedPlayer: true,
       isSpinning: false,
     );
@@ -128,6 +129,7 @@ class GameLogicService {
       currentRound: 1,
       balanceRuleEnabled: state.balanceRuleEnabled,
       randomButtonEnabled: state.randomButtonEnabled,
+      revengeModeEnabled: state.revengeModeEnabled,
     );
   }
 
@@ -135,6 +137,7 @@ class GameLogicService {
     return GameStateModel(
       balanceRuleEnabled: state.balanceRuleEnabled,
       randomButtonEnabled: state.randomButtonEnabled,
+      revengeModeEnabled: state.revengeModeEnabled,
     );
   }
 }

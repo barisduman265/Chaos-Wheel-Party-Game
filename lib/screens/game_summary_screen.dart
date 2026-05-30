@@ -2,14 +2,23 @@ import 'package:chaos_wheel_party_game/models/player.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/screens/add_players_screen.dart';
 import 'package:chaos_wheel_party_game/screens/game_screen.dart';
+import 'package:chaos_wheel_party_game/services/share_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
 
-class GameSummaryScreen extends StatelessWidget {
+class GameSummaryScreen extends StatefulWidget {
   const GameSummaryScreen({super.key});
 
   static const routeName = '/summary';
+
+  @override
+  State<GameSummaryScreen> createState() => _GameSummaryScreenState();
+}
+
+class _GameSummaryScreenState extends State<GameSummaryScreen> {
+  final ScreenshotController _reportController = ScreenshotController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,59 +27,67 @@ class GameSummaryScreen extends StatelessWidget {
 
     final stats = [
       _StatData(
-        title: 'MVP',
-        subtitle: 'Most picked',
+        title: provider.l('mvp'),
+        subtitle: provider.l('mostPicked'),
         icon: Icons.emoji_events_rounded,
         color: const Color(0xFFFFD66B),
+        surface: const Color(0xFF6B4220),
         value: _winner(players, (player) => player.pickedCount),
       ),
       _StatData(
-        title: 'Biggest Escaper',
-        subtitle: 'Most drinks used',
+        title: provider.l('biggestEscaper'),
+        subtitle: provider.l('mostShotsUsed'),
         icon: Icons.local_bar_rounded,
         color: const Color(0xFF71D2FF),
+        surface: const Color(0xFF153A6B),
         value: _winner(players, (player) => player.passUsed),
       ),
       _StatData(
-        title: 'Sniper',
-        subtitle: 'Most targets used',
+        title: provider.l('sniper'),
+        subtitle: provider.l('mostTargetsUsed'),
         icon: Icons.gps_fixed_rounded,
         color: const Color(0xFFFF5D98),
+        surface: const Color(0xFF6A173F),
         value: _winner(players, (player) => player.targetUsed),
       ),
       _StatData(
-        title: 'Most Hated',
-        subtitle: 'Most targeted',
+        title: provider.l('mostHated'),
+        subtitle: provider.l('mostTargeted'),
         icon: Icons.crisis_alert_rounded,
-        color: const Color(0xFFFF7B2F),
+        color: const Color(0xFFFF8A3D),
+        surface: const Color(0xFF6B2818),
         value: _winner(players, (player) => player.targetedCount),
       ),
       _StatData(
-        title: 'Fearless',
-        subtitle: 'Least drinks used',
+        title: provider.l('fearless'),
+        subtitle: provider.l('leastShotsUsed'),
         icon: Icons.shield_rounded,
         color: const Color(0xFF55F0B0),
+        surface: const Color(0xFF164E3C),
         value: _least(players, (player) => player.passUsed),
       ),
       _StatData(
-        title: 'Dare Devil',
-        subtitle: 'Most dares',
+        title: provider.l('dareDevil'),
+        subtitle: provider.l('mostDares'),
         icon: Icons.bolt_rounded,
         color: const Color(0xFFA85BFF),
+        surface: const Color(0xFF351A6D),
         value: _winner(players, (player) => player.dareCount),
       ),
       _StatData(
-        title: 'Honest Soul',
-        subtitle: 'Most truths',
+        title: provider.l('honestSoul'),
+        subtitle: provider.l('mostTruths'),
         icon: Icons.question_answer_rounded,
         color: const Color(0xFF7AB8FF),
+        surface: const Color(0xFF1A2B68),
         value: _winner(players, (player) => player.truthCount),
       ),
       _StatData(
-        title: 'Suspiciously Safe',
-        subtitle: 'Truth-heavy',
+        title: provider.l('suspiciouslySafe'),
+        subtitle: provider.l('truthHeavy'),
         icon: Icons.visibility_rounded,
         color: const Color(0xFFFF8BD1),
+        surface: const Color(0xFF5A1849),
         value: _winner(
           players,
           (player) => player.truthCount - player.dareCount,
@@ -84,33 +101,77 @@ class GameSummaryScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
             children: [
-              Text(
-                'CHAOS\nREPORT',
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  height: 0.9,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'The wheel kept receipts.',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.66),
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 22),
-              ...stats.map(
-                (stat) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: _StatTile(data: stat),
+              Screenshot(
+                controller: _reportController,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        provider.l('chaosReport'),
+                        style: Theme.of(context).textTheme.displaySmall
+                            ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              height: 0.9,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        provider.l('wheelKeptReceipts'),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.66),
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
+                      ...stats.asMap().entries.map(
+                        (entry) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0, end: 1),
+                            duration: Duration(
+                              milliseconds: 240 + (entry.key * 38),
+                            ),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, child) {
+                              return Opacity(
+                                opacity: value,
+                                child: Transform.translate(
+                                  offset: Offset(0, 12 * (1 - value)),
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: _StatTile(
+                              data: entry.value,
+                              prominent: false,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 22),
               _SummaryPrimaryAction(
-                label: 'PLAY AGAIN',
+                label: provider.l('shareTheChaos'),
+                icon: Icons.ios_share_rounded,
+                onTap: () {
+                  const ChaosShareService().shareChaosReport(
+                    players: players,
+                    totalRounds: provider.state.totalRounds,
+                    screenshotController: _reportController,
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              _SummaryPrimaryAction(
+                label: provider.l('playAgain'),
                 icon: Icons.replay_rounded,
+                compact: true,
                 onTap: () {
                   context.read<GameProvider>().resetGameSamePlayers();
                   Navigator.pushNamedAndRemoveUntil(
@@ -125,26 +186,13 @@ class GameSummaryScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _SummarySecondaryAction(
-                      label: 'NEW GAME',
+                      label: provider.l('newGame'),
                       onTap: () {
                         context.read<GameProvider>().startNewGame();
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           AddPlayersScreen.routeName,
                           (route) => false,
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SummarySecondaryAction(
-                      label: 'SHARE',
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Share results will be added later.'),
-                          ),
                         );
                       },
                     ),
@@ -187,11 +235,13 @@ class _SummaryPrimaryAction extends StatelessWidget {
     required this.label,
     required this.icon,
     required this.onTap,
+    this.compact = false,
   });
 
   final String label;
   final IconData icon;
   final VoidCallback onTap;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +249,7 @@ class _SummaryPrimaryAction extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 74,
+        height: compact ? 62 : 74,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           gradient: const LinearGradient(
@@ -324,6 +374,7 @@ class _StatData {
     required this.subtitle,
     required this.icon,
     required this.color,
+    required this.surface,
     required this.value,
   });
 
@@ -331,13 +382,15 @@ class _StatData {
   final String subtitle;
   final IconData icon;
   final Color color;
+  final Color surface;
   final String value;
 }
 
 class _StatTile extends StatelessWidget {
-  const _StatTile({required this.data});
+  const _StatTile({required this.data, required this.prominent});
 
   final _StatData data;
+  final bool prominent;
 
   @override
   Widget build(BuildContext context) {
@@ -346,25 +399,19 @@ class _StatTile extends StatelessWidget {
     final count = valueParts.length == 2 ? valueParts.last : '';
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            data.color.withValues(alpha: 0.18),
-            const Color(0xFF14051F).withValues(alpha: 0.72),
+            data.surface.withValues(alpha: 0.34),
+            data.color.withValues(alpha: 0.08),
+            const Color(0xFF12051E).withValues(alpha: 0.68),
           ],
         ),
-        border: Border.all(color: data.color.withValues(alpha: 0.36)),
-        boxShadow: [
-          BoxShadow(
-            color: data.color.withValues(alpha: 0.12),
-            blurRadius: 22,
-            offset: const Offset(0, 10),
-          ),
-        ],
+        border: Border.all(color: data.color.withValues(alpha: 0.26)),
       ),
       child: Row(
         children: [
@@ -373,10 +420,10 @@ class _StatTile extends StatelessWidget {
             height: 54,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: data.color.withValues(alpha: 0.16),
+              color: data.color.withValues(alpha: 0.12),
               border: Border.all(color: data.color.withValues(alpha: 0.34)),
             ),
-            child: Icon(data.icon, color: data.color, size: 26),
+            child: Icon(data.icon, color: data.color, size: 27),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -385,22 +432,17 @@ class _StatTile extends StatelessWidget {
               children: [
                 Text(
                   data.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
-                    height: 1,
                   ),
                 ),
-                const SizedBox(height: 5),
+                const SizedBox(height: 4),
                 Text(
                   data.subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.56),
-                    fontWeight: FontWeight.w700,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.58),
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -408,7 +450,7 @@ class _StatTile extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 126),
+            constraints: const BoxConstraints(maxWidth: 120),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -416,14 +458,12 @@ class _StatTile extends StatelessWidget {
                   playerName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.right,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: data.color,
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                if (count.isNotEmpty) ...[
-                  const SizedBox(height: 3),
+                if (count.isNotEmpty)
                   Text(
                     'x $count',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -431,7 +471,6 @@ class _StatTile extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                ],
               ],
             ),
           ),

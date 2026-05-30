@@ -1,6 +1,8 @@
 import 'package:chaos_wheel_party_game/models/player.dart';
+import 'package:chaos_wheel_party_game/models/prompt_models.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/screens/choice_reveal_screen.dart';
+import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -65,7 +67,9 @@ class FateChoiceScreen extends StatelessWidget {
                   children: [
                     const SizedBox(height: 8),
                     Text(
-                      noEscape ? 'NO ESCAPE MODE' : 'STEP 1 / 2',
+                      noEscape
+                          ? provider.l('noEscapeMode')
+                          : provider.l('step1of2'),
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
                         color: noEscape
                             ? const Color(0xFFFF6A7F)
@@ -104,7 +108,7 @@ class FateChoiceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      'CHOOSE\nYOUR FATE',
+                      provider.l('chooseYourFate'),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         color: Colors.white,
@@ -114,7 +118,9 @@ class FateChoiceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      '${activePlayer.name}, your choice. Your chaos.',
+                      provider.lf('yourChoiceYourChaos', {
+                        'player': activePlayer.name,
+                      }),
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white.withValues(alpha: 0.58),
@@ -127,10 +133,10 @@ class FateChoiceScreen extends StatelessWidget {
                     ],
                     const Spacer(),
                     _ChoiceTile(
-                      label: 'TRUTH',
+                      label: provider.l('truth'),
                       subtitle: truthLocked
-                          ? 'Locked this turn.'
-                          : 'Confess. Or get caught.',
+                          ? provider.l('lockedThisTurn')
+                          : provider.l('tellTheTruth'),
                       accent: const Color(0xFF42C7FF),
                       icon: Icons.question_answer_rounded,
                       enabled: !truthLocked,
@@ -138,8 +144,8 @@ class FateChoiceScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     _ChoiceTile(
-                      label: 'DARE',
-                      subtitle: 'Do something stupid.',
+                      label: provider.l('dare'),
+                      subtitle: provider.l('takeTheRisk'),
                       accent: const Color(0xFFFF3D81),
                       icon: Icons.bolt_rounded,
                       onTap: () => _choose(context, _FateChoice.dare),
@@ -147,8 +153,8 @@ class FateChoiceScreen extends StatelessWidget {
                     if (randomEnabled) ...[
                       const SizedBox(height: 16),
                       _ChoiceTile(
-                        label: 'RANDOM',
-                        subtitle: 'Let chaos choose.',
+                        label: provider.l('random'),
+                        subtitle: provider.l('letChaosDecide'),
                         accent: const Color(0xFF8A55FF),
                         icon: Icons.casino_rounded,
                         onTap: () => _choose(context, _FateChoice.random),
@@ -175,6 +181,16 @@ class FateChoiceScreen extends StatelessWidget {
             ? ChoiceRevealType.dare
             : ChoiceRevealType.truth,
     };
+    await provider.playSfx(
+      resolvedChoice == ChoiceRevealType.truth
+          ? ChaosSfx.truthSelected
+          : ChaosSfx.dareSelected,
+    );
+    provider.generatePrompt(
+      resolvedChoice == ChoiceRevealType.truth
+          ? PromptType.truth
+          : PromptType.dare,
+    );
 
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
@@ -207,7 +223,7 @@ class _NoEscapePill extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             const Color(0xFFFF3D81).withValues(alpha: 0.22),
-            const Color(0xFFFF7B2F).withValues(alpha: 0.14),
+            const Color(0xFFA85BFF).withValues(alpha: 0.12),
           ],
         ),
         border: Border.all(
@@ -215,11 +231,11 @@ class _NoEscapePill extends StatelessWidget {
         ),
       ),
       child: Text(
-        'DRINK + TARGET LOCKED - RANDOM LEANS DARE',
+        context.watch<GameProvider>().l('shotTargetLockedRandomLeansDare'),
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: const Color(0xFFFFA0BC),
-          fontWeight: FontWeight.w900,
+          color: const Color(0xFFFFA0BC).withValues(alpha: 0.82),
+          fontWeight: FontWeight.w800,
           letterSpacing: 1.3,
         ),
       ),

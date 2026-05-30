@@ -41,7 +41,7 @@ class PrimaryButton extends StatelessWidget {
                         Colors.white.withValues(alpha: 0.09),
                         Colors.white.withValues(alpha: 0.045),
                       ]
-                    : [theme.colorScheme.primary, theme.colorScheme.secondary],
+                    : [const Color(0xFFA85BFF), const Color(0xFFFF3D81)],
               )
             : LinearGradient(
                 colors: [
@@ -60,10 +60,10 @@ class PrimaryButton extends StatelessWidget {
                   color:
                       (isSecondary
                               ? theme.colorScheme.tertiary
-                              : theme.colorScheme.primary)
-                          .withValues(alpha: 0.24),
-                  blurRadius: 18,
-                  spreadRadius: 1,
+                              : theme.colorScheme.secondary)
+                          .withValues(alpha: isSecondary ? 0.08 : 0.20),
+                  blurRadius: isSecondary ? 12 : 18,
+                  spreadRadius: 0,
                 ),
               ]
             : null,

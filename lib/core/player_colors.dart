@@ -8,14 +8,14 @@ class PlayerColorSet {
 }
 
 const playerColorSets = [
-  PlayerColorSet(primary: Color(0xFF3EA7D5), secondary: Color(0xFF2462B8)),
-  PlayerColorSet(primary: Color(0xFFD94B86), secondary: Color(0xFFB83263)),
-  PlayerColorSet(primary: Color(0xFFD6A83D), secondary: Color(0xFFB67B2C)),
-  PlayerColorSet(primary: Color(0xFF58B56B), secondary: Color(0xFF2E8E79)),
-  PlayerColorSet(primary: Color(0xFF855CE0), secondary: Color(0xFF5A6DCE)),
-  PlayerColorSet(primary: Color(0xFFD86651), secondary: Color(0xFFB8445A)),
-  PlayerColorSet(primary: Color(0xFF41BFC5), secondary: Color(0xFF3F70C8)),
-  PlayerColorSet(primary: Color(0xFFB86DD6), secondary: Color(0xFF7A4EB8)),
+  PlayerColorSet(primary: Color(0xFF39BDEB), secondary: Color(0xFF4F6FE6)),
+  PlayerColorSet(primary: Color(0xFFE04D8A), secondary: Color(0xFFB73578)),
+  PlayerColorSet(primary: Color(0xFF9C69F4), secondary: Color(0xFF6D55D8)),
+  PlayerColorSet(primary: Color(0xFF55C7B5), secondary: Color(0xFF3F8FC2)),
+  PlayerColorSet(primary: Color(0xFF7D6BFF), secondary: Color(0xFFB157FF)),
+  PlayerColorSet(primary: Color(0xFFFF5D98), secondary: Color(0xFFB84472)),
+  PlayerColorSet(primary: Color(0xFF45D1E0), secondary: Color(0xFF446FE2)),
+  PlayerColorSet(primary: Color(0xFFC26CFF), secondary: Color(0xFF7A4EB8)),
 ];
 
 PlayerColorSet playerColorsForIndex(int index) {

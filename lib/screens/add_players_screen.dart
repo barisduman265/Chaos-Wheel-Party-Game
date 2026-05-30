@@ -65,20 +65,21 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                   ),
                   const SizedBox(height: 28),
                   Text(
-                    "Who's playing\ntonight?",
+                    provider.l('whoIsPlaying'),
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       color: Colors.white,
-                      fontWeight: FontWeight.w900,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w800,
                       height: 0.92,
                     ),
                   ),
                   const SizedBox(height: 14),
                   Text(
-                    'Add at least 2 players. No duplicates. The wheel decides everything.',
+                    provider.l('addPlayersHelper'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.78),
+                      color: Colors.white.withValues(alpha: 0.62),
                       height: 1.4,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 18),
@@ -92,7 +93,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _StartPlayersButton(
                     playerCount: playerCount,
                     playersNeeded: playersNeeded,
@@ -104,7 +105,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                       Navigator.pushNamed(context, GameSetupScreen.routeName);
                     },
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
                   _AddPlayerBar(
                     controller: _controller,
                     onChanged: (_) => setState(() {}),
@@ -165,7 +166,7 @@ class _EmptyPlayersState extends StatelessWidget {
           color: Colors.white.withValues(alpha: 0.025),
         ),
         child: Text(
-          'No players yet. Add the chaos crew below',
+          context.watch<GameProvider>().l('noPlayersYet'),
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             color: Colors.white.withValues(alpha: 0.42),
@@ -208,42 +209,38 @@ class _PlayerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(22),
-        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(24),
+        color: Colors.white.withValues(alpha: 0.055),
         border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 54,
+            height: 54,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: [colors.primary, colors.secondary],
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: colors.primary.withValues(alpha: 0.35),
-                  blurRadius: 14,
-                ),
-              ],
             ),
             child: Text(
-              player.name[0].toUpperCase(),
+              player.name.isEmpty ? '?' : player.name[0].toUpperCase(),
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w900,
               ),
             ),
           ),
-          const SizedBox(width: 14),
+          const SizedBox(width: 18),
           Expanded(
             child: Text(
               player.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
@@ -252,18 +249,21 @@ class _PlayerCard extends StatelessWidget {
           ),
           InkWell(
             onTap: () => context.read<GameProvider>().removePlayer(player.id),
-            borderRadius: BorderRadius.circular(18),
-            child: Container(
-              width: 42,
-              height: 42,
+            borderRadius: BorderRadius.circular(999),
+            child: Ink(
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0x22FF3D81),
-                border: Border.all(color: const Color(0x66FF3D81)),
+                color: const Color(0xFFFF3D81).withValues(alpha: 0.10),
+                border: Border.all(
+                  color: const Color(0xFFFF3D81).withValues(alpha: 0.34),
+                ),
               ),
               child: const Icon(
                 Icons.delete_outline_rounded,
-                color: Color(0xFFFF4A91),
+                color: Color(0xFFFF3D81),
+                size: 25,
               ),
             ),
           ),
@@ -288,43 +288,66 @@ class _StartPlayersButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
     final label = enabled
-        ? 'START - $playerCount PLAYERS ->'
+        ? provider.lf('startPlayers', {'count': playerCount})
         : playersNeeded == 1
-        ? 'ADD 1 MORE PLAYER'
-        : 'ADD $playersNeeded MORE PLAYERS';
+        ? provider.l('addOneMorePlayer')
+        : provider.lf('addMorePlayers', {'count': playersNeeded});
 
-    return Opacity(
-      opacity: enabled ? 1 : 0.55,
+    if (!enabled) {
+      return Container(
+        width: double.infinity,
+        constraints: const BoxConstraints(minHeight: 58),
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          color: Colors.white.withValues(alpha: 0.045),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Colors.white.withValues(alpha: 0.72),
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+      );
+    }
+
+    final gradientColors = enabled
+        ? const [Color(0xFFA85BFF), Color(0xFFFF3D81)]
+        : [
+            const Color(0xFFA85BFF).withValues(alpha: 0.34),
+            const Color(0xFFFF3D81).withValues(alpha: 0.30),
+          ];
+
+    return Material(
+      color: Colors.transparent,
       child: InkWell(
         onTap: enabled ? onPressed : null,
-        borderRadius: BorderRadius.circular(26),
-        child: Container(
+        borderRadius: BorderRadius.circular(28),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 22),
+          constraints: const BoxConstraints(minHeight: 62),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
-            gradient: enabled
-                ? const LinearGradient(
-                    colors: [Color(0xFFFF7A2F), Color(0xFFFF3D81)],
-                  )
-                : LinearGradient(
-                    colors: [
-                      Colors.white.withValues(alpha: 0.08),
-                      Colors.white.withValues(alpha: 0.04),
-                    ],
-                  ),
-            border: Border.all(
-              color: enabled
-                  ? Colors.white.withValues(alpha: 0.18)
-                  : Colors.white.withValues(alpha: 0.08),
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: gradientColors,
             ),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
             boxShadow: enabled
                 ? [
                     BoxShadow(
-                      color: const Color(0xFFFF4B76).withValues(alpha: 0.34),
-                      blurRadius: 22,
-                      spreadRadius: 2,
+                      color: const Color(0xFFFF3D81).withValues(alpha: 0.22),
+                      blurRadius: 16,
+                      offset: const Offset(0, 8),
                     ),
                   ]
                 : null,
@@ -335,7 +358,6 @@ class _StartPlayersButton extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w900,
-              letterSpacing: 0,
             ),
           ),
         ),
@@ -361,12 +383,15 @@ class _AddPlayerBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        color: Colors.white.withValues(alpha: 0.055),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        borderRadius: BorderRadius.circular(26),
+        color: Colors.white.withValues(alpha: 0.075),
+        border: Border.all(
+          color: const Color(0xFF39D2FF).withValues(alpha: 0.28),
+        ),
       ),
       child: Row(
         children: [
@@ -381,7 +406,7 @@ class _AddPlayerBar extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               ),
               decoration: InputDecoration(
-                hintText: 'Add player name...',
+                hintText: provider.l('addPlayerName'),
                 hintStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Colors.white.withValues(alpha: 0.34),
                   fontWeight: FontWeight.w500,
@@ -409,7 +434,7 @@ class _AddPlayerBar extends StatelessWidget {
                         ? const LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [Color(0xFFFF7A2F), Color(0xFFFF3D81)],
+                            colors: [Color(0xFF39D2FF), Color(0xFFA85BFF)],
                           )
                         : null,
                     color: addEnabled

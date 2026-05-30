@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 2800),
     )..repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -132,52 +132,53 @@ class _AnimatedSkullMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 142,
-      height: 142,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          AnimatedBuilder(
-            animation: controller,
-            builder: (context, child) {
-              return Transform.rotate(
-                angle: controller.value * 2 * pi,
-                child: child,
-              );
-            },
-            child: CustomPaint(
-              size: const Size.square(132),
-              painter: const _RingPainter(),
-            ),
-          ),
-          AnimatedBuilder(
-            animation: controller,
-            builder: (context, child) {
-              return Transform.rotate(
-                angle: -controller.value * 2 * pi,
-                child: child,
-              );
-            },
-            child: Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFF10081D),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFA85BFF).withValues(alpha: 0.22),
-                    blurRadius: 22,
-                    spreadRadius: 2,
+    return RepaintBoundary(
+      child: SizedBox(
+        width: 142,
+        height: 142,
+        child: AnimatedBuilder(
+          animation: controller,
+          builder: (context, _) {
+            final angle = controller.value * 2 * pi;
+
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Transform.rotate(
+                  angle: angle,
+                  child: const CustomPaint(
+                    size: Size.square(132),
+                    painter: _RingPainter(),
                   ),
-                ],
-              ),
-              child: CustomPaint(painter: const _SkullPainter()),
-            ),
-          ),
-        ],
+                ),
+                Transform.rotate(
+                  angle: -angle,
+                  child: Container(
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF10081D),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.10),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(
+                            0xFFA85BFF,
+                          ).withValues(alpha: 0.18),
+                          blurRadius: 18,
+                          spreadRadius: 1,
+                        ),
+                      ],
+                    ),
+                    child: const CustomPaint(painter: _SkullPainter()),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -190,8 +191,8 @@ class _SkullPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final skullPaint = Paint()..color = const Color(0xFFF3EDF5);
     final shadowPaint = Paint()
-      ..color = const Color(0x70FF6AA8)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 14);
+      ..color = const Color(0x50FF6AA8)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
     final darkPaint = Paint()..color = const Color(0xFF231826);
 
     final w = size.width;
@@ -205,7 +206,7 @@ class _SkullPainter extends CustomPainter {
       ..cubicTo(w * 0.84, h * 0.28, w * 0.72, h * 0.12, w * 0.50, h * 0.12)
       ..close();
 
-    canvas.drawPath(skull.shift(const Offset(0, 3)), shadowPaint);
+    canvas.drawPath(skull.shift(const Offset(0, 2)), shadowPaint);
     canvas.drawPath(skull, skullPaint);
 
     for (final x in [0.38, 0.50, 0.62]) {
@@ -217,7 +218,7 @@ class _SkullPainter extends CustomPainter {
         ),
         Radius.circular(w * 0.045),
       );
-      canvas.drawRRect(tooth.shift(const Offset(0, 3)), shadowPaint);
+      canvas.drawRRect(tooth.shift(const Offset(0, 2)), shadowPaint);
       canvas.drawRRect(tooth, skullPaint);
     }
 
@@ -256,36 +257,45 @@ class _RingPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    final paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 18
-      ..strokeCap = StrokeCap.round
-      ..shader = const SweepGradient(
-        colors: [
-          Color(0xFF39D2FF),
-          Color(0xFF8A55FF),
-          Color(0xFFFF3D81),
-          Color(0xFF39D2FF),
-        ],
-      ).createShader(rect);
+    final center = rect.center;
+    final radius = (size.shortestSide / 2) - 18;
+    final shaderRect = Rect.fromCircle(center: center, radius: radius + 12);
 
     final glowPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 24
-      ..strokeCap = StrokeCap.round
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12)
+      ..strokeWidth = 23
+      ..strokeCap = StrokeCap.butt
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10)
       ..shader = const SweepGradient(
         colors: [
-          Color(0x6639D2FF),
-          Color(0x668A55FF),
-          Color(0x66FF3D81),
-          Color(0x6639D2FF),
+          Color(0x5539D2FF),
+          Color(0x558A55FF),
+          Color(0x55FF3D81),
+          Color(0x5539D2FF),
         ],
-      ).createShader(rect);
+      ).createShader(shaderRect);
 
-    final arcRect = rect.deflate(18);
-    canvas.drawArc(arcRect, -pi / 2, pi * 1.78, false, glowPaint);
-    canvas.drawArc(arcRect, -pi / 2, pi * 1.78, false, paint);
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 16
+      ..strokeCap = StrokeCap.butt
+      ..shader = const SweepGradient(
+        colors: [
+          Color(0xFF39D2FF),
+          Color(0xFF806CFF),
+          Color(0xFFFF3D81),
+          Color(0xFF39D2FF),
+        ],
+      ).createShader(shaderRect);
+
+    final innerPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.4
+      ..color = Colors.white.withValues(alpha: 0.16);
+
+    canvas.drawCircle(center, radius, glowPaint);
+    canvas.drawCircle(center, radius, paint);
+    canvas.drawCircle(center, radius - 8.5, innerPaint);
   }
 
   @override

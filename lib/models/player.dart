@@ -11,6 +11,8 @@ class Player {
     this.truthCount = 0,
     this.dareCount = 0,
     this.targetedCount = 0,
+    this.revengeAvailable = false,
+    this.revengeTargetPlayerId,
   });
 
   final String id;
@@ -24,6 +26,8 @@ class Player {
   final int truthCount;
   final int dareCount;
   final int targetedCount;
+  final bool revengeAvailable;
+  final String? revengeTargetPlayerId;
 
   Player copyWith({
     String? id,
@@ -37,6 +41,9 @@ class Player {
     int? truthCount,
     int? dareCount,
     int? targetedCount,
+    bool? revengeAvailable,
+    String? revengeTargetPlayerId,
+    bool clearRevengeTarget = false,
   }) {
     return Player(
       id: id ?? this.id,
@@ -50,6 +57,10 @@ class Player {
       truthCount: truthCount ?? this.truthCount,
       dareCount: dareCount ?? this.dareCount,
       targetedCount: targetedCount ?? this.targetedCount,
+      revengeAvailable: revengeAvailable ?? this.revengeAvailable,
+      revengeTargetPlayerId: clearRevengeTarget
+          ? null
+          : revengeTargetPlayerId ?? this.revengeTargetPlayerId,
     );
   }
 

@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-enum ActionFeedbackType { shot, target, nextTurn, noEscape }
+enum ActionFeedbackType { shot, target, revenge, nextTurn, noEscape }
 
 class ActionFeedbackScreen extends StatefulWidget {
   const ActionFeedbackScreen({
@@ -68,6 +70,7 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
     return switch (widget.type) {
       ActionFeedbackType.shot => const Color(0xFF71D2FF),
       ActionFeedbackType.target => const Color(0xFFFF5D98),
+      ActionFeedbackType.revenge => const Color(0xFFFF3D6E),
       ActionFeedbackType.nextTurn => const Color(0xFF72E4FF),
       ActionFeedbackType.noEscape => const Color(0xFFFF4E92),
     };
@@ -77,8 +80,9 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
     return switch (widget.type) {
       ActionFeedbackType.shot => Icons.local_bar_outlined,
       ActionFeedbackType.target => Icons.gps_fixed_rounded,
+      ActionFeedbackType.revenge => Icons.crisis_alert_rounded,
       ActionFeedbackType.nextTurn => Icons.double_arrow_rounded,
-      ActionFeedbackType.noEscape => Icons.warning_amber_rounded,
+      ActionFeedbackType.noEscape => Icons.link_off_rounded,
     };
   }
 
@@ -86,25 +90,28 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
       widget.type == ActionFeedbackType.nextTurn ||
       widget.type == ActionFeedbackType.noEscape;
 
-  String get _buttonLabel {
+  String _buttonLabel(GameProvider provider) {
     final nextRound = widget.nextRound;
     final totalRounds = widget.totalRounds;
     if (nextRound != null && totalRounds != null && nextRound > totalRounds) {
-      return 'SEE RESULTS';
+      return provider.l('seeResults');
     }
-    return 'NEXT TURN';
+    return provider.l('nextTurn');
   }
 
-  String? get _roundLabel {
+  String? _roundLabel(GameProvider provider) {
     final nextRound = widget.nextRound;
     final totalRounds = widget.totalRounds;
     if (nextRound == null || totalRounds == null) {
       return null;
     }
     if (nextRound > totalRounds) {
-      return 'GAME COMPLETE';
+      return provider.l('gameComplete');
     }
-    return 'NEXT UP - ROUND $nextRound / $totalRounds';
+    return provider.lf('nextUpRound', {
+      'round': nextRound,
+      'total': totalRounds,
+    });
   }
 
   @override
@@ -136,6 +143,8 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
+    final roundLabel = _roundLabel(provider);
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -159,9 +168,9 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_roundLabel != null) ...[
+                    if (roundLabel != null) ...[
                       Text(
-                        _roundLabel!,
+                        roundLabel,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: _accent,
@@ -258,7 +267,7 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
                   child: _ContinueButton(
                     accent: _accent,
                     isNoEscape: widget.type == ActionFeedbackType.noEscape,
-                    label: _buttonLabel,
+                    label: _buttonLabel(provider),
                     onTap: () => Navigator.of(context).pop(),
                   ),
                 ),
@@ -287,9 +296,9 @@ class _ActionBadge extends StatelessWidget {
         border: Border.all(color: accent.withValues(alpha: 0.56), width: 2),
         boxShadow: [
           BoxShadow(
-            color: accent.withValues(alpha: 0.34),
-            blurRadius: 42,
-            spreadRadius: 8,
+            color: accent.withValues(alpha: 0.18),
+            blurRadius: 28,
+            spreadRadius: 3,
           ),
         ],
       ),
@@ -423,10 +432,10 @@ class _FeedbackNeonPainter extends CustomPainter {
         colors: isNextTurn
             ? isNoEscape
                   ? const [
-                      Color(0x38FF3D81),
-                      Color(0x2C5A123E),
+                      Color(0x24FF3D81),
+                      Color(0x205A123E),
                       Color(0x22140635),
-                      Color(0x3A25051F),
+                      Color(0x2A25051F),
                     ]
                   : const [
                       Color(0x4439D2FF),
@@ -435,9 +444,9 @@ class _FeedbackNeonPainter extends CustomPainter {
                       Color(0x334B0A42),
                     ]
             : [
-                accent.withValues(alpha: 0.24),
+                accent.withValues(alpha: 0.16),
                 const Color(0x00100420),
-                accent.withValues(alpha: 0.08),
+                accent.withValues(alpha: 0.05),
               ],
       ).createShader(rect);
     canvas.drawRect(rect, wash);
@@ -456,12 +465,12 @@ class _FeedbackNeonPainter extends CustomPainter {
         glow(
           Offset(size.width * 0.50, size.height * 0.42),
           size.shortestSide * 0.62,
-          const [Color(0x72FF3D81), Color(0x33C2185B), Color(0x00070312)],
+          const [Color(0x4FFF3D81), Color(0x25C2185B), Color(0x00070312)],
         );
         glow(
           Offset(size.width * 0.72, size.height * 0.32),
           size.shortestSide * 0.46,
-          const [Color(0x4AFF7B2F), Color(0x22FF4E92), Color(0x00070312)],
+          const [Color(0x24A85BFF), Color(0x18FF4E92), Color(0x00070312)],
         );
       } else {
         glow(
@@ -485,8 +494,8 @@ class _FeedbackNeonPainter extends CustomPainter {
         Offset(size.width * 0.50, size.height * 0.50),
         size.shortestSide * 0.64,
         [
-          accent.withValues(alpha: 0.30),
-          accent.withValues(alpha: 0.10),
+          accent.withValues(alpha: 0.18),
+          accent.withValues(alpha: 0.06),
           const Color(0x00070312),
         ],
       );
@@ -555,15 +564,15 @@ class _ContinueButton extends StatelessWidget {
           border: Border.all(color: borderColor.withValues(alpha: 0.34)),
           boxShadow: [
             BoxShadow(
-              color: primaryShadow.withValues(alpha: 0.34),
-              blurRadius: 34,
-              spreadRadius: 2,
+              color: primaryShadow.withValues(alpha: 0.24),
+              blurRadius: 24,
+              spreadRadius: 0,
               offset: const Offset(0, 10),
             ),
             BoxShadow(
-              color: secondaryShadow.withValues(alpha: 0.24),
-              blurRadius: 42,
-              spreadRadius: 1,
+              color: secondaryShadow.withValues(alpha: 0.14),
+              blurRadius: 30,
+              spreadRadius: 0,
             ),
           ],
         ),

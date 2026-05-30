@@ -32,6 +32,7 @@ class ChaosWheelApp extends StatelessWidget {
     return MaterialApp(
       title: 'Chaos Wheel: Party Game',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const _ChaosScrollBehavior(),
       themeMode: provider.darkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),
@@ -61,10 +62,10 @@ class ChaosWheelApp extends StatelessWidget {
 
     const background = Color(0xFF090411);
     const surface = Color(0xFF151022);
-    const primary = Color(0xFFBB29FF);
+    const primary = Color(0xFFA85BFF);
     const secondary = Color(0xFFFF3D81);
     const tertiary = Color(0xFF39D2FF);
-    const accent = Color(0xFFFF6B4A);
+    const accent = Color(0xFFFF5D98);
 
     final scheme = ColorScheme.fromSeed(
       seedColor: primary,
@@ -76,7 +77,7 @@ class ChaosWheelApp extends StatelessWidget {
     );
 
     final bodyColor = isDark ? Colors.white : const Color(0xFF130D1D);
-    final baseTextTheme = GoogleFonts.fredokaTextTheme(base.textTheme);
+    final baseTextTheme = GoogleFonts.nunitoSansTextTheme(base.textTheme);
     final textTheme = baseTextTheme
         .copyWith(
           displayLarge: GoogleFonts.fredoka(
@@ -118,45 +119,45 @@ class ChaosWheelApp extends StatelessWidget {
           ),
           titleLarge: GoogleFonts.fredoka(
             textStyle: base.textTheme.titleLarge,
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.w700,
             height: 1.04,
             letterSpacing: 0,
           ),
-          titleMedium: GoogleFonts.fredoka(
+          titleMedium: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.titleMedium,
-            fontWeight: FontWeight.w800,
-            height: 1.04,
+            fontWeight: FontWeight.w700,
+            height: 1.12,
             letterSpacing: 0,
           ),
-          titleSmall: GoogleFonts.fredoka(
+          titleSmall: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.titleSmall,
-            fontWeight: FontWeight.w800,
-            height: 1.04,
+            fontWeight: FontWeight.w700,
+            height: 1.12,
             letterSpacing: 0,
           ),
-          bodyLarge: GoogleFonts.fredoka(
+          bodyLarge: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.bodyLarge,
             fontWeight: FontWeight.w600,
           ),
-          bodyMedium: GoogleFonts.fredoka(
+          bodyMedium: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.bodyMedium,
             fontWeight: FontWeight.w600,
           ),
-          bodySmall: GoogleFonts.fredoka(
+          bodySmall: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.bodySmall,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
-          labelLarge: GoogleFonts.fredoka(
+          labelLarge: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.labelLarge,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
           ),
-          labelMedium: GoogleFonts.fredoka(
+          labelMedium: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.labelMedium,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.1,
           ),
-          labelSmall: GoogleFonts.fredoka(
+          labelSmall: GoogleFonts.nunitoSans(
             textStyle: base.textTheme.labelSmall,
             fontWeight: FontWeight.w800,
             letterSpacing: 1,
@@ -208,5 +209,18 @@ class ChaosWheelApp extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _ChaosScrollBehavior extends MaterialScrollBehavior {
+  const _ChaosScrollBehavior();
+
+  @override
+  Widget buildScrollbar(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    return child;
   }
 }

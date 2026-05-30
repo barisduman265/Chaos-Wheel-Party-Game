@@ -1,6 +1,9 @@
-import 'package:chaos_wheel_party_game/widgets/neon_card.dart';
-import 'package:chaos_wheel_party_game/widgets/primary_button.dart';
+import 'package:chaos_wheel_party_game/providers/game_provider.dart';
+import 'package:chaos_wheel_party_game/services/share_service.dart';
+import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel_party_game/widgets/pressable_scale.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PremiumScreen extends StatelessWidget {
   const PremiumScreen({super.key});
@@ -9,116 +12,117 @@ class PremiumScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const benefits = [
-      'Remove ads',
-      'Neon themes',
-      'Custom wheel styles',
-      'Chaos Mode',
-      'Advanced game controls',
-      'Extra sound effects',
-      'Lifetime unlock',
-    ];
-
-    const chaosModes = [
-      'Double Pick',
-      'Revenge Mode',
-      'Sudden Death',
-      'No Pass Round',
-      'Forced Dare Round',
-    ];
-
-    const themes = ['Neon Purple', 'Fire', 'Casino', 'Ice', 'Toxic Green'];
+    final provider = context.watch<GameProvider>();
+    final isPremium = provider.isPremiumUser;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chaos Wheel Premium')),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
+      body: ChaosBackground(
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(22, 16, 22, 24),
+            children: [
+              Row(
+                children: [
+                  _BackBubble(onTap: () => Navigator.maybePop(context)),
+                  const Spacer(),
+                  Text(
+                    isPremium ? 'Premium Unlocked' : 'Unlock Premium',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: const Color(0xFFF3EEFF),
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const Spacer(),
+                  const SizedBox(width: 44),
+                ],
+              ),
+              const SizedBox(height: 28),
+              _HeroPremiumCard(isPremium: isPremium),
+              const SizedBox(height: 18),
+              const _SectionLabel('WHAT YOU UNLOCK'),
+              const SizedBox(height: 10),
+              _UnlockGrid(isPremium: isPremium),
+              const SizedBox(height: 18),
+              const _SectionLabel('LIVE PREVIEW'),
+              const SizedBox(height: 10),
+              const _PremiumPreview(),
+              const SizedBox(height: 20),
+              _PremiumCta(isPremium: isPremium),
+              const SizedBox(height: 12),
+              _InviteFriendsButton(
+                onTap: () => const ChaosShareService().shareInvite(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroPremiumCard extends StatelessWidget {
+  const _HeroPremiumCard({required this.isPremium});
+
+  final bool isPremium;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFFFC44D).withValues(alpha: 0.16),
+            const Color(0xFFFF3D81).withValues(alpha: 0.12),
+            const Color(0xFFA85BFF).withValues(alpha: 0.13),
+            const Color(0xFF12051E).withValues(alpha: 0.78),
+          ],
+        ),
+        border: Border.all(
+          color: const Color(0xFFFFC44D).withValues(alpha: 0.26),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          NeonCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Chaos Wheel Premium',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                for (final benefit in benefits)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.bolt_rounded),
-                    title: Text(benefit),
-                  ),
-              ],
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: const Color(0xFFFFC44D).withValues(alpha: 0.13),
+              border: Border.all(
+                color: const Color(0xFFFFC44D).withValues(alpha: 0.38),
+              ),
+            ),
+            child: Icon(
+              isPremium ? Icons.workspace_premium_rounded : Icons.lock_rounded,
+              color: const Color(0xFFFFC44D),
+              size: 30,
             ),
           ),
-          const SizedBox(height: 18),
-          NeonCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Chaos Mode examples',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: chaosModes
-                      .map((mode) => _LockedChip(label: mode))
-                      .toList(growable: false),
-                ),
-                const SizedBox(height: 18),
-                Text(
-                  'Locked themes',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: themes
-                      .map((theme) => _LockedChip(label: theme))
-                      .toList(growable: false),
-                ),
-              ],
+          const SizedBox(height: 20),
+          Text(
+            isPremium ? 'Chaos Premium is yours.' : 'Unlock Chaos Premium',
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+              color: const Color(0xFFF3EEFF),
+              fontWeight: FontWeight.w900,
+              height: 0.92,
             ),
           ),
-          const SizedBox(height: 18),
-          PrimaryButton(
-            label: 'Unlock Premium',
-            icon: Icons.lock_open_rounded,
-            expanded: true,
-            onPressed: () {
-              // Placeholder: in-app purchase flow will be added later.
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Premium purchase is not enabled yet.'),
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          PrimaryButton(
-            label: 'Restore Purchase',
-            icon: Icons.restore_rounded,
-            expanded: true,
-            isSecondary: true,
-            onPressed: () {
-              // Placeholder: restore purchase flow will be added later.
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Restore purchase is a placeholder for now.'),
-                ),
-              );
-            },
+          const SizedBox(height: 10),
+          Text(
+            isPremium
+                ? 'EVIL mode, Custom Game and premium prompts are live.'
+                : 'More chaos. More tension. More control.',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.white.withValues(alpha: 0.62),
+              height: 1.35,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -126,27 +130,391 @@ class PremiumScreen extends StatelessWidget {
   }
 }
 
-class _LockedChip extends StatelessWidget {
-  const _LockedChip({required this.label});
+class _UnlockGrid extends StatelessWidget {
+  const _UnlockGrid({required this.isPremium});
+
+  final bool isPremium;
+
+  static const items = [
+    ('EVIL mode', Icons.warning_amber_rounded),
+    ('Custom Game', Icons.tune_rounded),
+    ('Revenge Mode', Icons.crisis_alert_rounded),
+    ('Premium prompt packs', Icons.auto_awesome_rounded),
+    ('Extreme Truth prompts', Icons.visibility_rounded),
+    ('Extreme Dare prompts', Icons.bolt_rounded),
+    ('Extra prompt changes', Icons.auto_fix_high_rounded),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: items.map((item) {
+        return _PremiumChip(label: item.$1, icon: item.$2, unlocked: isPremium);
+      }).toList(),
+    );
+  }
+}
+
+class _PremiumPreview extends StatelessWidget {
+  const _PremiumPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: const [
+        _PreviewCard(
+          title: 'EVIL TRUTH',
+          text: 'Expose the safest lie you told this room.',
+          icon: Icons.visibility_rounded,
+          color: Color(0xFFFF5D98),
+        ),
+        SizedBox(height: 10),
+        _PreviewCard(
+          title: 'EVIL DARE',
+          text: 'Let the room choose one message you must send.',
+          icon: Icons.bolt_rounded,
+          color: Color(0xFFA85BFF),
+        ),
+        SizedBox(height: 10),
+        _PreviewCard(
+          title: 'REVENGE MODE',
+          text: 'Targets can come back for you.',
+          icon: Icons.crisis_alert_rounded,
+          color: Color(0xFFFF3D6E),
+        ),
+      ],
+    );
+  }
+}
+
+class _PremiumCta extends StatelessWidget {
+  const _PremiumCta({required this.isPremium});
+
+  final bool isPremium;
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
+    return PressableScale(
+      enabled: !isPremium && !provider.premiumPurchaseInProgress,
+      onTap: () async {
+        final message = await context
+            .read<GameProvider>()
+            .purchasePremiumLifetime();
+        if (!context.mounted) {
+          return;
+        }
+        if (message != null) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+          return;
+        }
+        if (!context.read<GameProvider>().isPremiumUser) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Premium purchase started.')),
+          );
+          return;
+        }
+        await showDialog<void>(
+          context: context,
+          barrierColor: Colors.black.withValues(alpha: 0.62),
+          builder: (_) => const _PremiumSuccessDialog(),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 18),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          gradient: LinearGradient(
+            colors: isPremium
+                ? const [Color(0xFF3A2B55), Color(0xFF251637)]
+                : const [Color(0xFFFFC44D), Color(0xFFFF3D81)],
+          ),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              isPremium ? Icons.check_circle_rounded : Icons.lock_open_rounded,
+              color: Colors.white,
+              size: 26,
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isPremium
+                        ? 'LIFETIME PREMIUM ACTIVE'
+                        : provider.premiumPurchaseInProgress
+                        ? 'UNLOCKING...'
+                        : 'UNLOCK LIFETIME PREMIUM',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    isPremium
+                        ? 'Everything stays unlocked.'
+                        : provider.premiumPriceLabel == null
+                        ? 'One payment. Forever unlocked.'
+                        : '${provider.premiumPriceLabel} once. Forever unlocked.',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.72),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PremiumSuccessDialog extends StatelessWidget {
+  const _PremiumSuccessDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(26),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(32),
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2C143A), Color(0xFF12051E)],
+          ),
+          border: Border.all(
+            color: const Color(0xFFFFC44D).withValues(alpha: 0.38),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.72, end: 1),
+              duration: const Duration(milliseconds: 520),
+              curve: Curves.easeOutBack,
+              builder: (context, value, child) {
+                return Transform.scale(scale: value, child: child);
+              },
+              child: const Icon(
+                Icons.workspace_premium_rounded,
+                color: Color(0xFFFFC44D),
+                size: 72,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'PREMIUM UNLOCKED',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'EVIL mode, Custom Game and premium prompts are now live.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.white.withValues(alpha: 0.62),
+              ),
+            ),
+            const SizedBox(height: 18),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('LET CHAOS IN'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InviteFriendsButton extends StatelessWidget {
+  const _InviteFriendsButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return PressableScale(
+      onTap: onTap,
+      child: Container(
+        height: 54,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          color: Colors.white.withValues(alpha: 0.055),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        ),
+        child: Text(
+          'INVITE FRIENDS',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            color: Colors.white.withValues(alpha: 0.82),
+            fontWeight: FontWeight.w900,
+            letterSpacing: 0.8,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PreviewCard extends StatelessWidget {
+  const _PreviewCard({
+    required this.title,
+    required this.text,
+    required this.icon,
+    required this.color,
+  });
+
+  final String title;
+  final String text;
+  final IconData icon;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        color: color.withValues(alpha: 0.08),
+        border: Border.all(color: color.withValues(alpha: 0.20)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: 0.14),
+            ),
+            child: Icon(icon, color: color),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: color,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  text,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.62),
+                    height: 1.28,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.lock_rounded, color: color.withValues(alpha: 0.70)),
+        ],
+      ),
+    );
+  }
+}
+
+class _PremiumChip extends StatelessWidget {
+  const _PremiumChip({
+    required this.label,
+    required this.icon,
+    required this.unlocked,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool unlocked;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = unlocked ? const Color(0xFF62D8FF) : const Color(0xFFFFC44D);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(999),
+        color: color.withValues(alpha: 0.09),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(unlocked ? Icons.check_rounded : icon, color: color, size: 16),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: Colors.white.withValues(alpha: 0.84),
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.label);
 
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white.withValues(alpha: 0.06),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+    return Text(
+      label,
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+        color: Colors.white.withValues(alpha: 0.42),
+        fontWeight: FontWeight.w900,
+        letterSpacing: 3,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.lock_rounded, size: 16),
-          const SizedBox(width: 8),
-          Text(label),
-        ],
+    );
+  }
+}
+
+class _BackBubble extends StatelessWidget {
+  const _BackBubble({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.08),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+        ),
+        child: const Icon(Icons.chevron_left_rounded, color: Colors.white),
       ),
     );
   }

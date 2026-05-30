@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PickedRevealScreen extends StatefulWidget {
   const PickedRevealScreen({super.key, required this.playerName});
@@ -85,11 +87,11 @@ class _PickedRevealScreenState extends State<PickedRevealScreen>
                       ),
                       const SizedBox(height: 22),
                       Text(
-                        'THE WHEEL HAS SPOKEN',
+                        context.watch<GameProvider>().l('wheelHasSpoken'),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
                           color: const Color(0xFFFF4F9A),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                           letterSpacing: 6,
                         ),
                       ),
@@ -111,12 +113,12 @@ class _PickedRevealScreenState extends State<PickedRevealScreen>
                       ),
                       const SizedBox(height: 18),
                       Text(
-                        'is picked.',
+                        context.watch<GameProvider>().l('isPicked'),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white.withValues(alpha: 0.84),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.6,
+                          color: Colors.white.withValues(alpha: 0.74),
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.6,
                         ),
                       ),
                     ],
@@ -218,8 +220,8 @@ class _RevealBackgroundPainter extends CustomPainter {
       center: Offset(size.width * 0.48, size.height * 0.50),
       radius: min(size.width, size.height) * 0.48,
       colors: [
-        const Color(0xD0FF4F9A),
-        const Color(0x80FF6A3D),
+        const Color(0x98FF4F9A),
+        const Color(0x5639D2FF),
         const Color(0x0039D2FF),
       ],
     );
