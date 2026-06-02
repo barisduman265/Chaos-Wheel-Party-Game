@@ -61,33 +61,60 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
     final isPremium = provider.isPremiumUser;
 
     return Scaffold(
-      body: ChaosBackground(
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _RoundBackButton(onPressed: () => Navigator.maybePop(context)),
-                const SizedBox(height: 20),
-                Text(
-                  provider.l('chooseYourPoison'),
-                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    color: const Color(0xFFF3EEFF),
-                    fontSize: 34,
-                    fontWeight: FontWeight.w700,
-                    height: 0.96,
+      body: Stack(
+        children: [
+          const ChaosBackground(child: SizedBox.expand()),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                center: const Alignment(0.2, -0.7),
+                radius: 1.4,
+                colors: [
+                  _vibeAccent.withValues(alpha: 0.22),
+                  _vibeAccent.withValues(alpha: 0.08),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _RoundBackButton(
+                    onPressed: () => Navigator.maybePop(context),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  provider.l('howChaoticTonight'),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.58),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 20),
+                  AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 400),
+                    style:
+                        Theme.of(context).textTheme.displaySmall!.copyWith(
+                          color: Colors.white,
+                          fontSize: 36,
+                          fontWeight: FontWeight.w900,
+                          height: 0.96,
+                          shadows: [
+                            Shadow(
+                              color: _vibeAccent.withValues(alpha: 0.55),
+                              blurRadius: 24,
+                            ),
+                          ],
+                        ),
+                    child: Text(provider.l('chooseYourPoison')),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    provider.l('howChaoticTonight'),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.58),
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 const SizedBox(height: 14),
                 Expanded(
                   child: SingleChildScrollView(
@@ -95,7 +122,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _SectionLabel(provider.l('vibe')),
+                        _SectionLabel(provider.l('vibe'), accent: _vibeAccent),
                         const SizedBox(height: 12),
                         GridView.count(
                           crossAxisCount: 2,
@@ -170,15 +197,18 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                           accent: _vibeAccent,
                         ),
                         const SizedBox(height: 18),
-                        _SectionLabel(provider.l('gameMode')),
+                        _SectionLabel(
+                          provider.l('gameMode'),
+                          accent: const Color(0xFF7AB8FF),
+                        ),
                         const SizedBox(height: 12),
                         GridView.count(
                           crossAxisCount: 2,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.42,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 1.65,
                           children: [
                             _ModeCard(
                               leading: '15',
@@ -194,7 +224,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 Color(0xFF1263B3),
                                 Color(0xFF12306C),
                               ],
-                              accent: const Color(0xFF52D6FF),
+                              accent: const Color(0xFF39DDFF),
                               onTap: () => setState(() {
                                 _customModeSelected = false;
                                 _roundCount = 15;
@@ -214,7 +244,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 Color(0xFFC13A66),
                                 Color(0xFF77224E),
                               ],
-                              accent: const Color(0xFFFF7AAB),
+                              accent: const Color(0xFFFF5FA0),
                               onTap: () => setState(() {
                                 _customModeSelected = false;
                                 _roundCount = 25;
@@ -233,7 +263,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 Color(0xFF6737C7),
                                 Color(0xFF2A176A),
                               ],
-                              accent: const Color(0xFFA85BFF),
+                              accent: const Color(0xFFD580FF),
                               onTap: () => setState(() {
                                 _customModeSelected = false;
                                 _roundCount = 40;
@@ -417,7 +447,8 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
             ),
           ),
         ),
-      ),
+      ],
+    ),
     );
   }
 
@@ -496,20 +527,36 @@ class _RoundBackButton extends StatelessWidget {
 }
 
 class _SectionLabel extends StatelessWidget {
-  const _SectionLabel(this.text);
+  const _SectionLabel(this.text, {this.accent});
 
   final String text;
+  final Color? accent;
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: Theme.of(context).textTheme.labelMedium?.copyWith(
-        color: Colors.white.withValues(alpha: 0.38),
-        fontSize: 12,
-        letterSpacing: 4.2,
-        fontWeight: FontWeight.w700,
-      ),
+    return Row(
+      children: [
+        if (accent != null) ...[
+          Container(
+            width: 3,
+            height: 13,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(2),
+              color: accent,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+        Text(
+          text,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: Colors.white.withValues(alpha: 0.55),
+            fontSize: 12,
+            letterSpacing: 4.0,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -539,124 +586,158 @@ class _ModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.all(13),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: selected
+    return AnimatedScale(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOutCubic,
+      scale: selected ? 1.03 : 1.0,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 260),
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: selected
+                  ? [
+                      colors.first.withValues(alpha: 0.82),
+                      colors.last.withValues(alpha: 0.68),
+                    ]
+                  : [
+                      colors.first.withValues(alpha: 0.38),
+                      colors.last.withValues(alpha: 0.28),
+                    ],
+            ),
+            border: Border.all(
+              color: selected
+                  ? accent.withValues(alpha: 0.85)
+                  : locked
+                  ? accent.withValues(alpha: 0.28)
+                  : colors.first.withValues(alpha: 0.30),
+              width: selected ? 1.6 : 1.0,
+            ),
+            boxShadow: selected
                 ? [
-                    colors.first.withValues(alpha: 0.72),
-                    colors.last.withValues(alpha: 0.55),
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.32),
+                      blurRadius: 26,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: colors.first.withValues(alpha: 0.15),
+                      blurRadius: 40,
+                      spreadRadius: 2,
+                    ),
                   ]
                 : [
-                    colors.first.withValues(alpha: 0.13),
-                    colors.last.withValues(alpha: 0.10),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.25),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
                   ],
           ),
-          border: Border.all(
-            color: selected
-                ? accent.withValues(alpha: 0.68)
-                : locked
-                ? accent.withValues(alpha: 0.28)
-                : Colors.white.withValues(alpha: 0.08),
-            width: selected ? 1.4 : 1,
-          ),
-          boxShadow: selected
-              ? [
-                  BoxShadow(
-                    color: accent.withValues(alpha: 0.16),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Text(
-                    leading,
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: const Color(0xFFF3EEFF),
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      height: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      leading,
+                      style: Theme.of(context)
+                          .textTheme
+                          .displaySmall
+                          ?.copyWith(
+                            color: selected
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.55),
+                            fontSize: 30,
+                            fontWeight: FontWeight.w900,
+                            height: 1,
+                          ),
                     ),
                   ),
-                ),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(
+                        alpha: selected ? 0.18 : 0.07,
+                      ),
+                      border: Border.all(
+                        color: Colors.white.withValues(
+                          alpha: selected ? 0.22 : 0.10,
+                        ),
+                      ),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: selected
+                          ? Colors.white
+                          : locked
+                          ? accent
+                          : Colors.white.withValues(alpha: 0.50),
+                      size: 17,
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              if (locked) ...[
                 Container(
-                  width: 38,
-                  height: 38,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withValues(
-                      alpha: selected ? 0.15 : 0.08,
-                    ),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.16),
-                    ),
+                    borderRadius: BorderRadius.circular(99),
+                    color: accent.withValues(alpha: 0.14),
+                    border: Border.all(color: accent.withValues(alpha: 0.35)),
                   ),
-                  child: Icon(
-                    icon,
-                    color: locked ? accent : Colors.white,
-                    size: 20,
+                  child: Text(
+                    'PREMIUM',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: accent,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1,
+                      fontSize: 9,
+                    ),
                   ),
                 ),
+                const SizedBox(height: 6),
               ],
-            ),
-            const Spacer(),
-            if (locked) ...[
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(999),
-                  color: accent.withValues(alpha: 0.10),
-                  border: Border.all(color: accent.withValues(alpha: 0.30)),
-                ),
-                child: Text(
-                  'PREMIUM',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: accent,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1,
-                  ),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: selected
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.70),
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                  fontSize: 12,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.50),
+                  fontWeight: FontWeight.w400,
+                  fontSize: 10,
+                ),
+              ),
             ],
-            Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: accent,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.8,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.58),
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -686,45 +767,53 @@ class _VibeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foreground = locked
-        ? Colors.white.withValues(alpha: 0.58)
-        : Colors.white;
-
     return AnimatedScale(
-      duration: const Duration(milliseconds: 180),
+      duration: const Duration(milliseconds: 200),
       curve: Curves.easeOutCubic,
-      scale: selected ? 1.01 : 1,
+      scale: selected ? 1.03 : 1.0,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 220),
-          padding: const EdgeInsets.all(13),
+          duration: const Duration(milliseconds: 280),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            gradient: RadialGradient(
-              center: Alignment.topLeft,
-              radius: 1.2,
-              colors: [
-                accent.withValues(alpha: selected ? 0.14 : 0.045),
-                secondary.withValues(alpha: selected ? 0.13 : 0.025),
-                const Color(
-                  0xFF160821,
-                ).withValues(alpha: selected ? 0.64 : 0.76),
-              ],
+            borderRadius: BorderRadius.circular(22),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: selected
+                  ? [
+                      accent.withValues(alpha: 0.50),
+                      secondary.withValues(alpha: 0.38),
+                      const Color(0xFF0D0118).withValues(alpha: 0.42),
+                    ]
+                  : [
+                      accent.withValues(alpha: 0.10),
+                      secondary.withValues(alpha: 0.06),
+                      const Color(0xFF0D0118).withValues(alpha: 0.68),
+                    ],
             ),
             border: Border.all(
               color: selected
-                  ? accent.withValues(alpha: 0.68)
-                  : Colors.white.withValues(alpha: 0.09),
-              width: selected ? 1.4 : 1,
+                  ? accent.withValues(alpha: 0.92)
+                  : locked
+                  ? accent.withValues(alpha: 0.30)
+                  : Colors.white.withValues(alpha: 0.14),
+              width: selected ? 1.8 : 1.0,
             ),
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: accent.withValues(alpha: 0.07),
-                      blurRadius: 18,
+                      color: accent.withValues(alpha: 0.38),
+                      blurRadius: 30,
+                      spreadRadius: 0,
                       offset: const Offset(0, 6),
+                    ),
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.12),
+                      blurRadius: 60,
+                      spreadRadius: 4,
                     ),
                   ]
                 : null,
@@ -735,29 +824,52 @@ class _VibeCard extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 34,
-                    height: 34,
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [
-                          accent.withValues(alpha: 0.76),
-                          secondary.withValues(alpha: 0.58),
+                          accent.withValues(
+                            alpha: selected ? 1.0 : 0.72,
+                          ),
+                          secondary.withValues(
+                            alpha: selected ? 0.88 : 0.55,
+                          ),
                         ],
                       ),
                       boxShadow: selected
                           ? [
                               BoxShadow(
-                                color: accent.withValues(alpha: 0.08),
-                                blurRadius: 9,
+                                color: accent.withValues(alpha: 0.55),
+                                blurRadius: 16,
+                                spreadRadius: 1,
                               ),
                             ]
                           : null,
                     ),
-                    child: Icon(icon, color: Colors.white, size: 18),
+                    child: Icon(icon, color: Colors.white, size: 19),
                   ),
                   const Spacer(),
-                  if (locked)
+                  if (selected)
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: accent.withValues(alpha: 0.22),
+                        border: Border.all(
+                          color: accent.withValues(alpha: 0.85),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.check_rounded,
+                        color: accent,
+                        size: 13,
+                      ),
+                    )
+                  else if (locked)
                     const Icon(
                       Icons.workspace_premium_rounded,
                       color: Color(0xFFFFC44D),
@@ -771,21 +883,27 @@ class _VibeCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: locked ? accent : const Color(0xFFF3EEFF),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+                  color: selected
+                      ? Colors.white
+                      : locked
+                      ? accent
+                      : const Color(0xFFF3EEFF),
+                  fontSize: 19,
+                  fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 4),
               Text(
                 subtitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: foreground.withValues(alpha: 0.58),
+                  color: selected
+                      ? Colors.white.withValues(alpha: 0.82)
+                      : Colors.white.withValues(alpha: 0.52),
                   fontWeight: FontWeight.w400,
-                  height: 1.15,
+                  height: 1.2,
                 ),
               ),
             ],
@@ -1500,17 +1618,13 @@ class _StartChaosButton extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    provider.lf('startChaosMeta', {
-                      'rounds': roundCount,
-                      'players': playerCount,
-                      'round': noEscapeStartRound,
-                    }),
+                    '$roundCount ${provider.l('rounds').toLowerCase()} · $playerCount ${provider.l('players').toLowerCase()}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.white.withValues(alpha: 0.66),
                       fontWeight: FontWeight.w500,
-                      letterSpacing: 0.6,
+                      letterSpacing: 0.4,
                     ),
                   ),
                 ],

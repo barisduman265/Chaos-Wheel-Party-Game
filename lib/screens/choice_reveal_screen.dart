@@ -334,8 +334,12 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
 
     provider.finishCompletedChallenge();
 
-    final actionSummary = '${activePlayer.name} chose $_label.';
-    final shortActionSummary = 'chose $_label.';
+    final label = _label(provider);
+    final actionSummary = provider.lf('playerChose', {
+      'player': activePlayer.name,
+      'choice': label,
+    });
+    final shortActionSummary = provider.lf('choseLabel', {'choice': label});
     final nextTurnMessage = message == actionSummary
         ? shortActionSummary
         : '$shortActionSummary $message';
@@ -659,9 +663,9 @@ class _PromptRevealCard extends StatelessWidget {
         ? '$label $contentName'.toUpperCase()
         : '$modeLabel $contentName'.toUpperCase();
     final intensity = prompt == null ? 'HIGH TENSION' : prompt!.intensityLabel;
-    final promptText =
-        prompt?.text ??
-        (isTruth ? provider.l('tellTheTruth') : provider.l('takeTheRisk'));
+    final promptText = prompt != null
+        ? provider.localizedPromptText(prompt!)
+        : (isTruth ? provider.l('tellTheTruth') : provider.l('takeTheRisk'));
     final footer = prompt?.level == 3
         ? provider.l('chaosDemandsSacrifice')
         : provider.l('theRoomIsWatching');

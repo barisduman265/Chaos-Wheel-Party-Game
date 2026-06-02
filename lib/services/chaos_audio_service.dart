@@ -30,6 +30,7 @@ class ChaosAudioService {
   bool _hapticsEnabled = true;
   bool _backgroundMusicEnabled = false;
   bool _musicStarted = false;
+  String? _currentMusicAsset;
 
   Future<void> configure({
     required bool soundEnabled,
@@ -43,6 +44,7 @@ class ChaosAudioService {
     if (!_backgroundMusicEnabled || !_soundEnabled) {
       await _musicPlayer.stop();
       _musicStarted = false;
+      _currentMusicAsset = null;
       return;
     }
 
@@ -52,12 +54,45 @@ class ChaosAudioService {
 
     try {
       await _musicPlayer.setReleaseMode(ReleaseMode.loop);
-      await _musicPlayer.setVolume(0.08);
-      await _musicPlayer.play(AssetSource('audio/background_loop.wav'));
+      await _musicPlayer.setVolume(0.10);
+      await _musicPlayer.play(AssetSource('audio/home_music.mp3'));
+      _currentMusicAsset = 'audio/home_music.mp3';
       _musicStarted = true;
     } catch (_) {
       _musicStarted = false;
     }
+  }
+
+  Future<void> playHomeMusic() async {
+    if (!_soundEnabled || !_backgroundMusicEnabled) return;
+    const asset = 'audio/home_music.mp3';
+    if (_currentMusicAsset == asset && _musicStarted) return;
+    try {
+      await _musicPlayer.setReleaseMode(ReleaseMode.loop);
+      await _musicPlayer.setVolume(0.10);
+      await _musicPlayer.play(AssetSource(asset));
+      _currentMusicAsset = asset;
+      _musicStarted = true;
+    } catch (_) {}
+  }
+
+  Future<void> playNoEscapeMusic() async {
+    if (!_soundEnabled) return;
+    const asset = 'audio/noescape_music.mp3';
+    if (_currentMusicAsset == asset && _musicStarted) return;
+    try {
+      await _musicPlayer.setReleaseMode(ReleaseMode.loop);
+      await _musicPlayer.setVolume(0.13);
+      await _musicPlayer.play(AssetSource(asset));
+      _currentMusicAsset = asset;
+      _musicStarted = true;
+    } catch (_) {}
+  }
+
+  Future<void> stopMusic() async {
+    await _musicPlayer.stop();
+    _musicStarted = false;
+    _currentMusicAsset = null;
   }
 
   Future<void> play(ChaosSfx sfx) async {
@@ -81,6 +116,8 @@ class ChaosAudioService {
   Future<void> dispose() async {
     await _sfxPlayer.dispose();
     await _musicPlayer.dispose();
+    _musicStarted = false;
+    _currentMusicAsset = null;
   }
 
   void _triggerHaptic(ChaosSfx sfx) {

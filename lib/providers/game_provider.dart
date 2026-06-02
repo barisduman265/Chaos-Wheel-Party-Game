@@ -6,7 +6,8 @@ import 'package:chaos_wheel_party_game/services/game_logic_service.dart';
 import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
 import 'package:chaos_wheel_party_game/services/premium_purchase_service.dart';
 import 'package:chaos_wheel_party_game/services/prompt_engine.dart';
-import 'package:flutter/material.dart';
+import 'package:chaos_wheel_party_game/services/prompt_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GameProvider extends ChangeNotifier {
@@ -51,7 +52,7 @@ class GameProvider extends ChangeNotifier {
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
   bool _darkModeEnabled = true;
-  bool _backgroundMusicEnabled = false;
+  bool _backgroundMusicEnabled = true;
   bool _reduceAnimationsEnabled = false;
   bool _drinkingPromptsEnabled = true;
   bool _extremePromptsEnabled = true;
@@ -94,6 +95,13 @@ class GameProvider extends ChangeNotifier {
 
   String lf(String key, Map<String, Object> values) {
     return AppLocalizationService.format(key, _promptLanguage, values);
+  }
+
+  /// Prompt text translated into the current language, falling back to the
+  /// English source text when a translation is not yet available.
+  String localizedPromptText(ContentPrompt prompt) {
+    return PromptLocalizations.textFor(prompt.id, _promptLanguage) ??
+        prompt.text;
   }
 
   int calculatePassRights(int roundCount) {
@@ -154,14 +162,14 @@ class GameProvider extends ChangeNotifier {
   String? addPlayer(String rawName) {
     final name = rawName.trim();
     if (name.isEmpty) {
-      return 'Enter a player name.';
+      return l('enterPlayerName');
     }
 
     final duplicate = players.any(
       (player) => player.name.toLowerCase() == name.toLowerCase(),
     );
     if (duplicate) {
-      return 'Player names must be unique.';
+      return l('playerNamesUnique');
     }
 
     final player = Player(
@@ -248,6 +256,18 @@ class GameProvider extends ChangeNotifier {
     return ChaosAudioService.instance.play(sfx);
   }
 
+  Future<void> playHomeMusic() {
+    return ChaosAudioService.instance.playHomeMusic();
+  }
+
+  Future<void> playNoEscapeMusic() {
+    return ChaosAudioService.instance.playNoEscapeMusic();
+  }
+
+  Future<void> stopMusic() {
+    return ChaosAudioService.instance.stopMusic();
+  }
+
   void setGamePaused(bool value) {
     _gamePaused = value;
     notifyListeners();
@@ -267,14 +287,21 @@ class GameProvider extends ChangeNotifier {
       return null;
     }
 
+    // In debug builds the device store is usually unavailable (e.g. Flutter
+    // web debug), which would make it impossible to exercise premium features.
+    // Grant the entitlement locally so EVIL mode, Revenge and premium prompts
+    // can be tested. Release builds keep the real store purchase flow.
+    if (kDebugMode && result == PremiumPurchaseStartResult.storeUnavailable) {
+      await _grantPremiumEntitlement();
+      return null;
+    }
+
     _premiumPurchaseInProgress = false;
     _premiumPurchaseMessage = switch (result) {
-      PremiumPurchaseStartResult.storeUnavailable =>
-        'Store is unavailable on this device.',
+      PremiumPurchaseStartResult.storeUnavailable => l('storeUnavailable'),
       PremiumPurchaseStartResult.productUnavailable =>
-        'Premium product is not configured yet.',
-      PremiumPurchaseStartResult.failedToStart =>
-        'Could not start Premium purchase.',
+        l('premiumNotConfigured'),
+      PremiumPurchaseStartResult.failedToStart => l('purchaseFailedToStart'),
       PremiumPurchaseStartResult.started => null,
     };
     notifyListeners();
@@ -428,7 +455,7 @@ class GameProvider extends ChangeNotifier {
     );
     notifyListeners();
 
-    return '${selected.name} is picked.';
+    return lf('playerIsPicked', {'player': selected.name});
   }
 
   ContentPrompt generatePrompt(PromptType type) {
@@ -494,24 +521,24 @@ class GameProvider extends ChangeNotifier {
   String skipCurrentPlayer() {
     final player = selectedPlayer;
     if (player == null) {
-      return 'Spin first, then skip the picked player.';
+      return l('spinFirstSkip');
     }
     _finishRound();
-    return '${player.name} skipped. Next round.';
+    return lf('playerSkipped', {'player': player.name});
   }
 
   String skipRound() {
     if (!_state.hasActiveGame || _state.isGameOver) {
-      return 'No active round to skip.';
+      return l('noActiveRound');
     }
     _pendingSpinPlayerId = null;
     _finishRound();
-    return 'Round skipped.';
+    return l('roundSkipped');
   }
 
   String reshuffleWheel() {
     if (_state.isSpinning) {
-      return 'Let the wheel finish spinning first.';
+      return l('letWheelFinish');
     }
     _pendingSpinPlayerId = null;
     _state = _state.copyWith(
@@ -520,7 +547,7 @@ class GameProvider extends ChangeNotifier {
       clearCurrentPrompt: true,
     );
     notifyListeners();
-    return 'Wheel reset. Spin again.';
+    return l('wheelResetSpinAgain');
   }
 
   Player? randomizePicker() {
@@ -570,6 +597,7 @@ class GameProvider extends ChangeNotifier {
   }
 
   bool isTruthLockedFor(Player player) {
+    if (!_state.balanceRuleEnabled) return false;
     return player.truthStreak >= 2;
   }
 
@@ -598,7 +626,7 @@ class GameProvider extends ChangeNotifier {
       return '';
     }
     if (type == PromptType.truth && truthLocked) {
-      return 'Truth locked. Dare is mandatory.';
+      return l('truthLockedMandatory');
     }
 
     final updated = type == PromptType.truth
@@ -608,9 +636,12 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
 
     if (type == PromptType.truth && updated.truthStreak == 2) {
-      return 'Careful... next time Truth is locked.';
+      return l('carefulTruthLocks');
     }
-    return '${updated.name} chose ${type == PromptType.truth ? 'Truth' : 'Dare'}.';
+    return lf('playerChose', {
+      'player': updated.name,
+      'choice': l(type == PromptType.truth ? 'truth' : 'dare'),
+    });
   }
 
   void finishCompletedChallenge() {
@@ -656,7 +687,10 @@ class GameProvider extends ChangeNotifier {
     );
     notifyListeners();
 
-    return '${revengePlayer.name} sent it back to ${newSelected.name}.';
+    return lf('sentItBack', {
+      'source': revengePlayer.name,
+      'target': newSelected.name,
+    });
   }
 
   String chooseTruth() {
@@ -665,15 +699,15 @@ class GameProvider extends ChangeNotifier {
       return '';
     }
     if (truthLocked) {
-      return 'Truth locked. Dare is mandatory.';
+      return l('truthLockedMandatory');
     }
 
     final updated = _gameLogicService
         .chooseTruth(player)
         .copyWith(revengeAvailable: false, clearRevengeTarget: true);
     final message = updated.truthStreak == 2
-        ? 'Careful... next time Truth is locked.'
-        : '${updated.name} chose Truth.';
+        ? l('carefulTruthLocks')
+        : lf('playerChose', {'player': updated.name, 'choice': l('truth')});
     _replaceSelectedPlayer(updated);
     _finishRound();
     return message;
@@ -690,7 +724,7 @@ class GameProvider extends ChangeNotifier {
         .copyWith(revengeAvailable: false, clearRevengeTarget: true);
     _replaceSelectedPlayer(updated);
     _finishRound();
-    return '${updated.name} chose Dare.';
+    return lf('playerChose', {'player': updated.name, 'choice': l('dare')});
   }
 
   String chooseRandom() {
@@ -708,7 +742,9 @@ class GameProvider extends ChangeNotifier {
       result.player.copyWith(revengeAvailable: false, clearRevengeTarget: true),
     );
     _finishRound();
-    return 'Random chose: ${result.choice}';
+    return lf('randomChose', {
+      'choice': l(result.choice == 'Truth' ? 'truth' : 'dare'),
+    });
   }
 
   String usePass() {
@@ -717,10 +753,10 @@ class GameProvider extends ChangeNotifier {
       return '';
     }
     if (isNoEscapeActive) {
-      return 'No Escape is active. Shots are locked.';
+      return l('noEscapeShotsLocked');
     }
     if (player.passRights <= 0) {
-      return 'No shots left.';
+      return l('noShotsLeft');
     }
 
     final updated = _gameLogicService
@@ -728,22 +764,22 @@ class GameProvider extends ChangeNotifier {
         .copyWith(revengeAvailable: false, clearRevengeTarget: true);
     _replaceSelectedPlayer(updated);
     _finishRound();
-    return 'Shot used.';
+    return l('shotUsed');
   }
 
   String? canUseTarget() {
     final player = selectedPlayer;
     if (player == null) {
-      return 'Spin the wheel first.';
+      return l('spinWheelFirst');
     }
     if (isNoEscapeActive) {
-      return 'No Escape is active. Target is locked.';
+      return l('noEscapeTargetLocked');
     }
     if (player.targetRights <= 0) {
-      return 'No targets left.';
+      return l('noTargetsLeft');
     }
     if (_state.targetChainCount >= _state.maxTargetChainsPerRound) {
-      return 'Target chain limit reached.';
+      return l('targetChainLimit');
     }
     return null;
   }
@@ -788,7 +824,10 @@ class GameProvider extends ChangeNotifier {
     );
     notifyListeners();
 
-    return '${current.name} targeted ${newSelected.name}.';
+    return lf('playerTargetedTarget', {
+      'source': current.name,
+      'target': newSelected.name,
+    });
   }
 
   void resetGameSamePlayers() {
@@ -820,12 +859,12 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetAppData() {
+  Future<void> resetAppData() async {
     _state = const GameStateModel();
     _soundEnabled = true;
     _vibrationEnabled = true;
     _darkModeEnabled = true;
-    _backgroundMusicEnabled = false;
+    _backgroundMusicEnabled = true;
     _reduceAnimationsEnabled = false;
     _drinkingPromptsEnabled = true;
     _extremePromptsEnabled = true;
@@ -834,17 +873,45 @@ class GameProvider extends ChangeNotifier {
     _defaultBalanceRuleEnabled = true;
     _defaultRandomButtonEnabled = true;
     _pendingSpinPlayerId = null;
-    _syncAudioSettings();
+    await _syncAudioSettings();
     notifyListeners();
+
+    // Privacy: wipe persisted settings from the device. Player names and
+    // round stats live only in memory and are already cleared above. The
+    // premium entitlement is a paid purchase and is intentionally preserved.
+    final prefs = await SharedPreferences.getInstance();
+    for (final key in const <String>[
+      _soundEnabledKey,
+      _vibrationEnabledKey,
+      _backgroundMusicEnabledKey,
+      _reduceAnimationsEnabledKey,
+      _drinkingPromptsEnabledKey,
+      _extremePromptsEnabledKey,
+      _promptLanguageKey,
+      _musicDefaultMigratedKey,
+    ]) {
+      await prefs.remove(key);
+    }
   }
+
+  static const _musicDefaultMigratedKey = 'settings_music_default_v2';
 
   Future<void> _loadUserSettings() async {
     final prefs = await SharedPreferences.getInstance();
     _soundEnabled = prefs.getBool(_soundEnabledKey) ?? _soundEnabled;
     _vibrationEnabled =
         prefs.getBool(_vibrationEnabledKey) ?? _vibrationEnabled;
-    _backgroundMusicEnabled =
-        prefs.getBool(_backgroundMusicEnabledKey) ?? _backgroundMusicEnabled;
+
+    // Migration: ensure background music default is ON for existing users
+    final migrated = prefs.getBool(_musicDefaultMigratedKey) ?? false;
+    if (!migrated) {
+      await prefs.setBool(_backgroundMusicEnabledKey, true);
+      await prefs.setBool(_musicDefaultMigratedKey, true);
+      _backgroundMusicEnabled = true;
+    } else {
+      _backgroundMusicEnabled =
+          prefs.getBool(_backgroundMusicEnabledKey) ?? true;
+    }
     _reduceAnimationsEnabled =
         prefs.getBool(_reduceAnimationsEnabledKey) ?? _reduceAnimationsEnabled;
     _drinkingPromptsEnabled =

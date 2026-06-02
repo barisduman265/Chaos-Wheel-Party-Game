@@ -28,6 +28,14 @@ class _GameScreenState extends State<GameScreen> {
   final _wheelController = SpinningWheelController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<GameProvider>().stopMusic();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final state = provider.state;
@@ -239,7 +247,7 @@ void _showGameControlsSheet(BuildContext context) {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    'Quick fixes for the current chaos session. App settings stay on Home.',
+                    provider.l('gameControlsSubtitle'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.55),
                       height: 1.35,
@@ -338,8 +346,8 @@ void _showGameControlsSheet(BuildContext context) {
                           _showGameSnack(
                             context,
                             provider.gamePaused
-                                ? 'Game paused.'
-                                : 'Game resumed.',
+                                ? provider.l('gamePausedMsg')
+                                : provider.l('gameResumedMsg'),
                           );
                         },
                       ),
@@ -353,6 +361,11 @@ void _showGameControlsSheet(BuildContext context) {
                           Navigator.pop(sheetContext);
                         },
                       ),
+                    ],
+                  ),
+                  _ControlSection(
+                    title: provider.l('audio'),
+                    children: [
                       _ControlRow(
                         icon: provider.soundEnabled
                             ? Icons.volume_up_rounded
@@ -362,16 +375,77 @@ void _showGameControlsSheet(BuildContext context) {
                             : provider.l('soundEffectsOff'),
                         subtitle: provider.l('toggleGameplaySfx'),
                         accent: const Color(0xFFB985FF),
-                        onTap: () {
-                          provider.setSoundEnabled(!provider.soundEnabled);
-                          Navigator.pop(sheetContext);
-                          _showGameSnack(
-                            context,
-                            provider.soundEnabled
-                                ? 'Sound effects on.'
-                                : 'Sound effects off.',
-                          );
-                        },
+                        trailing: Switch(
+                          value: provider.soundEnabled,
+                          onChanged: (_) {
+                            provider.setSoundEnabled(!provider.soundEnabled);
+                          },
+                          activeTrackColor: const Color(0xFF7357A8),
+                          activeThumbColor: const Color(0xFFD8C5F2),
+                          inactiveThumbColor: const Color(0xFF8B7C96),
+                          inactiveTrackColor:
+                              Colors.white.withValues(alpha: 0.10),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onTap: () =>
+                            provider.setSoundEnabled(!provider.soundEnabled),
+                      ),
+                      _ControlRow(
+                        icon: provider.vibrationEnabled
+                            ? Icons.vibration_rounded
+                            : Icons.phonelink_off_rounded,
+                        title: provider.vibrationEnabled
+                            ? provider.l('hapticsOn')
+                            : provider.l('hapticsOff'),
+                        subtitle: provider.l('toggleHaptics'),
+                        accent: const Color(0xFF62D8FF),
+                        trailing: Switch(
+                          value: provider.vibrationEnabled,
+                          onChanged: (_) {
+                            provider.setVibrationEnabled(
+                              !provider.vibrationEnabled,
+                            );
+                          },
+                          activeTrackColor: const Color(0xFF2B7A8A),
+                          activeThumbColor: const Color(0xFF62D8FF),
+                          inactiveThumbColor: const Color(0xFF8B7C96),
+                          inactiveTrackColor:
+                              Colors.white.withValues(alpha: 0.10),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onTap: () => provider.setVibrationEnabled(
+                          !provider.vibrationEnabled,
+                        ),
+                      ),
+                      _ControlRow(
+                        icon: provider.backgroundMusicEnabled
+                            ? Icons.music_note_rounded
+                            : Icons.music_off_rounded,
+                        title: provider.backgroundMusicEnabled
+                            ? provider.l('backgroundMusic')
+                            : provider.l('backgroundMusicOff'),
+                        subtitle: provider.l('toggleBackgroundMusic'),
+                        accent: const Color(0xFFFF9F3D),
+                        trailing: Switch(
+                          value: provider.backgroundMusicEnabled,
+                          onChanged: (_) {
+                            provider.setBackgroundMusicEnabled(
+                              !provider.backgroundMusicEnabled,
+                            );
+                          },
+                          activeTrackColor: const Color(0xFF8A5A00),
+                          activeThumbColor: const Color(0xFFFF9F3D),
+                          inactiveThumbColor: const Color(0xFF8B7C96),
+                          inactiveTrackColor:
+                              Colors.white.withValues(alpha: 0.10),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onTap: () => provider.setBackgroundMusicEnabled(
+                          !provider.backgroundMusicEnabled,
+                        ),
                       ),
                     ],
                   ),
@@ -390,22 +464,39 @@ void _showGameControlsSheet(BuildContext context) {
                           Navigator.pop(sheetContext);
                           _showGameSnack(
                             context,
-                            'Prompt tone reduced to ${mode.label}.',
+                            provider.lf('promptToneReduced', {
+                              'mode': mode.label,
+                            }),
                           );
                         },
                       ),
                       _ControlRow(
-                        icon: Icons.no_drinks_rounded,
-                        title: provider.l('disableDrinkingPrompts'),
-                        subtitle: provider.drinkingPromptsEnabled
-                            ? 'Remove shot/drink prompts'
-                            : 'Drinking prompts are already off',
-                        enabled: provider.drinkingPromptsEnabled,
-                        onTap: () {
-                          provider.setDrinkingPromptsEnabled(false);
-                          Navigator.pop(sheetContext);
-                          _showGameSnack(context, 'Drinking prompts disabled.');
-                        },
+                        icon: provider.drinkingPromptsEnabled
+                            ? Icons.local_bar_rounded
+                            : Icons.no_drinks_rounded,
+                        title: provider.drinkingPromptsEnabled
+                            ? provider.l('enableDrinkingPrompts')
+                            : provider.l('disableDrinkingPrompts'),
+                        subtitle: provider.l('disableDrinkingPromptsDesc'),
+                        accent: const Color(0xFF71D2FF),
+                        trailing: Switch(
+                          value: provider.drinkingPromptsEnabled,
+                          onChanged: (_) {
+                            provider.setDrinkingPromptsEnabled(
+                              !provider.drinkingPromptsEnabled,
+                            );
+                          },
+                          activeTrackColor: const Color(0xFF1A5070),
+                          activeThumbColor: const Color(0xFF71D2FF),
+                          inactiveThumbColor: const Color(0xFF8B7C96),
+                          inactiveTrackColor:
+                              Colors.white.withValues(alpha: 0.10),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        onTap: () => provider.setDrinkingPromptsEnabled(
+                          !provider.drinkingPromptsEnabled,
+                        ),
                       ),
                     ],
                   ),
@@ -445,7 +536,7 @@ void _showPlayerControlsSheet(BuildContext context, Player player) {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Player controls',
+                  provider.l('playerControls'),
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.white.withValues(alpha: 0.55),
                   ),
@@ -453,23 +544,29 @@ void _showPlayerControlsSheet(BuildContext context, Player player) {
                 const SizedBox(height: 18),
                 _ControlRow(
                   icon: Icons.local_bar_outlined,
-                  title: 'Give extra shot',
-                  subtitle: '+1 shot token',
+                  title: provider.l('giveExtraShot'),
+                  subtitle: provider.l('plusOneShotToken'),
                   onTap: () {
                     provider.giveExtraShot(player.id);
                     Navigator.pop(sheetContext);
-                    _showGameSnack(context, '${player.name} got +1 shot.');
+                    _showGameSnack(
+                      context,
+                      provider.lf('gotExtraShot', {'player': player.name}),
+                    );
                   },
                 ),
                 _ControlRow(
                   icon: Icons.person_remove_rounded,
-                  title: 'Remove player',
-                  subtitle: 'Take them out of this session',
+                  title: provider.l('removePlayer'),
+                  subtitle: provider.l('takeThemOut'),
                   accent: const Color(0xFFFF5D98),
                   onTap: () {
                     provider.removePlayer(player.id);
                     Navigator.pop(sheetContext);
-                    _showGameSnack(context, '${player.name} removed.');
+                    _showGameSnack(
+                      context,
+                      provider.lf('playerRemovedMsg', {'player': player.name}),
+                    );
                   },
                 ),
               ],
@@ -501,7 +598,7 @@ void _showInGameAddPlayerSheet(BuildContext context) {
               const _SheetHandle(),
               const SizedBox(height: 18),
               Text(
-                'ADD PLAYER',
+                context.read<GameProvider>().l('addPlayerTitle'),
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w900,
@@ -514,7 +611,7 @@ void _showInGameAddPlayerSheet(BuildContext context) {
                 autofocus: true,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: 'Player name',
+                  hintText: context.read<GameProvider>().l('playerNameHint'),
                   hintStyle: TextStyle(
                     color: Colors.white.withValues(alpha: 0.38),
                   ),
@@ -548,7 +645,7 @@ void _showInGameAddPlayerSheet(BuildContext context) {
                   ),
                   child: Center(
                     child: Text(
-                      'ADD TO GAME',
+                      context.read<GameProvider>().l('addToGame'),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -571,13 +668,17 @@ void _addPlayerFromSheet(
   BuildContext sheetContext,
   String name,
 ) {
-  final message = context.read<GameProvider>().addPlayer(name);
+  final provider = context.read<GameProvider>();
+  final message = provider.addPlayer(name);
   if (message != null) {
     _showGameSnack(context, message);
     return;
   }
   Navigator.pop(sheetContext);
-  _showGameSnack(context, '${name.trim()} joined the game.');
+  _showGameSnack(
+    context,
+    provider.lf('playerJoinedMsg', {'player': name.trim()}),
+  );
 }
 
 void _showInGameRemovePlayerSheet(BuildContext context) {
@@ -596,7 +697,7 @@ void _showInGameRemovePlayerSheet(BuildContext context) {
                 const _SheetHandle(),
                 const SizedBox(height: 18),
                 Text(
-                  'REMOVE PLAYER',
+                  provider.l('removePlayerTitle'),
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
@@ -717,6 +818,7 @@ class _ControlRow extends StatelessWidget {
     this.enabled = true,
     this.accent = const Color(0xFF62D8FF),
     this.prominent = false,
+    this.trailing,
   });
 
   final IconData icon;
@@ -726,6 +828,7 @@ class _ControlRow extends StatelessWidget {
   final bool enabled;
   final Color accent;
   final bool prominent;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -785,10 +888,11 @@ class _ControlRow extends StatelessWidget {
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: Colors.white.withValues(alpha: 0.45),
-                ),
+                trailing ??
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: Colors.white.withValues(alpha: 0.45),
+                    ),
               ],
             ),
           ),

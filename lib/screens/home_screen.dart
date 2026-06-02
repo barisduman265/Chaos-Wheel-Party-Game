@@ -9,20 +9,36 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   static const routeName = '/home';
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _musicTriggered = false;
+
+  void _tryStartMusic() {
+    if (_musicTriggered) return;
+    _musicTriggered = true;
+    context.read<GameProvider>().playHomeMusic();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     return Scaffold(
-      body: ChaosBackground(
-        child: Stack(
-          children: [
-            const _HomeAmbientPulse(),
-            SafeArea(
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: _tryStartMusic,
+        child: ChaosBackground(
+          child: Stack(
+            children: [
+              const _HomeAmbientPulse(),
+              SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   final heroGap = (constraints.maxHeight * 0.28).clamp(
@@ -154,17 +170,20 @@ class HomeScreen extends StatelessWidget {
               right: 18,
               child: _HomeTopIcon(
                 icon: Icons.settings_rounded,
-                onTap: () => _showAppSettingsSheet(context),
+                onTap: () => showAppSettingsSheet(context),
               ),
             ),
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }
 
-void _showAppSettingsSheet(BuildContext context) {
+/// Opens the full app settings sheet (audio, gameplay, language, privacy,
+/// data reset, legal). Shared by the home screen and the game summary screen.
+void showAppSettingsSheet(BuildContext context) {
   showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,

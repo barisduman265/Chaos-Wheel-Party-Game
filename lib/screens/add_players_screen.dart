@@ -332,8 +332,8 @@ class _StartPlayersButton extends StatelessWidget {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 62),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+          constraints: const BoxConstraints(minHeight: 66),
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(26),
             gradient: LinearGradient(
@@ -341,24 +341,49 @@ class _StartPlayersButton extends StatelessWidget {
               end: Alignment.centerRight,
               colors: gradientColors,
             ),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
             boxShadow: enabled
                 ? [
                     BoxShadow(
-                      color: const Color(0xFFFF3D81).withValues(alpha: 0.22),
-                      blurRadius: 16,
-                      offset: const Offset(0, 8),
+                      color: const Color(0xFFFF3D81).withValues(alpha: 0.30),
+                      blurRadius: 24,
+                      offset: const Offset(0, 10),
+                    ),
+                    BoxShadow(
+                      color: const Color(0xFFA85BFF).withValues(alpha: 0.18),
+                      blurRadius: 40,
+                      offset: const Offset(0, 4),
                     ),
                   ]
                 : null,
           ),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.18),
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
         ),
       ),

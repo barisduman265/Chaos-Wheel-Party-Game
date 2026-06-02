@@ -26,7 +26,9 @@ class PremiumScreen extends StatelessWidget {
                   _BackBubble(onTap: () => Navigator.maybePop(context)),
                   const Spacer(),
                   Text(
-                    isPremium ? 'Premium Unlocked' : 'Unlock Premium',
+                    provider.l(
+                      isPremium ? 'premiumUnlockedTitle' : 'unlockPremiumTitle',
+                    ),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: const Color(0xFFF3EEFF),
                       fontWeight: FontWeight.w800,
@@ -39,11 +41,11 @@ class PremiumScreen extends StatelessWidget {
               const SizedBox(height: 28),
               _HeroPremiumCard(isPremium: isPremium),
               const SizedBox(height: 18),
-              const _SectionLabel('WHAT YOU UNLOCK'),
+              _SectionLabel(provider.l('whatYouUnlock')),
               const SizedBox(height: 10),
               _UnlockGrid(isPremium: isPremium),
               const SizedBox(height: 18),
-              const _SectionLabel('LIVE PREVIEW'),
+              _SectionLabel(provider.l('livePreview')),
               const SizedBox(height: 10),
               const _PremiumPreview(),
               const SizedBox(height: 20),
@@ -67,6 +69,7 @@ class _HeroPremiumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -106,7 +109,7 @@ class _HeroPremiumCard extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           Text(
-            isPremium ? 'Chaos Premium is yours.' : 'Unlock Chaos Premium',
+            provider.l(isPremium ? 'chaosPremiumYours' : 'unlockChaosPremium'),
             style: Theme.of(context).textTheme.displaySmall?.copyWith(
               color: const Color(0xFFF3EEFF),
               fontWeight: FontWeight.w900,
@@ -115,9 +118,7 @@ class _HeroPremiumCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            isPremium
-                ? 'EVIL mode, Custom Game and premium prompts are live.'
-                : 'More chaos. More tension. More control.',
+            provider.l(isPremium ? 'premiumLiveSubtitle' : 'premiumTagline'),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: Colors.white.withValues(alpha: 0.62),
               height: 1.35,
@@ -136,22 +137,27 @@ class _UnlockGrid extends StatelessWidget {
   final bool isPremium;
 
   static const items = [
-    ('EVIL mode', Icons.warning_amber_rounded),
-    ('Custom Game', Icons.tune_rounded),
-    ('Revenge Mode', Icons.crisis_alert_rounded),
-    ('Premium prompt packs', Icons.auto_awesome_rounded),
-    ('Extreme Truth prompts', Icons.visibility_rounded),
-    ('Extreme Dare prompts', Icons.bolt_rounded),
-    ('Extra prompt changes', Icons.auto_fix_high_rounded),
+    ('evilModeLabel', Icons.warning_amber_rounded),
+    ('customGameLabel', Icons.tune_rounded),
+    ('revengeModeLabel', Icons.crisis_alert_rounded),
+    ('premiumPromptPacks', Icons.auto_awesome_rounded),
+    ('extremeTruthPrompts', Icons.visibility_rounded),
+    ('extremeDarePrompts', Icons.bolt_rounded),
+    ('extraPromptChanges', Icons.auto_fix_high_rounded),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
     return Wrap(
       spacing: 10,
       runSpacing: 10,
       children: items.map((item) {
-        return _PremiumChip(label: item.$1, icon: item.$2, unlocked: isPremium);
+        return _PremiumChip(
+          label: provider.l(item.$1),
+          icon: item.$2,
+          unlocked: isPremium,
+        );
       }).toList(),
     );
   }
@@ -162,27 +168,28 @@ class _PremiumPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
     return Column(
-      children: const [
+      children: [
         _PreviewCard(
-          title: 'EVIL TRUTH',
-          text: 'Expose the safest lie you told this room.',
+          title: provider.l('evilTruthTitle'),
+          text: provider.l('evilTruthPreview'),
           icon: Icons.visibility_rounded,
-          color: Color(0xFFFF5D98),
+          color: const Color(0xFFFF5D98),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _PreviewCard(
-          title: 'EVIL DARE',
-          text: 'Let the room choose one message you must send.',
+          title: provider.l('evilDareTitle'),
+          text: provider.l('evilDarePreview'),
           icon: Icons.bolt_rounded,
-          color: Color(0xFFA85BFF),
+          color: const Color(0xFFA85BFF),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         _PreviewCard(
-          title: 'REVENGE MODE',
-          text: 'Targets can come back for you.',
+          title: provider.l('revengeModeTitle'),
+          text: provider.l('revengePreview'),
           icon: Icons.crisis_alert_rounded,
-          color: Color(0xFFFF3D6E),
+          color: const Color(0xFFFF3D6E),
         ),
       ],
     );
@@ -214,7 +221,7 @@ class _PremiumCta extends StatelessWidget {
         }
         if (!context.read<GameProvider>().isPremiumUser) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Premium purchase started.')),
+            SnackBar(content: Text(provider.l('premiumPurchaseStarted'))),
           );
           return;
         }
@@ -250,10 +257,10 @@ class _PremiumCta extends StatelessWidget {
                 children: [
                   Text(
                     isPremium
-                        ? 'LIFETIME PREMIUM ACTIVE'
+                        ? provider.l('lifetimePremiumActive')
                         : provider.premiumPurchaseInProgress
-                        ? 'UNLOCKING...'
-                        : 'UNLOCK LIFETIME PREMIUM',
+                        ? provider.l('unlockingPremium')
+                        : provider.l('unlockLifetimePremium'),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -263,10 +270,12 @@ class _PremiumCta extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     isPremium
-                        ? 'Everything stays unlocked.'
+                        ? provider.l('everythingStaysUnlocked')
                         : provider.premiumPriceLabel == null
-                        ? 'One payment. Forever unlocked.'
-                        : '${provider.premiumPriceLabel} once. Forever unlocked.',
+                        ? provider.l('onePaymentForever')
+                        : provider.lf('oncePriceForever', {
+                            'price': provider.premiumPriceLabel!,
+                          }),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.72),
                       fontWeight: FontWeight.w600,
@@ -287,6 +296,7 @@ class _PremiumSuccessDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -318,7 +328,7 @@ class _PremiumSuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             Text(
-              'PREMIUM UNLOCKED',
+              provider.l('premiumUnlockedDialog'),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: Colors.white,
@@ -327,7 +337,7 @@ class _PremiumSuccessDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'EVIL mode, Custom Game and premium prompts are now live.',
+              provider.l('premiumNowLive'),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Colors.white.withValues(alpha: 0.62),
@@ -336,7 +346,7 @@ class _PremiumSuccessDialog extends StatelessWidget {
             const SizedBox(height: 18),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('LET CHAOS IN'),
+              child: Text(provider.l('letChaosIn')),
             ),
           ],
         ),
@@ -363,7 +373,7 @@ class _InviteFriendsButton extends StatelessWidget {
           border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
         ),
         child: Text(
-          'INVITE FRIENDS',
+          context.read<GameProvider>().l('inviteFriends'),
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
             color: Colors.white.withValues(alpha: 0.82),
             fontWeight: FontWeight.w900,

@@ -2,6 +2,7 @@ import 'package:chaos_wheel_party_game/models/player.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/screens/add_players_screen.dart';
 import 'package:chaos_wheel_party_game/screens/game_screen.dart';
+import 'package:chaos_wheel_party_game/screens/home_screen.dart';
 import 'package:chaos_wheel_party_game/services/share_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,14 @@ class GameSummaryScreen extends StatefulWidget {
 
 class _GameSummaryScreenState extends State<GameSummaryScreen> {
   final ScreenshotController _reportController = ScreenshotController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<GameProvider>().playHomeMusic();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +108,16 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
       body: ChaosBackground(
         child: SafeArea(
           child: ListView(
-            padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
+            padding: const EdgeInsets.fromLTRB(22, 16, 22, 22),
             children: [
+              Align(
+                alignment: Alignment.centerRight,
+                child: _SummaryIconButton(
+                  icon: Icons.settings_rounded,
+                  onTap: () => showAppSettingsSheet(context),
+                ),
+              ),
+              const SizedBox(height: 8),
               Screenshot(
                 controller: _reportController,
                 child: Container(
@@ -155,10 +172,16 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 22),
-              _SummaryPrimaryAction(
+              const SizedBox(height: 24),
+              _SummaryActionButton(
                 label: provider.l('shareTheChaos'),
                 icon: Icons.ios_share_rounded,
+                gradientColors: const [
+                  Color(0xFFA85BFF),
+                  Color(0xFFD845D7),
+                  Color(0xFFFF3D81),
+                ],
+                glowColor: const Color(0xFFFF3D9A),
                 onTap: () {
                   const ChaosShareService().shareChaosReport(
                     players: players,
@@ -167,11 +190,16 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 12),
-              _SummaryPrimaryAction(
+              const SizedBox(height: 10),
+              _SummaryActionButton(
                 label: provider.l('playAgain'),
                 icon: Icons.replay_rounded,
-                compact: true,
+                gradientColors: const [
+                  Color(0xFF1A6BDB),
+                  Color(0xFF2A9DFF),
+                  Color(0xFF39D2FF),
+                ],
+                glowColor: const Color(0xFF39D2FF),
                 onTap: () {
                   context.read<GameProvider>().resetGameSamePlayers();
                   Navigator.pushNamedAndRemoveUntil(
@@ -181,23 +209,20 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: _SummarySecondaryAction(
-                      label: provider.l('newGame'),
-                      onTap: () {
-                        context.read<GameProvider>().startNewGame();
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AddPlayersScreen.routeName,
-                          (route) => false,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 10),
+              _SummaryActionButton(
+                label: provider.l('newGame'),
+                icon: Icons.add_rounded,
+                gradientColors: null,
+                glowColor: null,
+                onTap: () {
+                  context.read<GameProvider>().startNewGame();
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    AddPlayersScreen.routeName,
+                    (route) => false,
+                  );
+                },
               ),
             ],
           ),
@@ -230,18 +255,47 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
   }
 }
 
-class _SummaryPrimaryAction extends StatelessWidget {
-  const _SummaryPrimaryAction({
+class _SummaryIconButton extends StatelessWidget {
+  const _SummaryIconButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.07),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+        ),
+        child: Icon(icon, color: Colors.white, size: 24),
+      ),
+    );
+  }
+}
+
+class _SummaryActionButton extends StatelessWidget {
+  const _SummaryActionButton({
     required this.label,
     required this.icon,
     required this.onTap,
-    this.compact = false,
+    required this.gradientColors,
+    required this.glowColor,
   });
 
   final String label;
   final IconData icon;
   final VoidCallback onTap;
-  final bool compact;
+  final List<Color>? gradientColors;
+  final Color? glowColor;
+
+  bool get _isGradient => gradientColors != null;
 
   @override
   Widget build(BuildContext context) {
@@ -249,88 +303,62 @@ class _SummaryPrimaryAction extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: compact ? 62 : 74,
+        height: 62,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: const LinearGradient(
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-            colors: [Color(0xFFA85BFF), Color(0xFFD845D7), Color(0xFFFF3D81)],
+          borderRadius: BorderRadius.circular(22),
+          gradient: _isGradient
+              ? LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: gradientColors!,
+                )
+              : null,
+          color: _isGradient ? null : Colors.white.withValues(alpha: 0.07),
+          border: Border.all(
+            color: _isGradient
+                ? Colors.white.withValues(alpha: 0.18)
+                : Colors.white.withValues(alpha: 0.14),
           ),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFFFF3D9A).withValues(alpha: 0.32),
-              blurRadius: 28,
-              spreadRadius: 1,
-              offset: const Offset(0, 12),
-            ),
-            BoxShadow(
-              color: const Color(0xFFA85BFF).withValues(alpha: 0.22),
-              blurRadius: 36,
-              spreadRadius: 1,
-            ),
-          ],
+          boxShadow: _isGradient
+              ? [
+                  BoxShadow(
+                    color: glowColor!.withValues(alpha: 0.30),
+                    blurRadius: 22,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: Colors.white, size: 25),
+            Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(
+                  alpha: _isGradient ? 0.18 : 0.08,
+                ),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
             const SizedBox(width: 12),
             Text(
               label,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.white,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Colors.white.withValues(
+                  alpha: _isGradient ? 1.0 : 0.80,
+                ),
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.6,
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SummarySecondaryAction extends StatelessWidget {
-  const _SummarySecondaryAction({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return _PressableScale(
-      onTap: onTap,
-      child: Container(
-        height: 58,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              Colors.white.withValues(alpha: 0.08),
-              const Color(0xFF12051E).withValues(alpha: 0.56),
-            ],
-          ),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF62D9FF).withValues(alpha: 0.08),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 0.4,
-          ),
         ),
       ),
     );
