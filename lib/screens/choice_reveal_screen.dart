@@ -65,8 +65,6 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
         ? 0
         : provider.isNoEscapeActive && provider.isEvilModeActive
         ? 0
-        : provider.isPremiumUser
-        ? 2
         : 1;
     _startPromptReveal(provider.currentPrompt);
     if (provider.currentPrompt?.mode == PromptVibeMode.evil) {

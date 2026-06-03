@@ -213,8 +213,12 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
               _SummaryActionButton(
                 label: provider.l('newGame'),
                 icon: Icons.add_rounded,
-                gradientColors: null,
-                glowColor: null,
+                gradientColors: const [
+                  Color(0xFF12A878),
+                  Color(0xFF1FC98A),
+                  Color(0xFF55F0B0),
+                ],
+                glowColor: const Color(0xFF1FC98A),
                 onTap: () {
                   context.read<GameProvider>().startNewGame();
                   Navigator.pushNamedAndRemoveUntil(
@@ -303,9 +307,9 @@ class _SummaryActionButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 62,
+        height: 60,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(18),
           gradient: _isGradient
               ? LinearGradient(
                   begin: Alignment.centerLeft,
@@ -313,18 +317,19 @@ class _SummaryActionButton extends StatelessWidget {
                   colors: gradientColors!,
                 )
               : null,
-          color: _isGradient ? null : Colors.white.withValues(alpha: 0.07),
+          color: _isGradient ? null : Colors.white.withValues(alpha: 0.12),
           border: Border.all(
             color: _isGradient
-                ? Colors.white.withValues(alpha: 0.18)
-                : Colors.white.withValues(alpha: 0.14),
+                ? Colors.white.withValues(alpha: 0.22)
+                : Colors.white.withValues(alpha: 0.26),
+            width: 1.4,
           ),
           boxShadow: _isGradient
               ? [
                   BoxShadow(
-                    color: glowColor!.withValues(alpha: 0.30),
-                    blurRadius: 22,
-                    offset: const Offset(0, 8),
+                    color: glowColor!.withValues(alpha: 0.36),
+                    blurRadius: 24,
+                    offset: const Offset(0, 9),
                   ),
                 ]
               : null,
@@ -333,29 +338,31 @@ class _SummaryActionButton extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 32,
-              height: 32,
+              width: 34,
+              height: 34,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white.withValues(
-                  alpha: _isGradient ? 0.18 : 0.08,
+                  alpha: _isGradient ? 0.20 : 0.16,
                 ),
               ),
               child: Icon(
                 icon,
                 color: Colors.white,
-                size: 18,
+                size: 19,
               ),
             ),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.white.withValues(
-                  alpha: _isGradient ? 1.0 : 0.80,
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.4,
                 ),
-                fontWeight: FontWeight.w900,
-                letterSpacing: 0.6,
               ),
             ),
           ],

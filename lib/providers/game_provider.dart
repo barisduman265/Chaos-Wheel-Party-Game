@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chaos_wheel_party_game/models/game_state.dart';
 import 'package:chaos_wheel_party_game/models/player.dart';
 import 'package:chaos_wheel_party_game/models/prompt_models.dart';
@@ -47,6 +49,11 @@ class GameProvider extends ChangeNotifier {
   final GameLogicService _gameLogicService;
   final PromptEngine _promptEngine;
   final PremiumPurchaseService _premiumPurchaseService;
+  final Random _random = Random();
+
+  /// Probability that being targeted grants a revenge-back in revenge mode.
+  /// Revenge no longer triggers on every target — it now lands randomly.
+  static const double _revengeChance = 0.35;
 
   GameStateModel _state = const GameStateModel();
   bool _soundEnabled = true;
@@ -802,7 +809,8 @@ class GameProvider extends ChangeNotifier {
                 .copyWith(pickedCount: player.pickedCount + 1);
             if (!_state.revengeModeEnabled ||
                 isNoEscapeActive ||
-                _state.revengeUsedThisRound) {
+                _state.revengeUsedThisRound ||
+                _random.nextDouble() >= _revengeChance) {
               return targeted;
             }
             return targeted.copyWith(
