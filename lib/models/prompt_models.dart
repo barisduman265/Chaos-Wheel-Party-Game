@@ -67,8 +67,9 @@ class ContentPrompt {
   final String? _intensityLabel;
 
   String get intensityLabel {
-    if (_intensityLabel != null) {
-      return _intensityLabel!;
+    final intensityLabel = _intensityLabel;
+    if (intensityLabel != null) {
+      return intensityLabel;
     }
     return switch (level) {
       1 => 'SAFE',
