@@ -324,8 +324,9 @@ class GameProvider extends ChangeNotifier {
     _premiumPurchaseInProgress = false;
     _premiumPurchaseMessage = switch (result) {
       PremiumPurchaseStartResult.storeUnavailable => l('storeUnavailable'),
-      PremiumPurchaseStartResult.productUnavailable =>
-        l('premiumNotConfigured'),
+      PremiumPurchaseStartResult.productUnavailable => l(
+        'premiumNotConfigured',
+      ),
       PremiumPurchaseStartResult.failedToStart => l('purchaseFailedToStart'),
       PremiumPurchaseStartResult.started => null,
     };

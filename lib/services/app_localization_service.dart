@@ -301,7 +301,8 @@ class AppLocalizationService {
     'premiumUnlockedTitle': 'Premium Unlocked',
     'unlockChaosPremium': 'Unlock Chaos Premium',
     'chaosPremiumYours': 'Chaos Premium is yours.',
-    'premiumLiveSubtitle': 'EVIL mode, Custom Game and premium prompts are live.',
+    'premiumLiveSubtitle':
+        'EVIL mode, Custom Game and premium prompts are live.',
     'premiumTagline': 'More chaos. More tension. More control.',
     'whatYouUnlock': 'WHAT YOU UNLOCK',
     'evilModeLabel': 'EVIL mode',
@@ -340,7 +341,8 @@ class AppLocalizationService {
     'trustUpdates': 'Future premium updates included',
     'oncePriceForever': '{price} once. Forever unlocked.',
     'premiumUnlockedDialog': 'PREMIUM UNLOCKED',
-    'premiumNowLive': 'EVIL mode, Custom Game and premium prompts are now live.',
+    'premiumNowLive':
+        'EVIL mode, Custom Game and premium prompts are now live.',
     'letChaosIn': 'LET CHAOS IN',
     'premiumPurchaseStarted': 'Premium purchase started.',
     'inviteFriends': 'INVITE FRIENDS',
@@ -387,7 +389,8 @@ class AppLocalizationService {
     'storeOpenFailed': 'No se pudo abrir la tienda.',
     'reportProblem': 'Reportar un problema',
     'reportProblemDesc': 'Escríbenos sobre un error o problema.',
-    'reportProblemFailed': 'No se pudo abrir tu app de correo. Escríbenos a {email}',
+    'reportProblemFailed':
+        'No se pudo abrir tu app de correo. Escríbenos a {email}',
     'startGame': 'EMPEZAR',
     'startGameSubtitle': 'Gira la ruleta del destino',
     'howToPlay': 'Como jugar',
@@ -582,8 +585,7 @@ class AppLocalizationService {
     'unlockPremiumTitle': 'Desbloquear Premium',
     'removeAds': 'Quitar anuncios',
     'maybeLater': 'Quizás más tarde',
-    'premiumNoAdsTagline':
-        'Sin anuncios. Más caos. Más tensión. Más control.',
+    'premiumNoAdsTagline': 'Sin anuncios. Más caos. Más tensión. Más control.',
     'exclusiveContent': 'Más de 350 verdades y retos exclusivos',
     'unlimitedChanges': 'Cambios de pregunta ilimitados',
     'removeAdsDesc': 'Juega sin interrupciones.',
@@ -711,7 +713,8 @@ class AppLocalizationService {
       'noEscapeMode': 'KAÇIŞ YOK MODU',
       'noEscapeBody': 'Shot ve hedef kilitlendi. Son turları hayatta kal.',
       'whoIsPlaying': 'Bu gece\nkim oynuyor?',
-      'addPlayersHelper': 'En az 2 oyuncu ekle. Tekrar yok. Çark her şeye karar verir.',
+      'addPlayersHelper':
+          'En az 2 oyuncu ekle. Tekrar yok. Çark her şeye karar verir.',
       'noPlayersYet': 'Henüz oyuncu yok. Aşağıdan ekle',
       'addPlayerName': 'Oyuncu adı ekle...',
       'startPlayers': 'BAŞLA — {count} OYUNCU',
@@ -834,7 +837,8 @@ class AppLocalizationService {
       'storeOpenFailed': 'Mağaza açılamadı.',
       'reportProblem': 'Sorun bildir',
       'reportProblemDesc': 'Bir hata ya da sorunu bize yaz.',
-      'reportProblemFailed': 'E-posta uygulaması açılamadı. Bize {email} adresinden ulaş',
+      'reportProblemFailed':
+          'E-posta uygulaması açılamadı. Bize {email} adresinden ulaş',
       'lifetimeUnlocked': 'Ömür boyu kilidi açıldı',
       'freePlan': 'Ücretsiz plan',
       'appDataReset': 'Veriler sıfırlandı.',
@@ -1018,7 +1022,8 @@ class AppLocalizationService {
       'customGameDesc': 'Tur, shot ve hedef ayarla',
       'startCustomGame': 'ÖZEL OYUNU BAŞLAT',
       'letItGo': 'BOŞ VER',
-      'playersShotsTargets': '{players} oyuncu - {shots} shot - {targets} hedef',
+      'playersShotsTargets':
+          '{players} oyuncu - {shots} shot - {targets} hedef',
       'playersShotsTargetsPlural':
           '{players} oyuncu - {shots} shot - {targets} hedef',
       'versionBody': 'Chaos Wheel 0.1.0',
@@ -1062,7 +1067,8 @@ class AppLocalizationService {
       'storeOpenFailed': 'Impossibile aprire la pagina dello store.',
       'reportProblem': 'Segnala un problema',
       'reportProblemDesc': 'Scrivici di un bug o problema.',
-      'reportProblemFailed': 'Impossibile aprire l\'app email. Scrivici a {email}',
+      'reportProblemFailed':
+          'Impossibile aprire l\'app email. Scrivici a {email}',
       'startGame': 'INIZIA',
       'startGameSubtitle': 'Gira la ruota del destino',
       'howToPlay': 'Come si gioca',
@@ -1072,7 +1078,8 @@ class AppLocalizationService {
       'whoIsPlaying': 'Chi gioca\nstasera?',
       'addPlayersHelper':
           'Aggiungi almeno 2 giocatori. Nessun doppione. La ruota decide tutto.',
-      'noPlayersYet': 'Ancora nessun giocatore. Aggiungi la crew del caos qui sotto',
+      'noPlayersYet':
+          'Ancora nessun giocatore. Aggiungi la crew del caos qui sotto',
       'addPlayerName': 'Aggiungi nome giocatore...',
       'startPlayers': 'INIZIA — {count} GIOCATORI',
       'addOneMorePlayer': 'AGGIUNGI 1 GIOCATORE',
@@ -1296,8 +1303,7 @@ class AppLocalizationService {
       'chooseTarget': 'Scegli\nun bersaglio.',
       'noActivePlayer': 'Nessun giocatore attivo selezionato.',
       'redirectingChallenge': '{player} sta reindirizzando questa prova.',
-      'sameChallengePassed':
-          'La stessa domanda o sfida passerà al bersaglio.',
+      'sameChallengePassed': 'La stessa domanda o sfida passerà al bersaglio.',
       'unlockPremiumTitle': 'Sblocca Premium',
       'removeAds': 'Rimuovi le pubblicità',
       'maybeLater': 'Forse più tardi',
@@ -1402,7 +1408,8 @@ class AppLocalizationService {
       'storeOpenFailed': 'Impossible d\'ouvrir la page du store.',
       'reportProblem': 'Signaler un problème',
       'reportProblemDesc': 'Écris-nous au sujet d\'un bug.',
-      'reportProblemFailed': 'Impossible d\'ouvrir ton app e-mail. Contacte-nous à {email}',
+      'reportProblemFailed':
+          'Impossible d\'ouvrir ton app e-mail. Contacte-nous à {email}',
       'startGame': 'COMMENCER',
       'startGameSubtitle': 'Tourne la roue du destin',
       'howToPlay': 'Comment jouer',
@@ -1412,7 +1419,8 @@ class AppLocalizationService {
       'whoIsPlaying': 'Qui joue\nce soir?',
       'addPlayersHelper':
           'Ajoute au moins 2 joueurs. Pas de doublons. La roue décide de tout.',
-      'noPlayersYet': 'Pas encore de joueurs. Ajoute la team du chaos ci-dessous',
+      'noPlayersYet':
+          'Pas encore de joueurs. Ajoute la team du chaos ci-dessous',
       'addPlayerName': 'Ajouter un nom de joueur...',
       'startPlayers': 'COMMENCER — {count} JOUEURS',
       'addOneMorePlayer': 'AJOUTER 1 JOUEUR',
@@ -1455,7 +1463,8 @@ class AppLocalizationService {
       'advancedChaosSettings': 'Réglages avancés du chaos',
       'modifiersLocksPremiumChaos': 'Modificateurs, verrous et chaos premium.',
       'balanceRule': 'Règle d\'équilibre',
-      'balanceRuleDesc': 'Verrouille Vérité seulement après 2 Vérités d\'affilée',
+      'balanceRuleDesc':
+          'Verrouille Vérité seulement après 2 Vérités d\'affilée',
       'randomButton': 'Bouton aléatoire',
       'randomButtonDesc': 'Laisse le destin choisir vérité ou défi',
       'startChaos': 'COMMENCER {vibe}',
@@ -1499,8 +1508,7 @@ class AppLocalizationService {
       'endGame': 'Terminer la partie',
       'endGameDesc': 'Aller au Rapport du Chaos',
       'toneDownPrompts': 'Adoucir les défis',
-      'toneDownPromptsDesc':
-          'Réduit l\'intensité des défis pour cette session',
+      'toneDownPromptsDesc': 'Réduit l\'intensité des défis pour cette session',
       'disableDrinkingPrompts': 'Désactiver les défis à boire',
       'disableDrinkingPromptsDesc': 'Retire maintenant les défis shot/alcool',
       'soundEffectsOn': 'Effets sonores activés',
@@ -1627,7 +1635,8 @@ class AppLocalizationService {
           'Doux est sûr, Épicé est séducteur, Déjanté est chaotique, Maléfique est premium.',
       'spinTheWheelRule': 'La roue choisit qui affronte le prochain défi.',
       'truthOrDare': 'ACTION OU VÉRITÉ',
-      'truthOrDareRule': 'L\'app donne automatiquement la question ou la tâche.',
+      'truthOrDareRule':
+          'L\'app donne automatiquement la question ou la tâche.',
       'targetRule': 'Redirige le défi vers un autre joueur.',
       'shotRule': 'Utilise un jeton shot pour passer.',
       'noEscapeRule':
@@ -1671,7 +1680,8 @@ class AppLocalizationService {
       'extraPromptChanges': 'Changements de défi en plus',
       'livePreview': 'APERÇU',
       'evilTruthTitle': 'VÉRITÉ EVIL',
-      'evilTruthPreview': 'Révèle le mensonge le plus anodin que tu as dit ici.',
+      'evilTruthPreview':
+          'Révèle le mensonge le plus anodin que tu as dit ici.',
       'evilDareTitle': 'DÉFI EVIL',
       'evilDarePreview':
           'Laisse la salle choisir un message que tu dois envoyer.',
@@ -1737,8 +1747,7 @@ class AppLocalizationService {
       'privacyPolicyBody':
           'Chaos Wheel 完全离线运行。它不收集、不传输也不出售任何个人数据，且不包含任何分析或第三方追踪。\n\n一切都保留在你的设备上：玩家名字和回合统计仅在当前会话中存于内存，而你的设置（声音、语言、内容选项）和你的高级版购买则本地保存在此设备上。\n\n任何数据都不会离开你的手机。你可以随时通过“重置统计”清除本地保存的设置。高级版购买由你的应用商店根据其自身隐私条款处理。',
       'terms': '条款',
-      'termsBody':
-          'Chaos Wheel 是一款社交派对游戏。玩家需对同意、舒适以及停止任何不适合在场氛围的挑战负责。',
+      'termsBody': 'Chaos Wheel 是一款社交派对游戏。玩家需对同意、舒适以及停止任何不适合在场氛围的挑战负责。',
       'version': '版本',
       'versionBody': 'Chaos Wheel 0.1.0',
       'ok': '确定',
@@ -2107,10 +2116,8 @@ class AppLocalizationService {
       'customGame': 'カスタムゲーム',
       'customGameDesc': 'ラウンド・ショット・ターゲットを設定',
       'premiumHouseRules': 'プレミアムのハウスルール',
-      'playersShotsTargets':
-          '{players}人 - {shots}ショット - {targets}ターゲット',
-      'playersShotsTargetsPlural':
-          '{players}人 - {shots}ショット - {targets}ターゲット',
+      'playersShotsTargets': '{players}人 - {shots}ショット - {targets}ターゲット',
+      'playersShotsTargetsPlural': '{players}人 - {shots}ショット - {targets}ターゲット',
       'noEscapeActivates': '逃げ場なし発動',
       'inRound': 'ラウンド{round}で',
       'shotsTargetsLocked': 'ショットとターゲットがロックされます。',
@@ -2140,11 +2147,9 @@ class AppLocalizationService {
       'tellTheTruth': '本音を言え。',
       'takeTheRisk': 'リスクを取れ。',
       'letChaosDecide': 'カオスに決めさせろ。',
-      'shotTargetLockedRandomLeansDare':
-          'ショット+ターゲットロック - ランダムは挑戦寄り',
+      'shotTargetLockedRandomLeansDare': 'ショット+ターゲットロック - ランダムは挑戦寄り',
       'gameControls': 'ゲーム操作',
-      'gameControlsSubtitle':
-          '今のカオスセッション用のクイック調整。アプリ設定はホームに。',
+      'gameControlsSubtitle': '今のカオスセッション用のクイック調整。アプリ設定はホームに。',
       'round': 'ラウンド',
       'players': 'プレイヤー',
       'session': 'セッション',
@@ -2275,8 +2280,7 @@ class AppLocalizationService {
       'playAgain': 'もう一度',
       'newGame': '新しいゲーム',
       'howChaosWorks': 'カオスの仕組み',
-      'howChaosIntro':
-          'ホイールを回し、選ばれ、お題に挑むか、ショットを使う。',
+      'howChaosIntro': 'ホイールを回し、選ばれ、お題に挑むか、ショットを使う。',
       'howChaosSubtitle': 'アプリが質問・挑戦・最後のプレッシャーを進行します。',
       'flow': '流れ',
       'specialRules': '特別ルール',
@@ -2284,8 +2288,7 @@ class AppLocalizationService {
       'addPlayers': 'プレイヤーを追加',
       'addPlayersRule': 'ゲーム開始前に、その場の全員を追加。',
       'pickYourVibe': 'ムードを選べ',
-      'pickYourVibeRule':
-          'まったりは安全、スパイシーは色っぽい、カオスは無秩序、悪はプレミアム。',
+      'pickYourVibeRule': 'まったりは安全、スパイシーは色っぽい、カオスは無秩序、悪はプレミアム。',
       'spinTheWheelRule': 'ホイールが次のお題に挑む人を選ぶ。',
       'truthOrDare': '本音か挑戦か',
       'truthOrDareRule': 'アプリが質問やタスクを自動で出します。',
@@ -2609,8 +2612,7 @@ class AppLocalizationService {
       'addPlayers': '플레이어 추가',
       'addPlayersRule': '게임 시작 전에 그 자리의 모두를 추가하세요.',
       'pickYourVibe': '분위기를 골라',
-      'pickYourVibeRule':
-          '편안함은 안전, 스파이시는 설렘, 무모함은 카오스, 악은 프리미엄.',
+      'pickYourVibeRule': '편안함은 안전, 스파이시는 설렘, 무모함은 카오스, 악은 프리미엄.',
       'spinTheWheelRule': '바퀴가 다음 미션을 마주할 사람을 정한다.',
       'truthOrDare': '진실 혹은 도전',
       'truthOrDareRule': '앱이 질문이나 과제를 자동으로 줍니다.',
@@ -2726,7 +2728,8 @@ class AppLocalizationService {
       'storeOpenFailed': 'Não foi possível abrir a página da loja.',
       'reportProblem': 'Relatar um problema',
       'reportProblemDesc': 'Envie-nos um e-mail sobre um bug.',
-      'reportProblemFailed': 'Não foi possível abrir seu app de e-mail. Fale conosco em {email}',
+      'reportProblemFailed':
+          'Não foi possível abrir seu app de e-mail. Fale conosco em {email}',
       'startGame': 'COMEÇAR',
       'startGameSubtitle': 'Gire a roda do destino',
       'howToPlay': 'Como jogar',
@@ -2823,8 +2826,7 @@ class AppLocalizationService {
       'endGame': 'Encerrar jogo',
       'endGameDesc': 'Ir para o Relatório do Caos',
       'toneDownPrompts': 'Suavizar desafios',
-      'toneDownPromptsDesc':
-          'Reduz a intensidade dos desafios nesta sessão',
+      'toneDownPromptsDesc': 'Reduz a intensidade dos desafios nesta sessão',
       'disableDrinkingPrompts': 'Desativar desafios de bebida',
       'disableDrinkingPromptsDesc': 'Remova agora os desafios de shot/bebida',
       'soundEffectsOn': 'Efeitos sonoros ligados',
@@ -2992,9 +2994,11 @@ class AppLocalizationService {
       'extraPromptChanges': 'Trocas de desafio extras',
       'livePreview': 'PRÉVIA',
       'evilTruthTitle': 'VERDADE EVIL',
-      'evilTruthPreview': 'Revele a mentira mais inofensiva que você contou aqui.',
+      'evilTruthPreview':
+          'Revele a mentira mais inofensiva que você contou aqui.',
       'evilDareTitle': 'DESAFIO EVIL',
-      'evilDarePreview': 'Deixe a sala escolher uma mensagem que você deve enviar.',
+      'evilDarePreview':
+          'Deixe a sala escolher uma mensagem que você deve enviar.',
       'revengeModeTitle': 'MODO VINGANÇA',
       'revengePreview': 'Os alvos podem revidar em você.',
       'lifetimePremiumActive': 'PREMIUM VITALÍCIO ATIVO',
@@ -3074,7 +3078,8 @@ class AppLocalizationService {
       'unlockChaosMode': 'افتح وضع الفوضى',
       'homeTagline': 'حقيقة  .  تحدي  .  شرب  .  لا مفر',
       'whoIsPlaying': 'من يلعب\nالليلة?',
-      'addPlayersHelper': 'أضف لاعبَين على الأقل. لا تكرار. العجلة تقرر كل شيء.',
+      'addPlayersHelper':
+          'أضف لاعبَين على الأقل. لا تكرار. العجلة تقرر كل شيء.',
       'noPlayersYet': 'لا لاعبين بعد. أضف فريق الفوضى أدناه',
       'addPlayerName': 'أضف اسم لاعب...',
       'startPlayers': 'ابدأ — {count} لاعبين',
@@ -3297,7 +3302,8 @@ class AppLocalizationService {
       'unlockPremiumTitle': 'افتح البريميوم',
       'removeAds': 'إزالة الإعلانات',
       'maybeLater': 'ربما لاحقاً',
-      'premiumNoAdsTagline': 'بلا إعلانات. مزيد من الفوضى. مزيد من التوتر. مزيد من السيطرة.',
+      'premiumNoAdsTagline':
+          'بلا إعلانات. مزيد من الفوضى. مزيد من التوتر. مزيد من السيطرة.',
       'exclusiveContent': 'أكثر من 350 سؤالاً وتحدياً حصرياً',
       'unlimitedChanges': 'تغييرات غير محدودة للأسئلة',
       'removeAdsDesc': 'العب دون أي مقاطعة.',
@@ -3309,7 +3315,8 @@ class AppLocalizationService {
       'premiumUnlockedTitle': 'تم فتح البريميوم',
       'unlockChaosPremium': 'افتح Chaos بريميوم',
       'chaosPremiumYours': 'Chaos بريميوم أصبح لك.',
-      'premiumLiveSubtitle': 'وضع EVIL واللعبة المخصصة والتحديات المميزة مفعّلة.',
+      'premiumLiveSubtitle':
+          'وضع EVIL واللعبة المخصصة والتحديات المميزة مفعّلة.',
       'premiumTagline': 'فوضى أكثر. توتر أكثر. تحكم أكثر.',
       'whatYouUnlock': 'ما الذي ستفتحه',
       'evilModeLabel': 'وضع EVIL',
@@ -3348,7 +3355,8 @@ class AppLocalizationService {
       'trustUpdates': 'تحديثات البريميوم المستقبلية مشمولة',
       'oncePriceForever': '{price} مرة واحدة. مفتوح للأبد.',
       'premiumUnlockedDialog': 'تم فتح البريميوم',
-      'premiumNowLive': 'وضع EVIL واللعبة المخصصة والتحديات المميزة مفعّلة الآن.',
+      'premiumNowLive':
+          'وضع EVIL واللعبة المخصصة والتحديات المميزة مفعّلة الآن.',
       'letChaosIn': 'دع الفوضى تدخل',
       'premiumPurchaseStarted': 'بدأت عملية شراء البريميوم.',
       'inviteFriends': 'ادعُ الأصدقاء',

@@ -91,19 +91,18 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                   const SizedBox(height: 20),
                   AnimatedDefaultTextStyle(
                     duration: const Duration(milliseconds: 400),
-                    style:
-                        Theme.of(context).textTheme.displaySmall!.copyWith(
-                          color: Colors.white,
-                          fontSize: 36,
-                          fontWeight: FontWeight.w900,
-                          height: 0.96,
-                          shadows: [
-                            Shadow(
-                              color: _vibeAccent.withValues(alpha: 0.55),
-                              blurRadius: 24,
-                            ),
-                          ],
+                    style: Theme.of(context).textTheme.displaySmall!.copyWith(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.w900,
+                      height: 0.96,
+                      shadows: [
+                        Shadow(
+                          color: _vibeAccent.withValues(alpha: 0.55),
+                          blurRadius: 24,
                         ),
+                      ],
+                    ),
                     child: Text(provider.l('chooseYourPoison')),
                   ),
                   const SizedBox(height: 8),
@@ -115,342 +114,348 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                const SizedBox(height: 14),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _SectionLabel(provider.l('vibe'), accent: _vibeAccent),
-                        const SizedBox(height: 12),
-                        GridView.count(
-                          crossAxisCount: 2,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.62,
-                          children: [
-                            _VibeCard(
-                              label: provider.l('cozy'),
-                              subtitle: provider.l('cozyDesc'),
-                              icon: Icons.auto_awesome_rounded,
-                              accent: const Color(0xFF61D8FF),
-                              secondary: const Color(0xFF806CFF),
-                              selected: _vibeMode == PromptVibeMode.cozy,
-                              onTap: () => setState(
-                                () => _vibeMode = PromptVibeMode.cozy,
+                  const SizedBox(height: 14),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _SectionLabel(
+                            provider.l('vibe'),
+                            accent: _vibeAccent,
+                          ),
+                          const SizedBox(height: 12),
+                          GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisSpacing: 12,
+                            mainAxisSpacing: 12,
+                            childAspectRatio: 1.62,
+                            children: [
+                              _VibeCard(
+                                label: provider.l('cozy'),
+                                subtitle: provider.l('cozyDesc'),
+                                icon: Icons.auto_awesome_rounded,
+                                accent: const Color(0xFF61D8FF),
+                                secondary: const Color(0xFF806CFF),
+                                selected: _vibeMode == PromptVibeMode.cozy,
+                                onTap: () => setState(
+                                  () => _vibeMode = PromptVibeMode.cozy,
+                                ),
                               ),
-                            ),
-                            _VibeCard(
-                              label: provider.l('spicy'),
-                              subtitle: provider.l('spicyDesc'),
-                              icon: Icons.local_fire_department_rounded,
-                              accent: const Color(0xFFFF4E92),
-                              secondary: const Color(0xFFFF7B2F),
-                              selected:
-                                  isPremium &&
-                                  _vibeMode == PromptVibeMode.spicy,
-                              locked: !isPremium,
-                              onTap: () {
-                                if (!isPremium) {
-                                  context.read<GameProvider>().playSfx(
-                                    ChaosSfx.premiumLocked,
+                              _VibeCard(
+                                label: provider.l('spicy'),
+                                subtitle: provider.l('spicyDesc'),
+                                icon: Icons.local_fire_department_rounded,
+                                accent: const Color(0xFFFF4E92),
+                                secondary: const Color(0xFFFF7B2F),
+                                selected:
+                                    isPremium &&
+                                    _vibeMode == PromptVibeMode.spicy,
+                                locked: !isPremium,
+                                onTap: () {
+                                  if (!isPremium) {
+                                    context.read<GameProvider>().playSfx(
+                                      ChaosSfx.premiumLocked,
+                                    );
+                                    showPremiumUpsell(context);
+                                    return;
+                                  }
+                                  setState(
+                                    () => _vibeMode = PromptVibeMode.spicy,
                                   );
-                                  showPremiumUpsell(context);
-                                  return;
-                                }
-                                setState(
-                                  () => _vibeMode = PromptVibeMode.spicy,
-                                );
-                              },
-                            ),
-                            _VibeCard(
-                              label: provider.l('unhinged'),
-                              subtitle: provider.l('unhingedDesc'),
-                              icon: Icons.bolt_rounded,
-                              accent: const Color(0xFFA85BFF),
-                              secondary: const Color(0xFF39D2FF),
-                              selected: _vibeMode == PromptVibeMode.unhinged,
-                              onTap: () => setState(
-                                () => _vibeMode = PromptVibeMode.unhinged,
+                                },
                               ),
-                            ),
-                            _VibeCard(
-                              label: provider.l('evil'),
-                              subtitle: provider.l('evilDesc'),
-                              icon: Icons.lock_rounded,
-                              accent: const Color(0xFFFFC44D),
-                              secondary: const Color(0xFFFF3D81),
-                              selected:
-                                  isPremium && _vibeMode == PromptVibeMode.evil,
-                              locked: !isPremium,
-                              onTap: () {
-                                if (!isPremium) {
-                                  context.read<GameProvider>().playSfx(
-                                    ChaosSfx.premiumLocked,
-                                  );
-                                  showPremiumUpsell(context);
-                                  return;
-                                }
-                                setState(() => _vibeMode = PromptVibeMode.evil);
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-                        _CurrentVibeCard(
-                          vibe: _localizedVibe(provider, _vibeMode),
-                          summary: _localizedChaosSummary(provider),
-                          accent: _vibeAccent,
-                        ),
-                        const SizedBox(height: 18),
-                        _SectionLabel(
-                          provider.l('gameMode'),
-                          accent: const Color(0xFF7AB8FF),
-                        ),
-                        const SizedBox(height: 12),
-                        GridView.count(
-                          crossAxisCount: 2,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 1.65,
-                          children: [
-                            _ModeCard(
-                              leading: '15',
-                              label: provider.l('quickChaos'),
-                              subtitle: provider.lf('playersShotsTargets', {
-                                'players': '3-5',
-                                'shots': 1,
-                                'targets': 1,
-                              }),
-                              selected: _isQuick,
-                              colors: const [
-                                Color(0xFF1263B3),
-                                Color(0xFF12306C),
-                              ],
-                              accent: const Color(0xFF39DDFF),
-                              onTap: () => setState(() {
-                                _customModeSelected = false;
-                                _roundCount = 15;
-                              }),
-                            ),
-                            _ModeCard(
-                              leading: '25',
-                              label: provider.l('partyChaos'),
-                              subtitle: provider.lf('playersShotsTargets', {
-                                'players': '5-7',
-                                'shots': 2,
-                                'targets': 1,
-                              }),
-                              selected: _isParty,
-                              colors: const [
-                                Color(0xFFC13A66),
-                                Color(0xFF77224E),
-                              ],
-                              accent: const Color(0xFFFF5FA0),
-                              onTap: () => setState(() {
-                                _customModeSelected = false;
-                                _roundCount = 25;
-                              }),
-                            ),
-                            _ModeCard(
-                              leading: '40',
-                              label: provider.l('totalChaos'),
-                              subtitle: provider.lf(
-                                'playersShotsTargetsPlural',
-                                {'players': '7-10', 'shots': 3, 'targets': 2},
+                              _VibeCard(
+                                label: provider.l('unhinged'),
+                                subtitle: provider.l('unhingedDesc'),
+                                icon: Icons.bolt_rounded,
+                                accent: const Color(0xFFA85BFF),
+                                secondary: const Color(0xFF39D2FF),
+                                selected: _vibeMode == PromptVibeMode.unhinged,
+                                onTap: () => setState(
+                                  () => _vibeMode = PromptVibeMode.unhinged,
+                                ),
                               ),
-                              selected: _isTotal,
-                              colors: const [
-                                Color(0xFF6737C7),
-                                Color(0xFF2A176A),
-                              ],
-                              accent: const Color(0xFFD580FF),
-                              onTap: () => setState(() {
-                                _customModeSelected = false;
-                                _roundCount = 40;
-                              }),
-                            ),
-                            _ModeCard(
-                              leading: '∞',
-                              label: provider.l('customGame'),
-                              subtitle: isPremium
-                                  ? provider.l('customGameDesc')
-                                  : provider.l('premiumHouseRules'),
-                              selected: _customModeSelected,
-                              locked: !isPremium,
-                              colors: const [
-                                Color(0xFFFFC44D),
-                                Color(0xFF5B2A12),
-                              ],
-                              accent: const Color(0xFFFFC44D),
-                              onTap: () {
-                                if (!isPremium) {
-                                  context.read<GameProvider>().playSfx(
-                                    ChaosSfx.premiumLocked,
+                              _VibeCard(
+                                label: provider.l('evil'),
+                                subtitle: provider.l('evilDesc'),
+                                icon: Icons.lock_rounded,
+                                accent: const Color(0xFFFFC44D),
+                                secondary: const Color(0xFFFF3D81),
+                                selected:
+                                    isPremium &&
+                                    _vibeMode == PromptVibeMode.evil,
+                                locked: !isPremium,
+                                onTap: () {
+                                  if (!isPremium) {
+                                    context.read<GameProvider>().playSfx(
+                                      ChaosSfx.premiumLocked,
+                                    );
+                                    showPremiumUpsell(context);
+                                    return;
+                                  }
+                                  setState(
+                                    () => _vibeMode = PromptVibeMode.evil,
                                   );
-                                  showPremiumUpsell(context);
-                                  return;
-                                }
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          _CurrentVibeCard(
+                            vibe: _localizedVibe(provider, _vibeMode),
+                            summary: _localizedChaosSummary(provider),
+                            accent: _vibeAccent,
+                          ),
+                          const SizedBox(height: 18),
+                          _SectionLabel(
+                            provider.l('gameMode'),
+                            accent: const Color(0xFF7AB8FF),
+                          ),
+                          const SizedBox(height: 12),
+                          GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 1.65,
+                            children: [
+                              _ModeCard(
+                                leading: '15',
+                                label: provider.l('quickChaos'),
+                                subtitle: provider.lf('playersShotsTargets', {
+                                  'players': '3-5',
+                                  'shots': 1,
+                                  'targets': 1,
+                                }),
+                                selected: _isQuick,
+                                colors: const [
+                                  Color(0xFF1263B3),
+                                  Color(0xFF12306C),
+                                ],
+                                accent: const Color(0xFF39DDFF),
+                                onTap: () => setState(() {
+                                  _customModeSelected = false;
+                                  _roundCount = 15;
+                                }),
+                              ),
+                              _ModeCard(
+                                leading: '25',
+                                label: provider.l('partyChaos'),
+                                subtitle: provider.lf('playersShotsTargets', {
+                                  'players': '5-7',
+                                  'shots': 2,
+                                  'targets': 1,
+                                }),
+                                selected: _isParty,
+                                colors: const [
+                                  Color(0xFFC13A66),
+                                  Color(0xFF77224E),
+                                ],
+                                accent: const Color(0xFFFF5FA0),
+                                onTap: () => setState(() {
+                                  _customModeSelected = false;
+                                  _roundCount = 25;
+                                }),
+                              ),
+                              _ModeCard(
+                                leading: '40',
+                                label: provider.l('totalChaos'),
+                                subtitle: provider.lf(
+                                  'playersShotsTargetsPlural',
+                                  {'players': '7-10', 'shots': 3, 'targets': 2},
+                                ),
+                                selected: _isTotal,
+                                colors: const [
+                                  Color(0xFF6737C7),
+                                  Color(0xFF2A176A),
+                                ],
+                                accent: const Color(0xFFD580FF),
+                                onTap: () => setState(() {
+                                  _customModeSelected = false;
+                                  _roundCount = 40;
+                                }),
+                              ),
+                              _ModeCard(
+                                leading: '∞',
+                                label: provider.l('customGame'),
+                                subtitle: isPremium
+                                    ? provider.l('customGameDesc')
+                                    : provider.l('premiumHouseRules'),
+                                selected: _customModeSelected,
+                                locked: !isPremium,
+                                colors: const [
+                                  Color(0xFFFFC44D),
+                                  Color(0xFF5B2A12),
+                                ],
+                                accent: const Color(0xFFFFC44D),
+                                onTap: () {
+                                  if (!isPremium) {
+                                    context.read<GameProvider>().playSfx(
+                                      ChaosSfx.premiumLocked,
+                                    );
+                                    showPremiumUpsell(context);
+                                    return;
+                                  }
+                                  setState(() {
+                                    _customModeSelected = true;
+                                    _roundCount = _customRoundCount;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          if (_customModeSelected && isPremium) ...[
+                            const SizedBox(height: 12),
+                            _CustomRulesPanel(
+                              rounds: _customRoundCount,
+                              shots: _customShotRights,
+                              targets: _customTargetRights,
+                              onRoundsChanged: (value) {
                                 setState(() {
-                                  _customModeSelected = true;
-                                  _roundCount = _customRoundCount;
+                                  _customRoundCount = value;
+                                  _roundCount = value;
                                 });
                               },
+                              onShotsChanged: (value) {
+                                setState(() => _customShotRights = value);
+                              },
+                              onTargetsChanged: (value) {
+                                setState(() => _customTargetRights = value);
+                              },
                             ),
                           ],
-                        ),
-                        if (_customModeSelected && isPremium) ...[
+                          const SizedBox(height: 14),
+                          _NoEscapeRuleCard(
+                            rounds: provider.noEscapeRoundCountFor(
+                              _effectiveRoundCount,
+                            ),
+                            totalRounds: _effectiveRoundCount,
+                          ),
+                          const SizedBox(height: 14),
+                          _SectionLabel(provider.l('perPlayerRights')),
                           const SizedBox(height: 12),
-                          _CustomRulesPanel(
-                            rounds: _customRoundCount,
-                            shots: _customShotRights,
-                            targets: _customTargetRights,
-                            onRoundsChanged: (value) {
-                              setState(() {
-                                _customRoundCount = value;
-                                _roundCount = value;
-                              });
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _RightsCard(
+                                  icon: Icons.local_bar_outlined,
+                                  label: provider.l('shots'),
+                                  subtitle: provider.l('perPlayer'),
+                                  value: '$passRights',
+                                  accent: const Color(0xFF71D2FF),
+                                  background: const [
+                                    Color(0xFF203B67),
+                                    Color(0xFF18253E),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Expanded(
+                                child: _RightsCard(
+                                  icon: Icons.gps_fixed_rounded,
+                                  label: provider.l('targets'),
+                                  subtitle: provider.l('redirectEach'),
+                                  value: '$targetRights',
+                                  accent: const Color(0xFFFF625D),
+                                  background: const [
+                                    Color(0xFF4A2039),
+                                    Color(0xFF35192B),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 18),
+                          _AdvancedSettingsCard(
+                            expanded: _advancedSettingsExpanded,
+                            onToggle: () {
+                              setState(
+                                () => _advancedSettingsExpanded =
+                                    !_advancedSettingsExpanded,
+                              );
                             },
-                            onShotsChanged: (value) {
-                              setState(() => _customShotRights = value);
-                            },
-                            onTargetsChanged: (value) {
-                              setState(() => _customTargetRights = value);
-                            },
+                            children: [
+                              _SettingCard(
+                                icon: Icons.balance_rounded,
+                                title: provider.l('balanceRule'),
+                                subtitle: provider.l('balanceRuleDesc'),
+                                value: _balanceRuleEnabled,
+                                onChanged: (value) {
+                                  setState(() => _balanceRuleEnabled = value);
+                                },
+                              ),
+                              const SizedBox(height: 12),
+                              _SettingCard(
+                                icon: Icons.casino_rounded,
+                                title: provider.l('randomButton'),
+                                subtitle: provider.l('randomButtonDesc'),
+                                value: _randomButtonEnabled,
+                                onChanged: (value) {
+                                  setState(() => _randomButtonEnabled = value);
+                                },
+                              ),
+                            ],
                           ),
                         ],
-                        const SizedBox(height: 14),
-                        _NoEscapeRuleCard(
-                          rounds: provider.noEscapeRoundCountFor(
-                            _effectiveRoundCount,
-                          ),
-                          totalRounds: _effectiveRoundCount,
-                        ),
-                        const SizedBox(height: 14),
-                        _SectionLabel(provider.l('perPlayerRights')),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _RightsCard(
-                                icon: Icons.local_bar_outlined,
-                                label: provider.l('shots'),
-                                subtitle: provider.l('perPlayer'),
-                                value: '$passRights',
-                                accent: const Color(0xFF71D2FF),
-                                background: const [
-                                  Color(0xFF203B67),
-                                  Color(0xFF18253E),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: _RightsCard(
-                                icon: Icons.gps_fixed_rounded,
-                                label: provider.l('targets'),
-                                subtitle: provider.l('redirectEach'),
-                                value: '$targetRights',
-                                accent: const Color(0xFFFF625D),
-                                background: const [
-                                  Color(0xFF4A2039),
-                                  Color(0xFF35192B),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 18),
-                        _AdvancedSettingsCard(
-                          expanded: _advancedSettingsExpanded,
-                          onToggle: () {
-                            setState(
-                              () => _advancedSettingsExpanded =
-                                  !_advancedSettingsExpanded,
-                            );
-                          },
-                          children: [
-                            _SettingCard(
-                              icon: Icons.balance_rounded,
-                              title: provider.l('balanceRule'),
-                              subtitle: provider.l('balanceRuleDesc'),
-                              value: _balanceRuleEnabled,
-                              onChanged: (value) {
-                                setState(() => _balanceRuleEnabled = value);
-                              },
-                            ),
-                            const SizedBox(height: 12),
-                            _SettingCard(
-                              icon: Icons.casino_rounded,
-                              title: provider.l('randomButton'),
-                              subtitle: provider.l('randomButtonDesc'),
-                              value: _randomButtonEnabled,
-                              onChanged: (value) {
-                                setState(() => _randomButtonEnabled = value);
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 14),
-                _StartChaosButton(
-                  roundCount: _roundCount,
-                  customMode: _customModeSelected,
-                  playerCount: playerCount,
-                  vibeMode: _vibeMode,
-                  provider: provider,
-                  accent: _startAccent,
-                  noEscapeStartRound: provider.noEscapeStartRoundFor(
-                    _effectiveRoundCount,
-                  ),
-                  onPressed: () {
-                    if (playerCount < playerRange.min ||
-                        playerCount > playerRange.max) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          behavior: SnackBarBehavior.floating,
-                          backgroundColor: const Color(0xFF23142D),
-                          content: Text(
-                            'This mode is built for ${playerRange.min}-${playerRange.max} players.',
+                  const SizedBox(height: 14),
+                  _StartChaosButton(
+                    roundCount: _roundCount,
+                    customMode: _customModeSelected,
+                    playerCount: playerCount,
+                    vibeMode: _vibeMode,
+                    provider: provider,
+                    accent: _startAccent,
+                    noEscapeStartRound: provider.noEscapeStartRoundFor(
+                      _effectiveRoundCount,
+                    ),
+                    onPressed: () {
+                      if (playerCount < playerRange.min ||
+                          playerCount > playerRange.max) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            behavior: SnackBarBehavior.floating,
+                            backgroundColor: const Color(0xFF23142D),
+                            content: Text(
+                              'This mode is built for ${playerRange.min}-${playerRange.max} players.',
+                            ),
                           ),
-                        ),
+                        );
+                        return;
+                      }
+                      context.read<GameProvider>().initializeGame(
+                        roundCount: _effectiveRoundCount,
+                        balanceRuleEnabled: _balanceRuleEnabled,
+                        randomButtonEnabled: _randomButtonEnabled,
+                        revengeModeEnabled: _vibeMode == PromptVibeMode.evil,
+                        vibeMode: _vibeMode,
+                        customPassRights: _customModeSelected
+                            ? _customShotRights
+                            : null,
+                        customTargetRights: _customModeSelected
+                            ? _customTargetRights
+                            : null,
                       );
-                      return;
-                    }
-                    context.read<GameProvider>().initializeGame(
-                      roundCount: _effectiveRoundCount,
-                      balanceRuleEnabled: _balanceRuleEnabled,
-                      randomButtonEnabled: _randomButtonEnabled,
-                      revengeModeEnabled: _vibeMode == PromptVibeMode.evil,
-                      vibeMode: _vibeMode,
-                      customPassRights: _customModeSelected
-                          ? _customShotRights
-                          : null,
-                      customTargetRights: _customModeSelected
-                          ? _customTargetRights
-                          : null,
-                    );
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      GameScreen.routeName,
-                      (route) => false,
-                    );
-                  },
-                ),
-              ],
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        GameScreen.routeName,
+                        (route) => false,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
-    ),
+        ],
+      ),
     );
   }
 
@@ -796,12 +801,8 @@ class _VibeCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [
-                          accent.withValues(
-                            alpha: selected ? 1.0 : 0.72,
-                          ),
-                          secondary.withValues(
-                            alpha: selected ? 0.88 : 0.55,
-                          ),
+                          accent.withValues(alpha: selected ? 1.0 : 0.72),
+                          secondary.withValues(alpha: selected ? 0.88 : 0.55),
                         ],
                       ),
                       boxShadow: selected
@@ -829,11 +830,7 @@ class _VibeCard extends StatelessWidget {
                           width: 1.5,
                         ),
                       ),
-                      child: Icon(
-                        Icons.check_rounded,
-                        color: accent,
-                        size: 13,
-                      ),
+                      child: Icon(Icons.check_rounded, color: accent, size: 13),
                     )
                   else if (locked)
                     const Icon(

@@ -191,6 +191,9 @@ class FateChoiceScreen extends StatelessWidget {
           ? PromptType.truth
           : PromptType.dare,
     );
+    if (!context.mounted) {
+      return;
+    }
 
     await Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(

@@ -119,12 +119,9 @@ class TargetSelectionScreen extends StatelessWidget {
                           },
                           child: PressableScale(
                             onTap: () async {
-                              await context.read<GameProvider>().playSfx(
-                                ChaosSfx.targetUsed,
-                              );
-                              final result = context
-                                  .read<GameProvider>()
-                                  .selectTarget(player.id);
+                              final provider = context.read<GameProvider>();
+                              await provider.playSfx(ChaosSfx.targetUsed);
+                              final result = provider.selectTarget(player.id);
                               if (context.mounted) {
                                 Navigator.pop(context, result);
                               }

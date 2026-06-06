@@ -44,12 +44,7 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
       Icons.local_fire_department_rounded,
       Color(0xFFFF3D6E),
     ),
-    (
-      'spicyModeLabel',
-      'spicyDesc',
-      Icons.whatshot_rounded,
-      Color(0xFFFF5D98),
-    ),
+    ('spicyModeLabel', 'spicyDesc', Icons.whatshot_rounded, Color(0xFFFF5D98)),
     (
       'revengeModeLabel',
       'sendChaosBack',
@@ -167,7 +162,9 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                           padding: const EdgeInsets.only(bottom: 9),
                           child: _FeatureGlassCard(
                             title: provider.l(f.$1),
-                            description: f.$2 == null ? null : provider.l(f.$2!),
+                            description: f.$2 == null
+                                ? null
+                                : provider.l(f.$2!),
                             icon: f.$3,
                             color: f.$4,
                           ),
@@ -243,9 +240,7 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                 Positioned(
                   top: 8,
                   right: 8,
-                  child: _CloseButton(
-                    onTap: () => Navigator.of(context).pop(),
-                  ),
+                  child: _CloseButton(onTap: () => Navigator.of(context).pop()),
                 ),
               ],
             ),

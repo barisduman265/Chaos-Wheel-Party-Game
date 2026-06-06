@@ -39,145 +39,147 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const _HomeAmbientPulse(),
               SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final heroGap = (constraints.maxHeight * 0.28).clamp(
-                    124.0,
-                    240.0,
-                  );
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final heroGap = (constraints.maxHeight * 0.28).clamp(
+                      124.0,
+                      240.0,
+                    );
 
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(28, 28, 28, 18),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: constraints.maxHeight - 46,
-                      ),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 72),
-                          ShaderMask(
-                            blendMode: BlendMode.srcIn,
-                            shaderCallback: (bounds) {
-                              return const LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  Color(0xFFFFFFFF),
-                                  Color(0xFFEAD8FF),
-                                  Color(0xFFB985FF),
-                                  Color(0xFFD64CFF),
-                                ],
-                                stops: [0.0, 0.38, 0.74, 1.0],
-                              ).createShader(bounds);
-                            },
-                            child: Text(
-                              'CHAOS\nWHEEL',
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(28, 28, 28, 18),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight - 46,
+                        ),
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 72),
+                            ShaderMask(
+                              blendMode: BlendMode.srcIn,
+                              shaderCallback: (bounds) {
+                                return const LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    Color(0xFFFFFFFF),
+                                    Color(0xFFEAD8FF),
+                                    Color(0xFFB985FF),
+                                    Color(0xFFD64CFF),
+                                  ],
+                                  stops: [0.0, 0.38, 0.74, 1.0],
+                                ).createShader(bounds);
+                              },
+                              child: Text(
+                                'CHAOS\nWHEEL',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.displayLarge
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      height: 0.86,
+                                      letterSpacing: 0,
+                                      shadows: [
+                                        Shadow(
+                                          color: const Color(
+                                            0xFFA85BFF,
+                                          ).withValues(alpha: 0.42),
+                                          blurRadius: 32,
+                                        ),
+                                      ],
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              provider.l('homeTagline'),
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.displayLarge
+                              style: Theme.of(context).textTheme.labelLarge
                                   ?.copyWith(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w900,
-                                    height: 0.86,
-                                    letterSpacing: 0,
-                                    shadows: [
-                                      Shadow(
-                                        color: const Color(
-                                          0xFFA85BFF,
-                                        ).withValues(alpha: 0.42),
-                                        blurRadius: 32,
-                                      ),
-                                    ],
+                                    color: Colors.white.withValues(alpha: 0.56),
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 3.2,
                                   ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            provider.l('homeTagline'),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.56),
-                                  fontWeight: FontWeight.w800,
-                                  letterSpacing: 3.2,
-                                ),
-                          ),
-                          const SizedBox(height: 32),
-                          SizedBox(height: heroGap),
-                          PrimaryButton(
-                            label: provider.l('startGame'),
-                            subtitle: provider.l('startGameSubtitle'),
-                            trailingIcon: Icons.chevron_right_rounded,
-                            expanded: true,
-                            large: true,
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                AddPlayersScreen.routeName,
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _HomeMenuButton(
-                            title: provider.l('howToPlay'),
-                            subtitle: provider.l('rulesOfChaos'),
-                            icon: Icons.chevron_right_rounded,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                HowToPlayScreen.routeName,
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _HomeMenuButton(
-                            title: provider.l('premium'),
-                            subtitle: provider.l('unlockChaosMode'),
-                            leading: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.workspace_premium_rounded,
-                                  color: Color(0xFFFFC83D),
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  provider.l('premium'),
-                                  style: Theme.of(context).textTheme.titleMedium
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                ),
-                              ],
+                            const SizedBox(height: 32),
+                            SizedBox(height: heroGap),
+                            PrimaryButton(
+                              label: provider.l('startGame'),
+                              subtitle: provider.l('startGameSubtitle'),
+                              trailingIcon: Icons.chevron_right_rounded,
+                              expanded: true,
+                              large: true,
+                              onPressed: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  AddPlayersScreen.routeName,
+                                );
+                              },
                             ),
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                PremiumScreen.routeName,
-                              );
-                            },
-                          ),
-                        ],
+                            const SizedBox(height: 16),
+                            _HomeMenuButton(
+                              title: provider.l('howToPlay'),
+                              subtitle: provider.l('rulesOfChaos'),
+                              icon: Icons.chevron_right_rounded,
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  HowToPlayScreen.routeName,
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            _HomeMenuButton(
+                              title: provider.l('premium'),
+                              subtitle: provider.l('unlockChaosMode'),
+                              leading: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.workspace_premium_rounded,
+                                    color: Color(0xFFFFC83D),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    provider.l('premium'),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  PremiumScreen.routeName,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
-            ),
-            Positioned(
-              top: MediaQuery.paddingOf(context).top + 16,
-              right: 18,
-              child: _HomeTopIcon(
-                icon: Icons.settings_rounded,
-                onTap: () => showAppSettingsSheet(context),
+              Positioned(
+                top: MediaQuery.paddingOf(context).top + 16,
+                right: 18,
+                child: _HomeTopIcon(
+                  icon: Icons.settings_rounded,
+                  onTap: () => showAppSettingsSheet(context),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
   }
 }
 
@@ -528,8 +530,7 @@ Future<void> _openReportProblem(BuildContext context) async {
   const email = 'barisduman265@gmail.com';
   final provider = context.read<GameProvider>();
   final subject = 'Chaos Wheel - ${provider.l('reportProblem')}';
-  final body =
-      '\n\n\n---\nChaos Wheel 0.1.0\n${provider.promptLanguage}';
+  final body = '\n\n\n---\nChaos Wheel 0.1.0\n${provider.promptLanguage}';
   final uri = Uri(
     scheme: 'mailto',
     path: email,
@@ -603,12 +604,10 @@ class _SettingsSwitchRow extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
-    this.subtitle,
   });
 
   final IconData icon;
   final String title;
-  final String? subtitle;
   final bool value;
   final ValueChanged<bool>? onChanged;
 
@@ -617,7 +616,6 @@ class _SettingsSwitchRow extends StatelessWidget {
     return _SettingsShell(
       icon: icon,
       title: title,
-      subtitle: subtitle,
       child: Switch(
         value: value,
         onChanged: onChanged,

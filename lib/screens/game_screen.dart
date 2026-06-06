@@ -122,47 +122,38 @@ class _GameScreenState extends State<GameScreen> {
                         suspenseSpin: finalSpin,
                         dangerMode: noEscape,
                         onSpinRequested: () async {
-                          if (context.read<GameProvider>().gamePaused) {
+                          final provider = context.read<GameProvider>();
+                          if (provider.gamePaused) {
                             return null;
                           }
-                          await context.read<GameProvider>().playSfx(
-                            ChaosSfx.wheelSpinStart,
-                          );
-                          return context
-                              .read<GameProvider>()
-                              .prepareSpinSelection();
+                          await provider.playSfx(ChaosSfx.wheelSpinStart);
+                          return provider.prepareSpinSelection();
                         },
                         onSpinCompleted: (_) async {
-                          await context.read<GameProvider>().playSfx(
-                            ChaosSfx.wheelStop,
-                          );
-                          final message = context
-                              .read<GameProvider>()
-                              .completeSpinSelection();
+                          final provider = context.read<GameProvider>();
+                          await provider.playSfx(ChaosSfx.wheelStop);
+                          final message = provider.completeSpinSelection();
                           if (message.isEmpty || !context.mounted) {
                             return;
                           }
 
-                          final player = context
-                              .read<GameProvider>()
-                              .selectedPlayer;
+                          final player = provider.selectedPlayer;
                           if (player == null) {
                             return;
                           }
 
                           await PickedRevealScreen.show(context, player.name);
-                          if (context.mounted) {
-                            await FateChoiceScreen.show(
-                              context,
-                              player: player,
-                            );
+                          if (!context.mounted) {
+                            return;
                           }
-                          if (context.mounted &&
-                              context
-                                  .read<GameProvider>()
-                                  .consumeUpsellTrigger()) {
+
+                          if (provider.consumeUpsellTrigger()) {
                             await showPremiumUpsell(context);
+                            if (!context.mounted) {
+                              return;
+                            }
                           }
+                          await FateChoiceScreen.show(context, player: player);
                         },
                       ),
                     ),
@@ -396,8 +387,9 @@ void _showGameControlsSheet(BuildContext context) {
                           activeTrackColor: const Color(0xFF7357A8),
                           activeThumbColor: const Color(0xFFD8C5F2),
                           inactiveThumbColor: const Color(0xFF8B7C96),
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.10),
+                          inactiveTrackColor: Colors.white.withValues(
+                            alpha: 0.10,
+                          ),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -423,8 +415,9 @@ void _showGameControlsSheet(BuildContext context) {
                           activeTrackColor: const Color(0xFF2B7A8A),
                           activeThumbColor: const Color(0xFF62D8FF),
                           inactiveThumbColor: const Color(0xFF8B7C96),
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.10),
+                          inactiveTrackColor: Colors.white.withValues(
+                            alpha: 0.10,
+                          ),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -451,8 +444,9 @@ void _showGameControlsSheet(BuildContext context) {
                           activeTrackColor: const Color(0xFF8A5A00),
                           activeThumbColor: const Color(0xFFFF9F3D),
                           inactiveThumbColor: const Color(0xFF8B7C96),
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.10),
+                          inactiveTrackColor: Colors.white.withValues(
+                            alpha: 0.10,
+                          ),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -502,8 +496,9 @@ void _showGameControlsSheet(BuildContext context) {
                           activeTrackColor: const Color(0xFF1A5070),
                           activeThumbColor: const Color(0xFF71D2FF),
                           inactiveThumbColor: const Color(0xFF8B7C96),
-                          inactiveTrackColor:
-                              Colors.white.withValues(alpha: 0.10),
+                          inactiveTrackColor: Colors.white.withValues(
+                            alpha: 0.10,
+                          ),
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ),

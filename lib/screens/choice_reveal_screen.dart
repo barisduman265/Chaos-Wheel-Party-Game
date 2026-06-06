@@ -292,6 +292,9 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
 
     if (revengeTarget != null && context.mounted) {
       await provider.playSfx(ChaosSfx.revengeAvailable);
+      if (!context.mounted) {
+        return;
+      }
       final activate = await _showRevengeChoice(context, revengeTarget);
       if (!context.mounted) {
         return;
@@ -299,6 +302,9 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
       if (activate) {
         final revengeMessage = provider.activateRevenge();
         await provider.playSfx(ChaosSfx.revengeActivated);
+        if (!context.mounted) {
+          return;
+        }
         await ActionFeedbackScreen.show(
           context,
           type: ActionFeedbackType.revenge,
@@ -392,6 +398,9 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
       return;
     }
     await provider.playSfx(ChaosSfx.shotTaken);
+    if (!context.mounted) {
+      return;
+    }
 
     await ActionFeedbackScreen.show(
       context,
@@ -432,6 +441,9 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
     }
 
     await provider.playSfx(ChaosSfx.noEscape);
+    if (!context.mounted) {
+      return false;
+    }
     await ActionFeedbackScreen.show(
       context,
       type: ActionFeedbackType.noEscape,
@@ -461,9 +473,15 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
       context,
       TargetSelectionScreen.routeName,
     );
-    if (result is String && context.mounted) {
+    if (!context.mounted) {
+      return;
+    }
+    if (result is String) {
       await provider.playSfx(ChaosSfx.targetedReveal);
-      final selected = context.read<GameProvider>().selectedPlayer;
+      if (!context.mounted) {
+        return;
+      }
+      final selected = provider.selectedPlayer;
       if (selected != null) {
         await ActionFeedbackScreen.show(
           context,
@@ -478,25 +496,23 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
         if (!context.mounted) {
           return;
         }
-        if (context.mounted) {
-          await Navigator.of(context).pushReplacement(
-            PageRouteBuilder<void>(
-              opaque: true,
-              transitionDuration: const Duration(milliseconds: 260),
-              reverseTransitionDuration: const Duration(milliseconds: 220),
-              pageBuilder: (_, animation, _) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: ChoiceRevealScreen(
-                    player: selected,
-                    choice: widget.choice,
-                    isTargeted: true,
-                  ),
-                );
-              },
-            ),
-          );
-        }
+        await Navigator.of(context).pushReplacement(
+          PageRouteBuilder<void>(
+            opaque: true,
+            transitionDuration: const Duration(milliseconds: 260),
+            reverseTransitionDuration: const Duration(milliseconds: 220),
+            pageBuilder: (_, animation, _) {
+              return FadeTransition(
+                opacity: animation,
+                child: ChoiceRevealScreen(
+                  player: selected,
+                  choice: widget.choice,
+                  isTargeted: true,
+                ),
+              );
+            },
+          ),
+        );
       }
     }
   }
