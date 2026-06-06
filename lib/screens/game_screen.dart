@@ -10,6 +10,7 @@ import 'package:chaos_wheel_party_game/screens/game_summary_screen.dart';
 import 'package:chaos_wheel_party_game/screens/picked_reveal_screen.dart';
 import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel_party_game/widgets/premium_upsell_dialog.dart';
 import 'package:chaos_wheel_party_game/widgets/pressable_scale.dart';
 import 'package:chaos_wheel_party_game/widgets/spinning_wheel.dart';
 import 'package:flutter/material.dart';
@@ -144,6 +145,13 @@ class _GameScreenState extends State<GameScreen> {
                           await PickedRevealScreen.show(context, player.name);
                           if (!context.mounted) {
                             return;
+                          }
+
+                          if (provider.consumeUpsellTrigger()) {
+                            await showPremiumUpsell(context);
+                            if (!context.mounted) {
+                              return;
+                            }
                           }
                           await FateChoiceScreen.show(context, player: player);
                         },
@@ -287,6 +295,12 @@ void _showGameControlsSheet(BuildContext context) {
                               context,
                               player: player,
                             );
+                          }
+                          if (context.mounted &&
+                              context
+                                  .read<GameProvider>()
+                                  .consumeUpsellTrigger()) {
+                            await showPremiumUpsell(context);
                           }
                         },
                       ),
