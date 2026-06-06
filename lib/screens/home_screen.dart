@@ -344,6 +344,13 @@ void showAppSettingsSheet(BuildContext context) {
                     title: provider.l('rateApp'),
                     onTap: () => _openRateApp(context),
                   ),
+                  _SettingsActionRow(
+                    icon: Icons.bug_report_outlined,
+                    title: provider.l('reportProblem'),
+                    subtitle: provider.l('reportProblemDesc'),
+                    accent: const Color(0xFF55F0B0),
+                    onTap: () => _openReportProblem(context),
+                  ),
                   const SizedBox(height: 8),
                   _SettingsGroupLabel(provider.l('legal')),
                   _SettingsActionRow(
@@ -512,6 +519,33 @@ Future<void> _openRateApp(BuildContext context) async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(context.read<GameProvider>().l('storeOpenFailed')),
+      ),
+    );
+  }
+}
+
+Future<void> _openReportProblem(BuildContext context) async {
+  const email = 'barisduman265@gmail.com';
+  final provider = context.read<GameProvider>();
+  final subject = 'Chaos Wheel - ${provider.l('reportProblem')}';
+  final body =
+      '\n\n\n---\nChaos Wheel 0.1.0\n${provider.promptLanguage}';
+  final uri = Uri(
+    scheme: 'mailto',
+    path: email,
+    query:
+        'subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}',
+  );
+  var opened = false;
+  try {
+    opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+  } catch (_) {
+    opened = false;
+  }
+  if (!opened && context.mounted) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(provider.lf('reportProblemFailed', {'email': email})),
       ),
     );
   }

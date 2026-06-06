@@ -1,19 +1,34 @@
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/services/share_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel_party_game/widgets/premium_plan_cards.dart';
 import 'package:chaos_wheel_party_game/widgets/pressable_scale.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class PremiumScreen extends StatelessWidget {
+class PremiumScreen extends StatefulWidget {
   const PremiumScreen({super.key});
 
   static const routeName = '/premium';
 
   @override
+  State<PremiumScreen> createState() => _PremiumScreenState();
+}
+
+class _PremiumScreenState extends State<PremiumScreen> {
+  PremiumPlan _plan = PremiumPlan.lifetime;
+
+  // Lifetime is the only real store entitlement. Weekly is presented as an
+  // option but currently maps to the same unified premium unlock.
+  static const _lifetimeOldPrice = '\$29.99';
+  static const _lifetimeNewPrice = '\$9.99';
+  static const _weeklyPrice = '\$2.99';
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     final isPremium = provider.isPremiumUser;
+    final lifetimeNow = provider.premiumPriceLabel ?? _lifetimeNewPrice;
 
     return Scaffold(
       body: ChaosBackground(
@@ -49,7 +64,22 @@ class PremiumScreen extends StatelessWidget {
               const SizedBox(height: 10),
               const _PremiumPreview(),
               const SizedBox(height: 20),
-              _PremiumCta(isPremium: isPremium),
+              if (!isPremium) ...[
+                PremiumLifetimeCard(
+                  selected: _plan == PremiumPlan.lifetime,
+                  oldPrice: _lifetimeOldPrice,
+                  newPrice: lifetimeNow,
+                  onTap: () => setState(() => _plan = PremiumPlan.lifetime),
+                ),
+                const SizedBox(height: 10),
+                PremiumWeeklyCard(
+                  selected: _plan == PremiumPlan.weekly,
+                  price: _weeklyPrice,
+                  onTap: () => setState(() => _plan = PremiumPlan.weekly),
+                ),
+                const SizedBox(height: 14),
+              ],
+              _PremiumCta(isPremium: isPremium, plan: _plan),
               const SizedBox(height: 12),
               _InviteFriendsButton(
                 onTap: () => const ChaosShareService().shareInvite(),
@@ -137,6 +167,7 @@ class _UnlockGrid extends StatelessWidget {
   final bool isPremium;
 
   static const items = [
+    ('spicyModeLabel', Icons.whatshot_rounded),
     ('evilModeLabel', Icons.warning_amber_rounded),
     ('customGameLabel', Icons.tune_rounded),
     ('revengeModeLabel', Icons.crisis_alert_rounded),
@@ -172,10 +203,17 @@ class _PremiumPreview extends StatelessWidget {
     return Column(
       children: [
         _PreviewCard(
+          title: provider.l('spicyModeLabel'),
+          text: provider.l('spicyDesc'),
+          icon: Icons.whatshot_rounded,
+          color: const Color(0xFFFF5D98),
+        ),
+        const SizedBox(height: 10),
+        _PreviewCard(
           title: provider.l('evilTruthTitle'),
           text: provider.l('evilTruthPreview'),
           icon: Icons.visibility_rounded,
-          color: const Color(0xFFFF5D98),
+          color: const Color(0xFFFF8A3D),
         ),
         const SizedBox(height: 10),
         _PreviewCard(
@@ -197,9 +235,10 @@ class _PremiumPreview extends StatelessWidget {
 }
 
 class _PremiumCta extends StatelessWidget {
-  const _PremiumCta({required this.isPremium});
+  const _PremiumCta({required this.isPremium, required this.plan});
 
   final bool isPremium;
+  final PremiumPlan plan;
 
   @override
   Widget build(BuildContext context) {
@@ -260,7 +299,11 @@ class _PremiumCta extends StatelessWidget {
                         ? provider.l('lifetimePremiumActive')
                         : provider.premiumPurchaseInProgress
                         ? provider.l('unlockingPremium')
-                        : provider.l('unlockLifetimePremium'),
+                        : provider.l(
+                            plan == PremiumPlan.lifetime
+                                ? 'unlockForever'
+                                : 'startWeeklyPlan',
+                          ),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
@@ -271,11 +314,11 @@ class _PremiumCta extends StatelessWidget {
                   Text(
                     isPremium
                         ? provider.l('everythingStaysUnlocked')
-                        : provider.premiumPriceLabel == null
-                        ? provider.l('onePaymentForever')
-                        : provider.lf('oncePriceForever', {
-                            'price': provider.premiumPriceLabel!,
-                          }),
+                        : plan == PremiumPlan.lifetime
+                        ? provider.lf('oncePriceForever', {
+                            'price': provider.premiumPriceLabel ?? '\$9.99',
+                          })
+                        : provider.l('weeklyPlanDesc'),
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.72),
                       fontWeight: FontWeight.w600,

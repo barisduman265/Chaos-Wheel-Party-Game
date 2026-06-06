@@ -1,9 +1,9 @@
 import 'package:chaos_wheel_party_game/models/prompt_models.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/screens/game_screen.dart';
-import 'package:chaos_wheel_party_game/screens/premium_screen.dart';
 import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel_party_game/widgets/premium_upsell_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +21,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
   int _customRoundCount = 30;
   int _customShotRights = 2;
   int _customTargetRights = 2;
-  PromptVibeMode _vibeMode = PromptVibeMode.spicy;
+  PromptVibeMode _vibeMode = PromptVibeMode.cozy;
   bool _balanceRuleEnabled = true;
   bool _randomButtonEnabled = true;
   bool _customModeSelected = false;
@@ -149,10 +149,22 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                               icon: Icons.local_fire_department_rounded,
                               accent: const Color(0xFFFF4E92),
                               secondary: const Color(0xFFFF7B2F),
-                              selected: _vibeMode == PromptVibeMode.spicy,
-                              onTap: () => setState(
-                                () => _vibeMode = PromptVibeMode.spicy,
-                              ),
+                              selected:
+                                  isPremium &&
+                                  _vibeMode == PromptVibeMode.spicy,
+                              locked: !isPremium,
+                              onTap: () {
+                                if (!isPremium) {
+                                  context.read<GameProvider>().playSfx(
+                                    ChaosSfx.premiumLocked,
+                                  );
+                                  showPremiumUpsell(context);
+                                  return;
+                                }
+                                setState(
+                                  () => _vibeMode = PromptVibeMode.spicy,
+                                );
+                              },
                             ),
                             _VibeCard(
                               label: provider.l('unhinged'),
@@ -179,10 +191,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                   context.read<GameProvider>().playSfx(
                                     ChaosSfx.premiumLocked,
                                   );
-                                  Navigator.pushNamed(
-                                    context,
-                                    PremiumScreen.routeName,
-                                  );
+                                  showPremiumUpsell(context);
                                   return;
                                 }
                                 setState(() => _vibeMode = PromptVibeMode.evil);
@@ -218,7 +227,6 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 'shots': 1,
                                 'targets': 1,
                               }),
-                              icon: Icons.bolt_rounded,
                               selected: _isQuick,
                               colors: const [
                                 Color(0xFF1263B3),
@@ -238,7 +246,6 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 'shots': 2,
                                 'targets': 1,
                               }),
-                              icon: Icons.local_fire_department_rounded,
                               selected: _isParty,
                               colors: const [
                                 Color(0xFFC13A66),
@@ -257,7 +264,6 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                 'playersShotsTargetsPlural',
                                 {'players': '7-10', 'shots': 3, 'targets': 2},
                               ),
-                              icon: Icons.workspace_premium_rounded,
                               selected: _isTotal,
                               colors: const [
                                 Color(0xFF6737C7),
@@ -275,7 +281,6 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                               subtitle: isPremium
                                   ? provider.l('customGameDesc')
                                   : provider.l('premiumHouseRules'),
-                              icon: Icons.lock_rounded,
                               selected: _customModeSelected,
                               locked: !isPremium,
                               colors: const [
@@ -288,10 +293,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                                   context.read<GameProvider>().playSfx(
                                     ChaosSfx.premiumLocked,
                                   );
-                                  Navigator.pushNamed(
-                                    context,
-                                    PremiumScreen.routeName,
-                                  );
+                                  showPremiumUpsell(context);
                                   return;
                                 }
                                 setState(() {
@@ -566,7 +568,6 @@ class _ModeCard extends StatelessWidget {
     required this.leading,
     required this.label,
     required this.subtitle,
-    required this.icon,
     required this.selected,
     required this.colors,
     required this.accent,
@@ -577,7 +578,6 @@ class _ModeCard extends StatelessWidget {
   final String leading;
   final String label;
   final String subtitle;
-  final IconData icon;
   final bool selected;
   final List<Color> colors;
   final Color accent;
@@ -643,50 +643,16 @@ class _ModeCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      leading,
-                      style: Theme.of(context)
-                          .textTheme
-                          .displaySmall
-                          ?.copyWith(
-                            color: selected
-                                ? Colors.white
-                                : Colors.white.withValues(alpha: 0.55),
-                            fontSize: 30,
-                            fontWeight: FontWeight.w900,
-                            height: 1,
-                          ),
-                    ),
-                  ),
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white.withValues(
-                        alpha: selected ? 0.18 : 0.07,
-                      ),
-                      border: Border.all(
-                        color: Colors.white.withValues(
-                          alpha: selected ? 0.22 : 0.10,
-                        ),
-                      ),
-                    ),
-                    child: Icon(
-                      icon,
-                      color: selected
-                          ? Colors.white
-                          : locked
-                          ? accent
-                          : Colors.white.withValues(alpha: 0.50),
-                      size: 17,
-                    ),
-                  ),
-                ],
+              Text(
+                leading,
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                  color: selected
+                      ? Colors.white
+                      : Colors.white.withValues(alpha: 0.55),
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  height: 1,
+                ),
               ),
               const Spacer(),
               if (locked) ...[

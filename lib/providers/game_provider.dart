@@ -55,6 +55,24 @@ class GameProvider extends ChangeNotifier {
   /// Revenge no longer triggers on every target — it now lands randomly.
   static const double _revengeChance = 0.35;
 
+  /// Free players see the premium pop-up once every this many completed turns.
+  static const int _upsellEveryTurns = 3;
+  int _turnsSinceUpsell = 0;
+
+  /// Counts a completed turn and reports whether the in-game premium pop-up
+  /// should be shown now. Returns false for premium users.
+  bool consumeUpsellTrigger() {
+    if (_isPremiumUser) {
+      return false;
+    }
+    _turnsSinceUpsell++;
+    if (_turnsSinceUpsell < _upsellEveryTurns) {
+      return false;
+    }
+    _turnsSinceUpsell = 0;
+    return true;
+  }
+
   GameStateModel _state = const GameStateModel();
   bool _soundEnabled = true;
   bool _vibrationEnabled = true;
