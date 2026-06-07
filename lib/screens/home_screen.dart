@@ -39,29 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const _HomeAmbientPulse(),
               SafeArea(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final heroGap = (constraints.maxHeight * 0.28).clamp(
-                      124.0,
-                      240.0,
-                    );
-
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(28, 28, 28, 18),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight - 46,
-                        ),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 48),
-                            Image.asset(
-                              'assets/AppLogo.png',
-                              width: 132,
-                              height: 132,
-                              filterQuality: FilterQuality.medium,
-                            ),
-                            const SizedBox(height: 20),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(28, 28, 28, 18),
+                  child: Column(
+                    children: [
+                      const Spacer(flex: 2),
                             ShaderMask(
                               blendMode: BlendMode.srcIn,
                               shaderCallback: (bounds) {
@@ -108,8 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     letterSpacing: 3.2,
                                   ),
                             ),
-                            const SizedBox(height: 32),
-                            SizedBox(height: heroGap),
+                            const SizedBox(height: 28),
+                            const Spacer(flex: 3),
                             PrimaryButton(
                               label: provider.l('startGame'),
                               subtitle: provider.l('startGameSubtitle'),
@@ -167,13 +149,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 );
                               },
                             ),
+                            const Spacer(flex: 1),
                           ],
                         ),
                       ),
-                    );
-                  },
-                ),
-              ),
+                    ),
               Positioned(
                 top: MediaQuery.paddingOf(context).top + 16,
                 right: 18,

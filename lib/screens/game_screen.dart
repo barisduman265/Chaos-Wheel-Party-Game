@@ -425,35 +425,6 @@ void _showGameControlsSheet(BuildContext context) {
                           !provider.vibrationEnabled,
                         ),
                       ),
-                      _ControlRow(
-                        icon: provider.backgroundMusicEnabled
-                            ? Icons.music_note_rounded
-                            : Icons.music_off_rounded,
-                        title: provider.backgroundMusicEnabled
-                            ? provider.l('backgroundMusic')
-                            : provider.l('backgroundMusicOff'),
-                        subtitle: provider.l('toggleBackgroundMusic'),
-                        accent: const Color(0xFFFF9F3D),
-                        trailing: Switch(
-                          value: provider.backgroundMusicEnabled,
-                          onChanged: (_) {
-                            provider.setBackgroundMusicEnabled(
-                              !provider.backgroundMusicEnabled,
-                            );
-                          },
-                          activeTrackColor: const Color(0xFF8A5A00),
-                          activeThumbColor: const Color(0xFFFF9F3D),
-                          inactiveThumbColor: const Color(0xFF8B7C96),
-                          inactiveTrackColor: Colors.white.withValues(
-                            alpha: 0.10,
-                          ),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onTap: () => provider.setBackgroundMusicEnabled(
-                          !provider.backgroundMusicEnabled,
-                        ),
-                      ),
                     ],
                   ),
                   _ControlSection(
@@ -1028,21 +999,30 @@ class _AutoRosterStrip extends StatefulWidget {
 }
 
 class _AutoRosterStripState extends State<_AutoRosterStrip> {
+  // 132 card width + 10 trailing gap. Used as a fixed item extent so the strip
+  // can loop seamlessly by jumping back exactly one full set of players.
+  static const double _itemExtent = 142;
+
   final _controller = ScrollController();
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 36), (_) {
-      if (!_controller.hasClients || widget.players.length < 4) {
+    _timer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+      if (!_controller.hasClients) {
         return;
       }
-
-      final next = _controller.offset + 0.55;
-      if (next >= _controller.position.maxScrollExtent) {
-        _controller.jumpTo(0);
+      final count = widget.players.length;
+      if (count == 0) {
         return;
+      }
+      // Period = width of one full pass of every player. Wrapping by exactly
+      // this keeps the motion continuous because the next set is identical.
+      final period = count * _itemExtent;
+      var next = _controller.offset + 0.6;
+      if (next >= period) {
+        next -= period;
       }
       _controller.jumpTo(next);
     });
@@ -1057,9 +1037,7 @@ class _AutoRosterStripState extends State<_AutoRosterStrip> {
 
   @override
   Widget build(BuildContext context) {
-    final players = widget.players.length < 4
-        ? widget.players
-        : [...widget.players, ...widget.players];
+    final count = widget.players.length;
 
     return SizedBox(
       height: 76,
@@ -1076,34 +1054,36 @@ class _AutoRosterStripState extends State<_AutoRosterStrip> {
             stops: [0, 0.06, 0.94, 1],
           ).createShader(bounds);
         },
-        child: ListView.separated(
-          controller: _controller,
-          scrollDirection: Axis.horizontal,
-          physics: widget.players.length < 4
-              ? const BouncingScrollPhysics()
-              : const NeverScrollableScrollPhysics(),
-          itemCount: players.length,
-          separatorBuilder: (_, _) => const SizedBox(width: 10),
-          itemBuilder: (context, index) {
-            final player = players[index];
-            final playerIndex = widget.players.indexWhere(
-              (candidate) => candidate.id == player.id,
-            );
-            return _MiniPlayerCard(
-              player: player,
-              colors: playerColorsForIndex(
-                playerIndex < 0 ? index : playerIndex,
+        child: count == 0
+            ? const SizedBox.shrink()
+            : ListView.builder(
+                controller: _controller,
+                scrollDirection: Axis.horizontal,
+                physics: const NeverScrollableScrollPhysics(),
+                itemExtent: _itemExtent,
+                // Effectively endless: the timer wraps the offset by one set,
+                // so the cards keep flowing sideways no matter the count.
+                itemCount: count * 1000,
+                itemBuilder: (context, index) {
+                  final playerIndex = index % count;
+                  final player = widget.players[playerIndex];
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: _MiniPlayerCard(
+                      player: player,
+                      colors: playerColorsForIndex(playerIndex),
+                      active: widget.selectedPlayerId == player.id,
+                      noEscape: widget.noEscape,
+                      dimmed:
+                          widget.isSpinning ||
+                          (widget.selectedPlayerId != null &&
+                              widget.selectedPlayerId != player.id),
+                      onLongPress: () =>
+                          _showPlayerControlsSheet(context, player),
+                    ),
+                  );
+                },
               ),
-              active: widget.selectedPlayerId == player.id,
-              noEscape: widget.noEscape,
-              dimmed:
-                  widget.isSpinning ||
-                  (widget.selectedPlayerId != null &&
-                      widget.selectedPlayerId != player.id),
-              onLongPress: () => _showPlayerControlsSheet(context, player),
-            );
-          },
-        ),
       ),
     );
   }

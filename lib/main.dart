@@ -33,6 +33,21 @@ class ChaosWheelApp extends StatelessWidget {
       title: 'Chaos Wheel: Party Game',
       debugShowCheckedModeBanner: false,
       scrollBehavior: const _ChaosScrollBehavior(),
+      // The UI is laid out for the default text size. Clamp the system font
+      // scale so very large accessibility font settings don't blow up the
+      // tightly-designed screens (premium, game setup, player cards).
+      builder: (context, child) {
+        final mq = MediaQuery.of(context);
+        return MediaQuery(
+          data: mq.copyWith(
+            textScaler: mq.textScaler.clamp(
+              minScaleFactor: 0.9,
+              maxScaleFactor: 1.1,
+            ),
+          ),
+          child: child!,
+        );
+      },
       themeMode: provider.darkModeEnabled ? ThemeMode.dark : ThemeMode.light,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),

@@ -32,6 +32,12 @@ class ChaosAudioService {
   bool _musicStarted = false;
   String? _currentMusicAsset;
 
+  // The track (and volume) the current screen wants playing. Music is gated
+  // ONLY by [_backgroundMusicEnabled] — it is fully independent of the sound
+  // effects toggle, so muting SFX never stops the music and vice versa.
+  String _desiredMusicAsset = 'audio/home_music.mp3';
+  double _desiredMusicVolume = 0.10;
+
   Future<void> configure({
     required bool soundEnabled,
     required bool hapticsEnabled,
@@ -41,7 +47,7 @@ class ChaosAudioService {
     _hapticsEnabled = hapticsEnabled;
     _backgroundMusicEnabled = backgroundMusicEnabled;
 
-    if (!_backgroundMusicEnabled || !_soundEnabled) {
+    if (!_backgroundMusicEnabled) {
       await _musicPlayer.stop();
       _musicStarted = false;
       _currentMusicAsset = null;
@@ -52,41 +58,35 @@ class ChaosAudioService {
       return;
     }
 
+    await _startMusic(_desiredMusicAsset, _desiredMusicVolume);
+  }
+
+  Future<void> playHomeMusic() async {
+    _desiredMusicAsset = 'audio/home_music.mp3';
+    _desiredMusicVolume = 0.10;
+    if (!_backgroundMusicEnabled) return;
+    if (_currentMusicAsset == _desiredMusicAsset && _musicStarted) return;
+    await _startMusic(_desiredMusicAsset, _desiredMusicVolume);
+  }
+
+  Future<void> playNoEscapeMusic() async {
+    _desiredMusicAsset = 'audio/noescape_music.mp3';
+    _desiredMusicVolume = 0.13;
+    if (!_backgroundMusicEnabled) return;
+    if (_currentMusicAsset == _desiredMusicAsset && _musicStarted) return;
+    await _startMusic(_desiredMusicAsset, _desiredMusicVolume);
+  }
+
+  Future<void> _startMusic(String asset, double volume) async {
     try {
       await _musicPlayer.setReleaseMode(ReleaseMode.loop);
-      await _musicPlayer.setVolume(0.10);
-      await _musicPlayer.play(AssetSource('audio/home_music.mp3'));
-      _currentMusicAsset = 'audio/home_music.mp3';
+      await _musicPlayer.setVolume(volume);
+      await _musicPlayer.play(AssetSource(asset));
+      _currentMusicAsset = asset;
       _musicStarted = true;
     } catch (_) {
       _musicStarted = false;
     }
-  }
-
-  Future<void> playHomeMusic() async {
-    if (!_soundEnabled || !_backgroundMusicEnabled) return;
-    const asset = 'audio/home_music.mp3';
-    if (_currentMusicAsset == asset && _musicStarted) return;
-    try {
-      await _musicPlayer.setReleaseMode(ReleaseMode.loop);
-      await _musicPlayer.setVolume(0.10);
-      await _musicPlayer.play(AssetSource(asset));
-      _currentMusicAsset = asset;
-      _musicStarted = true;
-    } catch (_) {}
-  }
-
-  Future<void> playNoEscapeMusic() async {
-    if (!_soundEnabled) return;
-    const asset = 'audio/noescape_music.mp3';
-    if (_currentMusicAsset == asset && _musicStarted) return;
-    try {
-      await _musicPlayer.setReleaseMode(ReleaseMode.loop);
-      await _musicPlayer.setVolume(0.13);
-      await _musicPlayer.play(AssetSource(asset));
-      _currentMusicAsset = asset;
-      _musicStarted = true;
-    } catch (_) {}
   }
 
   Future<void> stopMusic() async {

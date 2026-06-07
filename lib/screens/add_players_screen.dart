@@ -63,26 +63,28 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                   _RoundBackButton(
                     onPressed: () => Navigator.maybePop(context),
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 18),
                   Text(
                     provider.l('whoIsPlaying'),
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       color: Colors.white,
-                      fontSize: 40,
+                      fontSize: 32,
                       fontWeight: FontWeight.w800,
-                      height: 0.92,
+                      height: 0.95,
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
                   Text(
                     provider.l('addPlayersHelper'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white.withValues(alpha: 0.62),
-                      height: 1.4,
+                      height: 1.35,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 14),
                   Expanded(
                     child: SingleChildScrollView(
                       child: AnimatedSwitcher(

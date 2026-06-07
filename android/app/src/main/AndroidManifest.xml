@@ -1,4 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required so HapticFeedback impacts (medium/heavy) actually vibrate the
+         device during gameplay; without it Android silently ignores them. -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <application
         android:label="chaos_wheel_party_game"
         android:name="${applicationName}"

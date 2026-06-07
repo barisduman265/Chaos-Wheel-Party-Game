@@ -130,47 +130,48 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                   child: _GlowBlob(color: Color(0xFF35E0FF), size: 180),
                 ),
                 SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(18, 44, 18, 16),
+                  padding: const EdgeInsets.fromLTRB(18, 32, 18, 14),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const _PremiumBadge(),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 10),
                       Text(
                         provider.l('unlockChaosPremium'),
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.4,
                           height: 1.05,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 4),
                       Text(
                         provider.l('premiumNoAdsTagline'),
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Colors.white.withValues(alpha: 0.62),
                           fontWeight: FontWeight.w600,
-                          height: 1.3,
+                          height: 1.25,
                         ),
                       ),
-                      const SizedBox(height: 18),
-                      ..._features.map(
-                        (f) => Padding(
-                          padding: const EdgeInsets.only(bottom: 9),
-                          child: _FeatureGlassCard(
-                            title: provider.l(f.$1),
-                            description: f.$2 == null
-                                ? null
-                                : provider.l(f.$2!),
-                            icon: f.$3,
-                            color: f.$4,
+                      const SizedBox(height: 12),
+                      // Compact, single-line feature rows so the whole upsell
+                      // fits on one screen without scrolling.
+                      ..._features
+                          .take(5)
+                          .map(
+                            (f) => Padding(
+                              padding: const EdgeInsets.only(bottom: 6),
+                              child: _FeatureGlassCard(
+                                title: provider.l(f.$1),
+                                icon: f.$3,
+                                color: f.$4,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 12),
                       PremiumLifetimeCard(
                         selected: _plan == PremiumPlan.lifetime,
                         oldPrice: _lifetimeOldPrice,
@@ -178,13 +179,13 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                         onTap: () =>
                             setState(() => _plan = PremiumPlan.lifetime),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 8),
                       PremiumWeeklyCard(
                         selected: _plan == PremiumPlan.weekly,
                         price: _weeklyPrice,
                         onTap: () => setState(() => _plan = PremiumPlan.weekly),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       _PrimaryCta(
                         label: provider.premiumPurchaseInProgress
                             ? provider.l('unlockingPremium')
@@ -198,31 +199,7 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                             ? null
                             : _purchase,
                       ),
-                      const SizedBox(height: 9),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            color: Color(0xFFFFD66B),
-                            size: 15,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            provider.l('mostPlayersLifetime'),
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: Colors.white.withValues(alpha: 0.60),
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      _TrustRow(text: provider.l('trustOneTime')),
-                      _TrustRow(text: provider.l('trustInstant')),
-                      _TrustRow(text: provider.l('trustUpdates')),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
                         child: Text(
@@ -314,22 +291,20 @@ class _PremiumBadge extends StatelessWidget {
 class _FeatureGlassCard extends StatelessWidget {
   const _FeatureGlassCard({
     required this.title,
-    required this.description,
     required this.icon,
     required this.color,
   });
 
   final String title;
-  final String? description;
   final IconData icon;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(11),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -343,10 +318,10 @@ class _FeatureGlassCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -357,37 +332,24 @@ class _FeatureGlassCard extends StatelessWidget {
               ),
               border: Border.all(color: color.withValues(alpha: 0.65)),
             ),
-            child: Icon(icon, color: Colors.white, size: 21),
+            child: Icon(icon, color: Colors.white, size: 18),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                if (description != null) ...[
-                  const SizedBox(height: 1),
-                  Text(
-                    description!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.60),
-                      fontWeight: FontWeight.w500,
-                      height: 1.2,
-                    ),
-                  ),
-                ],
-              ],
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
             ),
+          ),
+          Icon(
+            Icons.check_circle_rounded,
+            color: color.withValues(alpha: 0.85),
+            size: 18,
           ),
         ],
       ),
@@ -445,37 +407,6 @@ class _PrimaryCta extends StatelessWidget {
                   letterSpacing: 0.6,
                 ),
               ),
-      ),
-    );
-  }
-}
-
-class _TrustRow extends StatelessWidget {
-  const _TrustRow({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(
-            Icons.check_circle_rounded,
-            color: Color(0xFF55F0B0),
-            size: 16,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            text,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.white.withValues(alpha: 0.70),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }

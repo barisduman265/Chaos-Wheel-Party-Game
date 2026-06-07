@@ -132,7 +132,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
-                            childAspectRatio: 1.62,
+                            childAspectRatio: 1.3,
                             children: [
                               _VibeCard(
                                 label: provider.l('cozy'),
@@ -222,7 +222,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
-                            childAspectRatio: 1.65,
+                            childAspectRatio: 1.35,
                             children: [
                               _ModeCard(
                                 leading: '15',

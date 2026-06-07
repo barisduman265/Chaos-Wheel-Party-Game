@@ -53,17 +53,17 @@ class _PremiumScreenState extends State<PremiumScreen> {
                   const SizedBox(width: 44),
                 ],
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 20),
               _HeroPremiumCard(isPremium: isPremium),
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
               _SectionLabel(provider.l('whatYouUnlock')),
               const SizedBox(height: 10),
               _UnlockGrid(isPremium: isPremium),
-              const SizedBox(height: 18),
+              const SizedBox(height: 16),
               _SectionLabel(provider.l('livePreview')),
               const SizedBox(height: 10),
               const _PremiumPreview(),
-              const SizedBox(height: 20),
+              const SizedBox(height: 18),
               if (!isPremium) ...[
                 PremiumLifetimeCard(
                   selected: _plan == PremiumPlan.lifetime,
@@ -101,9 +101,9 @@ class _HeroPremiumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(28),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -122,8 +122,8 @@ class _HeroPremiumCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 58,
-            height: 58,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: const Color(0xFFFFC44D).withValues(alpha: 0.13),
@@ -134,24 +134,24 @@ class _HeroPremiumCard extends StatelessWidget {
             child: Icon(
               isPremium ? Icons.workspace_premium_rounded : Icons.lock_rounded,
               color: const Color(0xFFFFC44D),
-              size: 30,
+              size: 26,
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 14),
           Text(
             provider.l(isPremium ? 'chaosPremiumYours' : 'unlockChaosPremium'),
-            style: Theme.of(context).textTheme.displaySmall?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: const Color(0xFFF3EEFF),
               fontWeight: FontWeight.w900,
-              height: 0.92,
+              height: 0.96,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             provider.l(isPremium ? 'premiumLiveSubtitle' : 'premiumTagline'),
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Colors.white.withValues(alpha: 0.62),
-              height: 1.35,
+              height: 1.3,
               fontWeight: FontWeight.w500,
             ),
           ),
