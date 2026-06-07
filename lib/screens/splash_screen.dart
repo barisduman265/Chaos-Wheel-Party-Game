@@ -28,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
     )..repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _timer = Timer(const Duration(seconds: 3), () {
+      _timer = Timer(const Duration(milliseconds: 2000), () {
         if (!mounted) {
           return;
         }
