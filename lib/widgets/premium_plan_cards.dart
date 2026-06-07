@@ -32,9 +32,9 @@ class PremiumLifetimeCard extends StatelessWidget {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.fromLTRB(18, 22, 18, 16),
+            padding: const EdgeInsets.fromLTRB(16, 15, 16, 12),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
+              borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -81,7 +81,7 @@ class PremiumLifetimeCard extends StatelessWidget {
                     PremiumSelectDot(selected: selected),
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 7),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -89,19 +89,19 @@ class PremiumLifetimeCard extends StatelessWidget {
                       newPrice,
                       style: GoogleFonts.nunitoSans(
                         color: Colors.white,
-                        fontSize: 30,
+                        fontSize: 23,
                         fontWeight: FontWeight.w900,
                         height: 1,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 3),
+                      padding: const EdgeInsets.only(bottom: 2),
                       child: Text(
                         oldPrice,
                         style: GoogleFonts.nunitoSans(
                           color: Colors.white.withValues(alpha: 0.55),
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w700,
                           decoration: TextDecoration.lineThrough,
                           decorationColor: const Color(0xFFFF6AB0),
@@ -133,7 +133,7 @@ class PremiumLifetimeCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
                   provider.l('onePaymentForever'),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -211,9 +211,9 @@ class PremiumWeeklyCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(16),
           color: selected
               ? const Color(0xFF6D8BFF).withValues(alpha: 0.16)
               : Colors.white.withValues(alpha: 0.035),

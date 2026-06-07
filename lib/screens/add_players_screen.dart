@@ -63,39 +63,46 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
                   _RoundBackButton(
                     onPressed: () => Navigator.maybePop(context),
                   ),
-                  const SizedBox(height: 18),
-                  Text(
-                    provider.l('whoIsPlaying'),
-                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w800,
-                      height: 0.95,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    provider.l('addPlayersHelper'),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.62),
-                      height: 1.35,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 12),
+                  // Everything above the action buttons scrolls together, so an
+                  // open keyboard or a long player list can never overflow.
                   Expanded(
                     child: SingleChildScrollView(
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 220),
-                        child: provider.players.isEmpty
-                            ? const _EmptyPlayersState()
-                            : _PlayersList(players: provider.players),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            provider.l('whoIsPlaying'),
+                            style: Theme.of(context).textTheme.displaySmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w800,
+                                  height: 0.95,
+                                ),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            provider.l('addPlayersHelper'),
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.62),
+                                  height: 1.35,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                          const SizedBox(height: 14),
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            child: provider.players.isEmpty
+                                ? const _EmptyPlayersState()
+                                : _PlayersList(players: provider.players),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   _StartPlayersButton(
                     playerCount: playerCount,
                     playersNeeded: playersNeeded,

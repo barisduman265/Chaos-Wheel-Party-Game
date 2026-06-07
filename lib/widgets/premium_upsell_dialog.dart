@@ -157,15 +157,18 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      // Compact, single-line feature rows so the whole upsell
-                      // fits on one screen without scrolling.
+                      // Feature rows with short descriptions so the value is
+                      // clear; the price cards below stay compact.
                       ..._features
                           .take(5)
                           .map(
                             (f) => Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.only(bottom: 7),
                               child: _FeatureGlassCard(
                                 title: provider.l(f.$1),
+                                description: f.$2 == null
+                                    ? null
+                                    : provider.l(f.$2!),
                                 icon: f.$3,
                                 color: f.$4,
                               ),
@@ -291,20 +294,22 @@ class _PremiumBadge extends StatelessWidget {
 class _FeatureGlassCard extends StatelessWidget {
   const _FeatureGlassCard({
     required this.title,
+    required this.description,
     required this.icon,
     required this.color,
   });
 
   final String title;
+  final String? description;
   final IconData icon;
   final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -318,10 +323,10 @@ class _FeatureGlassCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -332,24 +337,43 @@ class _FeatureGlassCard extends StatelessWidget {
               ),
               border: Border.all(color: color.withValues(alpha: 0.65)),
             ),
-            child: Icon(icon, color: Colors.white, size: 18),
+            child: Icon(icon, color: Colors.white, size: 21),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                if (description != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    description!,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.66),
+                      fontWeight: FontWeight.w500,
+                      height: 1.25,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ),
+          const SizedBox(width: 8),
           Icon(
             Icons.check_circle_rounded,
             color: color.withValues(alpha: 0.85),
-            size: 18,
+            size: 20,
           ),
         ],
       ),

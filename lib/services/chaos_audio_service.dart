@@ -38,6 +38,11 @@ class ChaosAudioService {
   String _desiredMusicAsset = 'audio/home_music.mp3';
   double _desiredMusicVolume = 0.10;
 
+  // Whether the current screen actually wants music playing. The game screen
+  // calls [stopMusic] on entry to clear this, so toggling sound/haptics there
+  // (which re-runs [configure]) never restarts background music.
+  bool _wantsMusic = true;
+
   Future<void> configure({
     required bool soundEnabled,
     required bool hapticsEnabled,
@@ -54,7 +59,9 @@ class ChaosAudioService {
       return;
     }
 
-    if (_musicStarted) {
+    // Only (re)start music if the active screen actually wants it. Settings
+    // toggles must not kick off music on screens that intentionally muted it.
+    if (_musicStarted || !_wantsMusic) {
       return;
     }
 
@@ -62,6 +69,7 @@ class ChaosAudioService {
   }
 
   Future<void> playHomeMusic() async {
+    _wantsMusic = true;
     _desiredMusicAsset = 'audio/home_music.mp3';
     _desiredMusicVolume = 0.10;
     if (!_backgroundMusicEnabled) return;
@@ -70,6 +78,7 @@ class ChaosAudioService {
   }
 
   Future<void> playNoEscapeMusic() async {
+    _wantsMusic = true;
     _desiredMusicAsset = 'audio/noescape_music.mp3';
     _desiredMusicVolume = 0.13;
     if (!_backgroundMusicEnabled) return;
@@ -90,6 +99,7 @@ class ChaosAudioService {
   }
 
   Future<void> stopMusic() async {
+    _wantsMusic = false;
     await _musicPlayer.stop();
     _musicStarted = false;
     _currentMusicAsset = null;

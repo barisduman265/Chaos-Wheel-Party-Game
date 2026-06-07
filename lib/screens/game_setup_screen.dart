@@ -130,6 +130,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             crossAxisCount: 2,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
+                            clipBehavior: Clip.none,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
                             childAspectRatio: 1.3,
@@ -220,6 +221,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             crossAxisCount: 2,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
+                            clipBehavior: Clip.none,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
                             childAspectRatio: 1.35,
@@ -594,7 +596,7 @@ class _ModeCard extends StatelessWidget {
     return AnimatedScale(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOutCubic,
-      scale: selected ? 1.03 : 1.0,
+      scale: 1.0,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
@@ -741,7 +743,7 @@ class _VibeCard extends StatelessWidget {
     return AnimatedScale(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeOutCubic,
-      scale: selected ? 1.03 : 1.0,
+      scale: 1.0,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
