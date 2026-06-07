@@ -56,6 +56,27 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
 
+  # Generates Android/iOS/web launcher icons from assets/AppLogo.png.
+  # Run after changing the icon: dart run flutter_launcher_icons
+  flutter_launcher_icons: ^0.14.4
+
+# Launcher icon configuration. The source is the same AppLogo.png used as the
+# in-app logo, so the app icon and on-screen logo stay in sync.
+flutter_launcher_icons:
+  image_path: "assets/AppLogo.png"
+  android: true
+  min_sdk_android: 21
+  ios: true
+  # iOS icons cannot contain transparency; flatten the rounded corners onto a
+  # black background that matches the logo's dark backdrop.
+  remove_alpha_ios: true
+  background_color_ios: "#000000"
+  web:
+    generate: true
+    image_path: "assets/AppLogo.png"
+    background_color: "#000000"
+    theme_color: "#000000"
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -69,6 +90,7 @@ flutter:
 
   assets:
     - assets/audio/
+    - assets/AppLogo.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

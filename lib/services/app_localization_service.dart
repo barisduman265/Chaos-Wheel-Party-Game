@@ -43,7 +43,7 @@ class AppLocalizationService {
     'privacyPolicy': 'Privacy policy',
     'privacyPolicyTitle': 'Privacy Policy',
     'privacyPolicyBody':
-        'Chaos Wheel works fully offline. It does not collect, transmit, or sell any personal data, and contains no analytics or third-party tracking.\n\nEverything stays on your device: player names and round stats live only in memory for the current session, while your settings (sound, language, content options) and your premium purchase are stored locally on this device.\n\nNo data ever leaves your phone. You can erase the locally saved settings any time with "Reset statistics". Premium purchases are processed by your app store under their own privacy terms.',
+        'Chaos Wheel works fully offline. It does not collect, transmit, or sell any personal data, and contains no analytics or third-party tracking.\n\nEverything stays on your device: player names and round stats live only in memory for the current session, while your settings (sound, language, content options) and your premium purchase are stored locally on this device.\n\nThe app never transmits your data on its own. The only exception is when you tap "Share": this uses your device share sheet, can include player names and round stats, and only goes to the app you choose. You can erase the locally saved settings any time with "Reset statistics". Premium purchases are processed by your app store under their own privacy terms.',
     'terms': 'Terms',
     'termsBody':
         'Chaos Wheel is a social party game. Players are responsible for consent, comfort, and stopping any prompt that does not fit the room.',
@@ -847,7 +847,7 @@ class AppLocalizationService {
       'privacyPolicy': 'Gizlilik politikası',
       'privacyPolicyTitle': 'Gizlilik Politikası',
       'privacyPolicyBody':
-          'Chaos Wheel tamamen çevrimdışı çalışır. Hiçbir kişisel veriyi toplamaz, göndermez veya satmaz; analytics ya da üçüncü taraf takip içermez.\n\nHer şey cihazınızda kalır: oyuncu isimleri ve tur istatistikleri yalnızca o oturum boyunca bellekte tutulur; ayarlarınız (ses, dil, içerik seçenekleri) ve premium satın alımınız ise bu cihazda yerel olarak saklanır.\n\nHiçbir veri telefonunuzdan çıkmaz. Yerel kayıtlı ayarları istediğiniz zaman "İstatistikleri sıfırla" ile silebilirsiniz. Premium satın alımları, kendi gizlilik koşullarıyla uygulama mağazanız tarafından işlenir.',
+          'Chaos Wheel tamamen çevrimdışı çalışır. Hiçbir kişisel veriyi toplamaz, göndermez veya satmaz; analytics ya da üçüncü taraf takip içermez.\n\nHer şey cihazınızda kalır: oyuncu isimleri ve tur istatistikleri yalnızca o oturum boyunca bellekte tutulur; ayarlarınız (ses, dil, içerik seçenekleri) ve premium satın alımınız ise bu cihazda yerel olarak saklanır.\n\nUygulama verilerinizi kendiliğinden hiçbir yere göndermez. Tek istisna "Paylaş" düğmesine bastığınızdadır: bu, cihazınızın paylaşım menüsünü kullanır, oyuncu isimlerini ve tur istatistiklerini içerebilir ve yalnızca sizin seçtiğiniz uygulamaya gider. Yerel kayıtlı ayarları istediğiniz zaman "İstatistikleri sıfırla" ile silebilirsiniz. Premium satın alımları, kendi gizlilik koşullarıyla uygulama mağazanız tarafından işlenir.',
       'terms': 'Koşullar',
       'termsBody':
           'Chaos Wheel sosyal bir parti oyunudur. Oyuncular rıza, rahatlık ve uygun olmayan görevleri durdurmaktan sorumludur.',
@@ -1057,7 +1057,7 @@ class AppLocalizationService {
       'privacyPolicy': 'Privacy',
       'privacyPolicyTitle': 'Informativa sulla privacy',
       'privacyPolicyBody':
-          'Chaos Wheel funziona completamente offline. Non raccoglie, trasmette né vende alcun dato personale e non contiene analisi o tracciamento di terze parti.\n\nTutto resta sul tuo dispositivo: i nomi dei giocatori e le statistiche dei turni vivono solo in memoria per la sessione attuale, mentre le tue impostazioni (audio, lingua, opzioni dei contenuti) e il tuo acquisto premium sono salvati localmente su questo dispositivo.\n\nNessun dato lascia mai il tuo telefono. Puoi cancellare le impostazioni salvate localmente in qualsiasi momento con "Reimposta statistiche". Gli acquisti premium sono gestiti dal tuo app store secondo le sue condizioni sulla privacy.',
+          'Chaos Wheel funziona completamente offline. Non raccoglie, trasmette né vende alcun dato personale e non contiene analisi o tracciamento di terze parti.\n\nTutto resta sul tuo dispositivo: i nomi dei giocatori e le statistiche dei turni vivono solo in memoria per la sessione attuale, mentre le tue impostazioni (audio, lingua, opzioni dei contenuti) e il tuo acquisto premium sono salvati localmente su questo dispositivo.\n\nL\'app non trasmette mai i tuoi dati da sola. L\'unica eccezione è quando tocchi "Condividi": questo usa il menu di condivisione del dispositivo, può includere i nomi dei giocatori e le statistiche dei turni e va solo all\'app che scegli tu. Puoi cancellare le impostazioni salvate localmente in qualsiasi momento con "Reimposta statistiche". Gli acquisti premium sono gestiti dal tuo app store secondo le sue condizioni sulla privacy.',
       'terms': 'Termini',
       'termsBody':
           'Chaos Wheel è un gioco di società. I giocatori sono responsabili del consenso, del comfort e di fermare qualsiasi prova non adatta al gruppo.',
@@ -1398,7 +1398,7 @@ class AppLocalizationService {
       'privacyPolicy': 'Confidentialité',
       'privacyPolicyTitle': 'Politique de confidentialité',
       'privacyPolicyBody':
-          'Chaos Wheel fonctionne entièrement hors ligne. Il ne collecte, ne transmet ni ne vend aucune donnée personnelle, et ne contient aucune analyse ni suivi tiers.\n\nTout reste sur ton appareil : les noms des joueurs et les statistiques des manches ne vivent qu\'en mémoire pour la session en cours, tandis que tes réglages (son, langue, options de contenu) et ton achat premium sont enregistrés localement sur cet appareil.\n\nAucune donnée ne quitte jamais ton téléphone. Tu peux effacer les réglages enregistrés localement à tout moment avec « Réinitialiser les stats ». Les achats premium sont traités par ton magasin d\'applications selon ses propres conditions de confidentialité.',
+          'Chaos Wheel fonctionne entièrement hors ligne. Il ne collecte, ne transmet ni ne vend aucune donnée personnelle, et ne contient aucune analyse ni suivi tiers.\n\nTout reste sur ton appareil : les noms des joueurs et les statistiques des manches ne vivent qu\'en mémoire pour la session en cours, tandis que tes réglages (son, langue, options de contenu) et ton achat premium sont enregistrés localement sur cet appareil.\n\nL\'application ne transmet jamais tes données d\'elle-même. La seule exception est quand tu appuies sur « Partager » : cela utilise le menu de partage de ton appareil, peut inclure les noms des joueurs et les statistiques des manches, et ne va qu\'à l\'application que tu choisis. Tu peux effacer les réglages enregistrés localement à tout moment avec « Réinitialiser les stats ». Les achats premium sont traités par ton magasin d\'applications selon ses propres conditions de confidentialité.',
       'terms': 'Conditions',
       'termsBody':
           'Chaos Wheel est un jeu de société. Les joueurs sont responsables du consentement, du confort et de l\'arrêt de tout défi qui ne convient pas au groupe.',
@@ -1745,7 +1745,7 @@ class AppLocalizationService {
       'privacyPolicy': '隐私政策',
       'privacyPolicyTitle': '隐私政策',
       'privacyPolicyBody':
-          'Chaos Wheel 完全离线运行。它不收集、不传输也不出售任何个人数据，且不包含任何分析或第三方追踪。\n\n一切都保留在你的设备上：玩家名字和回合统计仅在当前会话中存于内存，而你的设置（声音、语言、内容选项）和你的高级版购买则本地保存在此设备上。\n\n任何数据都不会离开你的手机。你可以随时通过“重置统计”清除本地保存的设置。高级版购买由你的应用商店根据其自身隐私条款处理。',
+          'Chaos Wheel 完全离线运行。它不收集、不传输也不出售任何个人数据，且不包含任何分析或第三方追踪。\n\n一切都保留在你的设备上：玩家名字和回合统计仅在当前会话中存于内存，而你的设置（声音、语言、内容选项）和你的高级版购买则本地保存在此设备上。\n\n应用不会自行传输你的数据。唯一的例外是当你点击“分享”时：这会使用设备的分享菜单，可能包含玩家名字和回合统计，并且只发送到你所选择的应用。你可以随时通过“重置统计”清除本地保存的设置。高级版购买由你的应用商店根据其自身隐私条款处理。',
       'terms': '条款',
       'termsBody': 'Chaos Wheel 是一款社交派对游戏。玩家需对同意、舒适以及停止任何不适合在场氛围的挑战负责。',
       'version': '版本',
@@ -2069,7 +2069,7 @@ class AppLocalizationService {
       'privacyPolicy': 'プライバシー',
       'privacyPolicyTitle': 'プライバシーポリシー',
       'privacyPolicyBody':
-          'Chaos Wheel は完全にオフラインで動作します。個人データを収集・送信・販売することはなく、分析や第三者によるトラッキングも含みません。\n\nすべてがあなたの端末内に留まります。プレイヤー名やラウンドの統計は現在のセッションのメモリ上にのみ存在し、設定（サウンド・言語・コンテンツのオプション）とプレミアム購入はこの端末にローカル保存されます。\n\nデータが端末の外に出ることは一切ありません。ローカル保存された設定は「統計をリセット」でいつでも消去できます。プレミアム購入はあなたのアプリストアが各自のプライバシー規約に基づいて処理します。',
+          'Chaos Wheel は完全にオフラインで動作します。個人データを収集・送信・販売することはなく、分析や第三者によるトラッキングも含みません。\n\nすべてがあなたの端末内に留まります。プレイヤー名やラウンドの統計は現在のセッションのメモリ上にのみ存在し、設定（サウンド・言語・コンテンツのオプション）とプレミアム購入はこの端末にローカル保存されます。\n\nアプリが自動的にデータを送信することはありません。唯一の例外は「共有」をタップしたときです。これは端末の共有メニューを使い、プレイヤー名やラウンドの統計を含むことがあり、あなたが選んだアプリにのみ送られます。ローカル保存された設定は「統計をリセット」でいつでも消去できます。プレミアム購入はあなたのアプリストアが各自のプライバシー規約に基づいて処理します。',
       'terms': '利用規約',
       'termsBody':
           'Chaos Wheel はソーシャルなパーティーゲームです。プレイヤーは同意・快適さ、そしてその場に合わないお題を止めることに責任を持ちます。',
@@ -2393,7 +2393,7 @@ class AppLocalizationService {
       'privacyPolicy': '개인정보',
       'privacyPolicyTitle': '개인정보 처리방침',
       'privacyPolicyBody':
-          'Chaos Wheel은 완전히 오프라인으로 작동합니다. 어떤 개인정보도 수집·전송·판매하지 않으며, 분석이나 제3자 추적도 포함하지 않습니다.\n\n모든 것은 기기에 남습니다. 플레이어 이름과 라운드 통계는 현재 세션 동안 메모리에만 존재하고, 설정(소리, 언어, 콘텐츠 옵션)과 프리미엄 구매는 이 기기에 로컬로 저장됩니다.\n\n어떤 데이터도 절대 휴대폰을 벗어나지 않습니다. 로컬에 저장된 설정은 "통계 초기화"로 언제든 지울 수 있습니다. 프리미엄 구매는 각자의 개인정보 약관에 따라 앱 스토어가 처리합니다.',
+          'Chaos Wheel은 완전히 오프라인으로 작동합니다. 어떤 개인정보도 수집·전송·판매하지 않으며, 분석이나 제3자 추적도 포함하지 않습니다.\n\n모든 것은 기기에 남습니다. 플레이어 이름과 라운드 통계는 현재 세션 동안 메모리에만 존재하고, 설정(소리, 언어, 콘텐츠 옵션)과 프리미엄 구매는 이 기기에 로컬로 저장됩니다.\n\n앱이 스스로 데이터를 전송하는 일은 없습니다. 유일한 예외는 "공유"를 누를 때입니다. 이 경우 기기의 공유 메뉴를 사용하며, 플레이어 이름과 라운드 통계가 포함될 수 있고, 당신이 선택한 앱으로만 전송됩니다. 로컬에 저장된 설정은 "통계 초기화"로 언제든 지울 수 있습니다. 프리미엄 구매는 각자의 개인정보 약관에 따라 앱 스토어가 처리합니다.',
       'terms': '약관',
       'termsBody':
           'Chaos Wheel은 소셜 파티 게임입니다. 플레이어는 동의, 편안함, 그리고 분위기에 맞지 않는 미션을 멈추는 것에 책임이 있습니다.',
@@ -2718,7 +2718,7 @@ class AppLocalizationService {
       'privacyPolicy': 'Privacidade',
       'privacyPolicyTitle': 'Política de Privacidade',
       'privacyPolicyBody':
-          'O Chaos Wheel funciona totalmente offline. Ele não coleta, não transmite nem vende nenhum dado pessoal, e não contém análises nem rastreamento de terceiros.\n\nTudo fica no seu aparelho: nomes dos jogadores e estatísticas das rodadas vivem só na memória durante a sessão atual, enquanto suas configurações (som, idioma, opções de conteúdo) e sua compra premium ficam salvas localmente neste aparelho.\n\nNenhum dado sai do seu celular. Você pode apagar as configurações salvas localmente a qualquer momento com "Redefinir estatísticas". As compras premium são processadas pela sua loja de aplicativos sob os próprios termos de privacidade.',
+          'O Chaos Wheel funciona totalmente offline. Ele não coleta, não transmite nem vende nenhum dado pessoal, e não contém análises nem rastreamento de terceiros.\n\nTudo fica no seu aparelho: nomes dos jogadores e estatísticas das rodadas vivem só na memória durante a sessão atual, enquanto suas configurações (som, idioma, opções de conteúdo) e sua compra premium ficam salvas localmente neste aparelho.\n\nO app nunca transmite seus dados por conta própria. A única exceção é quando você toca em "Compartilhar": isso usa o menu de compartilhamento do aparelho, pode incluir nomes dos jogadores e estatísticas das rodadas, e vai apenas para o app que você escolher. Você pode apagar as configurações salvas localmente a qualquer momento com "Redefinir estatísticas". As compras premium são processadas pela sua loja de aplicativos sob os próprios termos de privacidade.',
       'terms': 'Termos',
       'termsBody':
           'O Chaos Wheel é um jogo social de festa. Os jogadores são responsáveis pelo consentimento, pelo conforto e por interromper qualquer desafio que não combine com o grupo.',
@@ -3060,7 +3060,7 @@ class AppLocalizationService {
       'privacyPolicy': 'الخصوصية',
       'privacyPolicyTitle': 'سياسة الخصوصية',
       'privacyPolicyBody':
-          'يعمل Chaos Wheel دون اتصال بالكامل. لا يجمع أو ينقل أو يبيع أي بيانات شخصية، ولا يحتوي على أي تحليلات أو تتبع من أطراف ثالثة.\n\nكل شيء يبقى على جهازك: أسماء اللاعبين وإحصائيات الجولات تعيش فقط في الذاكرة خلال الجلسة الحالية، بينما تُحفظ إعداداتك (الصوت، اللغة، خيارات المحتوى) وعملية شراء البريميوم محليًا على هذا الجهاز.\n\nلا تغادر أي بيانات هاتفك أبدًا. يمكنك مسح الإعدادات المحفوظة محليًا في أي وقت عبر "إعادة تعيين الإحصائيات". تتم معالجة مشتريات البريميوم بواسطة متجر التطبيقات وفق شروط الخصوصية الخاصة به.',
+          'يعمل Chaos Wheel دون اتصال بالكامل. لا يجمع أو ينقل أو يبيع أي بيانات شخصية، ولا يحتوي على أي تحليلات أو تتبع من أطراف ثالثة.\n\nكل شيء يبقى على جهازك: أسماء اللاعبين وإحصائيات الجولات تعيش فقط في الذاكرة خلال الجلسة الحالية، بينما تُحفظ إعداداتك (الصوت، اللغة، خيارات المحتوى) وعملية شراء البريميوم محليًا على هذا الجهاز.\n\nلا يرسل التطبيق بياناتك من تلقاء نفسه أبدًا. الاستثناء الوحيد هو عندما تضغط على "مشاركة": فهذا يستخدم قائمة المشاركة في جهازك، وقد يتضمن أسماء اللاعبين وإحصائيات الجولات، ويذهب فقط إلى التطبيق الذي تختاره. يمكنك مسح الإعدادات المحفوظة محليًا في أي وقت عبر "إعادة تعيين الإحصائيات". تتم معالجة مشتريات البريميوم بواسطة متجر التطبيقات وفق شروط الخصوصية الخاصة به.',
       'terms': 'الشروط',
       'termsBody':
           'Chaos Wheel لعبة حفلات اجتماعية. اللاعبون مسؤولون عن الموافقة والراحة وإيقاف أي تحدٍ لا يناسب المجموعة.',

@@ -37,13 +37,19 @@ class ChaosShareService {
             bytes,
             'chaos_report_${DateTime.now().millisecondsSinceEpoch}.png',
           );
-          await SharePlus.instance.share(
-            ShareParams(
-              subject: 'Chaos Wheel Report',
-              text: text,
-              files: [file],
-            ),
-          );
+          try {
+            await SharePlus.instance.share(
+              ShareParams(
+                subject: 'Chaos Wheel Report',
+                text: text,
+                files: [file],
+              ),
+            );
+          } finally {
+            // The share sheet has finished with the file by now; remove it so
+            // the report screenshot doesn't linger in temp storage.
+            await cleanupShareImageFile(file);
+          }
           return;
         }
       } catch (_) {

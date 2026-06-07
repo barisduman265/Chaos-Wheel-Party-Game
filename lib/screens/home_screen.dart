@@ -54,7 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: Column(
                           children: [
-                            const SizedBox(height: 72),
+                            const SizedBox(height: 48),
+                            Image.asset(
+                              'assets/AppLogo.png',
+                              width: 132,
+                              height: 132,
+                              filterQuality: FilterQuality.medium,
+                            ),
+                            const SizedBox(height: 20),
                             ShaderMask(
                               blendMode: BlendMode.srcIn,
                               shaderCallback: (bounds) {
