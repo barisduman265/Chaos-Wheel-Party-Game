@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:chaos_wheel_party_game/core/player_colors.dart';
 import 'package:chaos_wheel_party_game/models/player.dart';
@@ -1288,10 +1287,10 @@ class _SpinBar extends StatelessWidget {
               if (hasSelection)
                 const Icon(Icons.bolt_rounded, color: Colors.white, size: 24)
               else
-                const SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CustomPaint(painter: _SpinGlyphPainter()),
+                const Icon(
+                  Icons.autorenew_rounded,
+                  color: Colors.white,
+                  size: 27,
                 ),
               const SizedBox(width: 12),
               Text(
@@ -1308,61 +1307,4 @@ class _SpinBar extends StatelessWidget {
       ),
     );
   }
-}
-
-class _SpinGlyphPainter extends CustomPainter {
-  const _SpinGlyphPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    final center = rect.center;
-    final radius = size.width * 0.36;
-    final glowPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5
-      ..strokeCap = StrokeCap.round
-      ..color = Colors.white.withValues(alpha: 0.20)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5);
-    final arcPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round
-      ..shader = SweepGradient(
-        colors: [
-          Colors.white.withValues(alpha: 0.10),
-          Colors.white,
-          Colors.white.withValues(alpha: 0.65),
-          Colors.white.withValues(alpha: 0.10),
-        ],
-      ).createShader(rect);
-
-    final orbit = Rect.fromCircle(center: center, radius: radius);
-    canvas.drawArc(orbit, -1.25, 4.7, false, glowPaint);
-    canvas.drawArc(orbit, -1.25, 4.7, false, arcPaint);
-
-    final arrowPaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    final angle = 3.45;
-    final arrowCenter = Offset(
-      center.dx + cos(angle) * radius,
-      center.dy + sin(angle) * radius,
-    );
-    final arrow = Path()
-      ..moveTo(arrowCenter.dx, arrowCenter.dy)
-      ..lineTo(arrowCenter.dx + size.width * 0.16, arrowCenter.dy - 1)
-      ..lineTo(
-        arrowCenter.dx + size.width * 0.06,
-        arrowCenter.dy + size.height * 0.13,
-      )
-      ..close();
-    canvas.drawPath(arrow, arrowPaint);
-
-    final dotPaint = Paint()..color = Colors.white.withValues(alpha: 0.92);
-    canvas.drawCircle(center, size.width * 0.09, dotPaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

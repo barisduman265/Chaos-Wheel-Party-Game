@@ -49,13 +49,10 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
     return Scaffold(
       body: ChaosBackground(
         child: SafeArea(
-          child: AnimatedPadding(
-            duration: const Duration(milliseconds: 180),
-            curve: Curves.easeOut,
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.viewInsetsOf(context).bottom,
-            ),
-            child: Padding(
+          // The Scaffold already resizes the body above the keyboard
+          // (resizeToAvoidBottomInset), so no manual keyboard padding here —
+          // adding it again double-counted the inset and overflowed.
+          child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 18, 24, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,8 +124,7 @@ class _AddPlayersScreenState extends State<AddPlayersScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
 
@@ -383,13 +379,17 @@ class _StartPlayersButton extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 14),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
+              Flexible(
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
             ],

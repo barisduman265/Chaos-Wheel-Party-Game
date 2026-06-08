@@ -133,7 +133,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             clipBehavior: Clip.none,
                             crossAxisSpacing: 12,
                             mainAxisSpacing: 12,
-                            childAspectRatio: 1.3,
+                            childAspectRatio: 1.22,
                             children: [
                               _VibeCard(
                                 label: provider.l('cozy'),
@@ -224,7 +224,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             clipBehavior: Clip.none,
                             crossAxisSpacing: 10,
                             mainAxisSpacing: 10,
-                            childAspectRatio: 1.35,
+                            childAspectRatio: 1.2,
                             children: [
                               _ModeCard(
                                 leading: '15',
