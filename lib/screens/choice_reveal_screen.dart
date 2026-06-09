@@ -65,7 +65,7 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
         ? 0
         : provider.isNoEscapeActive && provider.isEvilModeActive
         ? 0
-        : 1;
+        : provider.changeRightsPerTurn;
     _startPromptReveal(provider.currentPrompt);
     if (provider.currentPrompt?.mode == PromptVibeMode.evil) {
       provider.playSfx(ChaosSfx.evilReveal);
@@ -127,6 +127,8 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
       return;
     }
     final provider = context.read<GameProvider>();
+    // Noticeable buzz so changing the question feels responsive.
+    provider.haptic(ChaosSfx.targetUsed);
     final nextPrompt = provider.generatePrompt(
       _isTruth ? PromptType.truth : PromptType.dare,
     );
@@ -441,6 +443,8 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
     }
 
     await provider.playSfx(ChaosSfx.noEscape);
+    // Switch the soundtrack to the tense No Escape loop for the final rounds.
+    await provider.playNoEscapeMusic();
     if (!context.mounted) {
       return false;
     }

@@ -21,6 +21,8 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
   int _customRoundCount = 30;
   int _customShotRights = 2;
   int _customTargetRights = 2;
+  int _customNoEscapeStartRound = 23;
+  int _customChangeRights = 1;
   PromptVibeMode _vibeMode = PromptVibeMode.cozy;
   bool _balanceRuleEnabled = true;
   bool _randomButtonEnabled = true;
@@ -317,10 +319,16 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                               rounds: _customRoundCount,
                               shots: _customShotRights,
                               targets: _customTargetRights,
+                              noEscapeStart: _customNoEscapeStartRound,
+                              changes: _customChangeRights,
                               onRoundsChanged: (value) {
                                 setState(() {
                                   _customRoundCount = value;
                                   _roundCount = value;
+                                  // Keep the No Escape start within the new
+                                  // round range.
+                                  _customNoEscapeStartRound =
+                                      _customNoEscapeStartRound.clamp(2, value);
                                 });
                               },
                               onShotsChanged: (value) {
@@ -329,14 +337,23 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                               onTargetsChanged: (value) {
                                 setState(() => _customTargetRights = value);
                               },
+                              onNoEscapeStartChanged: (value) {
+                                setState(
+                                  () => _customNoEscapeStartRound = value,
+                                );
+                              },
+                              onChangesChanged: (value) {
+                                setState(() => _customChangeRights = value);
+                              },
                             ),
                           ],
                           const SizedBox(height: 14),
                           _NoEscapeRuleCard(
-                            rounds: provider.noEscapeRoundCountFor(
-                              _effectiveRoundCount,
-                            ),
-                            totalRounds: _effectiveRoundCount,
+                            startRound: _customModeSelected
+                                ? _customNoEscapeStartRound
+                                : provider.noEscapeStartRoundFor(
+                                    _effectiveRoundCount,
+                                  ),
                           ),
                           const SizedBox(height: 14),
                           _SectionLabel(provider.l('perPlayerRights')),
@@ -443,6 +460,12 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             : null,
                         customTargetRights: _customModeSelected
                             ? _customTargetRights
+                            : null,
+                        customNoEscapeStartRound: _customModeSelected
+                            ? _customNoEscapeStartRound
+                            : null,
+                        customChangeRights: _customModeSelected
+                            ? _customChangeRights
                             : null,
                       );
                       Navigator.pushNamedAndRemoveUntil(
@@ -956,17 +979,25 @@ class _CustomRulesPanel extends StatelessWidget {
     required this.rounds,
     required this.shots,
     required this.targets,
+    required this.noEscapeStart,
+    required this.changes,
     required this.onRoundsChanged,
     required this.onShotsChanged,
     required this.onTargetsChanged,
+    required this.onNoEscapeStartChanged,
+    required this.onChangesChanged,
   });
 
   final int rounds;
   final int shots;
   final int targets;
+  final int noEscapeStart;
+  final int changes;
   final ValueChanged<int> onRoundsChanged;
   final ValueChanged<int> onShotsChanged;
   final ValueChanged<int> onTargetsChanged;
+  final ValueChanged<int> onNoEscapeStartChanged;
+  final ValueChanged<int> onChangesChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -1015,6 +1046,30 @@ class _CustomRulesPanel extends StatelessWidget {
                   min: 0,
                   max: 4,
                   onChanged: onTargetsChanged,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _CustomStepper(
+                  label: 'NO ESCAPE R',
+                  value: noEscapeStart,
+                  min: 2,
+                  max: rounds,
+                  onChanged: onNoEscapeStartChanged,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _CustomStepper(
+                  label: 'CHANGES',
+                  value: changes,
+                  min: 0,
+                  max: 3,
+                  onChanged: onChangesChanged,
                 ),
               ),
             ],
@@ -1136,10 +1191,9 @@ class _StepButton extends StatelessWidget {
 }
 
 class _NoEscapeRuleCard extends StatelessWidget {
-  const _NoEscapeRuleCard({required this.rounds, required this.totalRounds});
+  const _NoEscapeRuleCard({required this.startRound});
 
-  final int rounds;
-  final int totalRounds;
+  final int startRound;
 
   @override
   Widget build(BuildContext context) {
@@ -1196,7 +1250,7 @@ class _NoEscapeRuleCard extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   context.watch<GameProvider>().lf('inRound', {
-                    'round': totalRounds - rounds + 1,
+                    'round': startRound,
                   }),
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: const Color(0xFFFF6A9B),

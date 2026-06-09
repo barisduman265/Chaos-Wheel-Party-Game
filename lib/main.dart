@@ -92,49 +92,47 @@ class ChaosWheelApp extends StatelessWidget {
     );
 
     final bodyColor = isDark ? Colors.white : const Color(0xFF130D1D);
+    // Fredoka is missing some Turkish glyphs (e.g. ş, ı), which made names like
+    // "Barış" render as "Baris,". Fall back to Nunito Sans for those glyphs.
+    final turkishFallback = <String>[
+      GoogleFonts.nunitoSans().fontFamily ?? 'sans-serif',
+    ];
     final baseTextTheme = GoogleFonts.nunitoSansTextTheme(base.textTheme);
-    final textTheme = baseTextTheme
-        .copyWith(
+    final textTheme = _withTurkishFallback(
+      baseTextTheme.copyWith(
           displayLarge: GoogleFonts.fredoka(
-            textStyle: base.textTheme.displayLarge,
-            fontSize: 64,
+            textStyle: base.textTheme.displayLarge,            fontSize: 64,
             fontWeight: FontWeight.w700,
             height: 0.92,
             letterSpacing: -0.4,
           ),
           displayMedium: GoogleFonts.fredoka(
-            textStyle: base.textTheme.displayMedium,
-            fontWeight: FontWeight.w800,
+            textStyle: base.textTheme.displayMedium,            fontWeight: FontWeight.w800,
             height: 0.96,
             letterSpacing: -0.3,
           ),
           displaySmall: GoogleFonts.fredoka(
-            textStyle: base.textTheme.displaySmall,
-            fontWeight: FontWeight.w800,
+            textStyle: base.textTheme.displaySmall,            fontWeight: FontWeight.w800,
             height: 0.98,
             letterSpacing: -0.2,
           ),
           headlineLarge: GoogleFonts.fredoka(
-            textStyle: base.textTheme.headlineLarge,
-            fontWeight: FontWeight.w800,
+            textStyle: base.textTheme.headlineLarge,            fontWeight: FontWeight.w800,
             height: 1,
             letterSpacing: -0.1,
           ),
           headlineMedium: GoogleFonts.fredoka(
-            textStyle: base.textTheme.headlineMedium,
-            fontWeight: FontWeight.w800,
+            textStyle: base.textTheme.headlineMedium,            fontWeight: FontWeight.w800,
             height: 1.02,
             letterSpacing: -0.1,
           ),
           headlineSmall: GoogleFonts.fredoka(
-            textStyle: base.textTheme.headlineSmall,
-            fontWeight: FontWeight.w800,
+            textStyle: base.textTheme.headlineSmall,            fontWeight: FontWeight.w800,
             height: 1.02,
             letterSpacing: 0,
           ),
           titleLarge: GoogleFonts.fredoka(
-            textStyle: base.textTheme.titleLarge,
-            fontWeight: FontWeight.w700,
+            textStyle: base.textTheme.titleLarge,            fontWeight: FontWeight.w700,
             height: 1.04,
             letterSpacing: 0,
           ),
@@ -178,7 +176,9 @@ class ChaosWheelApp extends StatelessWidget {
             letterSpacing: 1,
           ),
         )
-        .apply(bodyColor: bodyColor, displayColor: bodyColor);
+        .apply(bodyColor: bodyColor, displayColor: bodyColor),
+      turkishFallback,
+    );
 
     return base.copyWith(
       scaffoldBackgroundColor: isDark ? background : const Color(0xFFF4F3FA),
@@ -225,6 +225,30 @@ class ChaosWheelApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Adds [fallback] families to every style so glyphs missing from the primary
+/// font (e.g. Turkish ş/ı in Fredoka) are drawn from a font that has them.
+TextTheme _withTurkishFallback(TextTheme theme, List<String> fallback) {
+  TextStyle? f(TextStyle? style) =>
+      style?.copyWith(fontFamilyFallback: fallback);
+  return theme.copyWith(
+    displayLarge: f(theme.displayLarge),
+    displayMedium: f(theme.displayMedium),
+    displaySmall: f(theme.displaySmall),
+    headlineLarge: f(theme.headlineLarge),
+    headlineMedium: f(theme.headlineMedium),
+    headlineSmall: f(theme.headlineSmall),
+    titleLarge: f(theme.titleLarge),
+    titleMedium: f(theme.titleMedium),
+    titleSmall: f(theme.titleSmall),
+    bodyLarge: f(theme.bodyLarge),
+    bodyMedium: f(theme.bodyMedium),
+    bodySmall: f(theme.bodySmall),
+    labelLarge: f(theme.labelLarge),
+    labelMedium: f(theme.labelMedium),
+    labelSmall: f(theme.labelSmall),
+  );
 }
 
 class _ChaosScrollBehavior extends MaterialScrollBehavior {

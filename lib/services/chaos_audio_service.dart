@@ -130,14 +130,26 @@ class ChaosAudioService {
     _currentMusicAsset = null;
   }
 
+  /// Fires only the haptic for [sfx] (no sound), respecting the haptics
+  /// setting. Used for moments that need a buzz but no extra sound, e.g.
+  /// changing the current question.
+  void haptic(ChaosSfx sfx) {
+    if (_hapticsEnabled) {
+      _triggerHaptic(sfx);
+    }
+  }
+
   void _triggerHaptic(ChaosSfx sfx) {
     switch (sfx) {
       case ChaosSfx.buttonTap:
+        HapticFeedback.selectionClick();
+      // Choosing your fate, spending a shot and redirecting a target are key
+      // moments — give them a clearly felt medium buzz.
       case ChaosSfx.truthSelected:
       case ChaosSfx.dareSelected:
-        HapticFeedback.selectionClick();
       case ChaosSfx.wheelSpinStart:
       case ChaosSfx.targetUsed:
+      case ChaosSfx.shotTaken:
         HapticFeedback.mediumImpact();
       case ChaosSfx.wheelStop:
       case ChaosSfx.targetedReveal:
@@ -146,7 +158,6 @@ class ChaosAudioService {
       case ChaosSfx.evilReveal:
       case ChaosSfx.revengeActivated:
         HapticFeedback.heavyImpact();
-      case ChaosSfx.shotTaken:
       case ChaosSfx.premiumLocked:
       case ChaosSfx.revengeAvailable:
         HapticFeedback.lightImpact();

@@ -153,18 +153,30 @@ class GameProvider extends ChangeNotifier {
     return totalRounds - noEscapeRoundCountFor(totalRounds) + 1;
   }
 
+  /// The active game's No Escape start round: a custom value when the host set
+  /// one (custom game), otherwise the automatic formula.
+  int get effectiveNoEscapeStartRound {
+    if (_state.noEscapeStartRound > 0) {
+      return _state.noEscapeStartRound;
+    }
+    return noEscapeStartRoundFor(_state.totalRounds);
+  }
+
+  /// How many prompt changes a player gets each turn in the active game.
+  int get changeRightsPerTurn => _state.changeRightsPerTurn;
+
   bool get isNoEscapeActive {
     if (!_state.hasActiveGame || _state.isGameOver) {
       return false;
     }
-    return _state.currentRound >= noEscapeStartRoundFor(_state.totalRounds);
+    return _state.currentRound >= effectiveNoEscapeStartRound;
   }
 
   bool get isNoEscapeStartRound {
     if (!_state.hasActiveGame || _state.isGameOver) {
       return false;
     }
-    return _state.currentRound == noEscapeStartRoundFor(_state.totalRounds);
+    return _state.currentRound == effectiveNoEscapeStartRound;
   }
 
   bool get isFinalSpin {
@@ -279,6 +291,11 @@ class GameProvider extends ChangeNotifier {
 
   Future<void> playSfx(ChaosSfx sfx) {
     return ChaosAudioService.instance.play(sfx);
+  }
+
+  /// Fires only the haptic for [sfx] (no sound).
+  void haptic(ChaosSfx sfx) {
+    ChaosAudioService.instance.haptic(sfx);
   }
 
   Future<void> playHomeMusic() {
@@ -408,6 +425,8 @@ class GameProvider extends ChangeNotifier {
     required PromptVibeMode vibeMode,
     int? customPassRights,
     int? customTargetRights,
+    int? customNoEscapeStartRound,
+    int? customChangeRights,
   }) {
     final initializedPlayers = _gameLogicService
         .initializeGame(players, roundCount)
@@ -434,6 +453,8 @@ class GameProvider extends ChangeNotifier {
       revengeModeEnabled: revengeModeEnabled && _isPremiumUser,
       vibeMode: vibeMode,
       usedPromptIds: const {},
+      noEscapeStartRound: customNoEscapeStartRound ?? 0,
+      changeRightsPerTurn: customChangeRights ?? 1,
     );
     _pendingSpinPlayerId = null;
     _gamePaused = false;
