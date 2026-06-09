@@ -1,6 +1,7 @@
 import 'package:chaos_wheel_party_game/core/player_colors.dart';
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
+import 'package:chaos_wheel_party_game/util/turkish_name.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:chaos_wheel_party_game/widgets/pressable_scale.dart';
 import 'package:flutter/material.dart';
@@ -177,10 +178,12 @@ class TargetSelectionScreen extends StatelessWidget {
                                       player.name,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge
-                                          ?.copyWith(
+                                      style:
+                                          turkishName(
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.titleLarge,
+                                          ).copyWith(
                                             color: Colors.white,
                                             fontWeight: FontWeight.w800,
                                           ),

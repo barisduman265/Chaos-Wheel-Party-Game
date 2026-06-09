@@ -200,7 +200,10 @@ class ChaosWheelApp extends StatelessWidget {
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: accent,
-        contentTextStyle: GoogleFonts.fredoka(
+        // Snackbar messages frequently embed user-typed player names; use
+        // Nunito Sans (full Turkish support) rather than Fredoka, whose ş/Ş
+        // cedilla is malformed.
+        contentTextStyle: GoogleFonts.nunitoSans(
           color: Colors.white,
           fontWeight: FontWeight.w700,
         ),

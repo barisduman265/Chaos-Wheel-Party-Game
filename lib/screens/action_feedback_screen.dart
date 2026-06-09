@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
 import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
+import 'package:chaos_wheel_party_game/util/turkish_name.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -238,8 +239,10 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
                               widget.highlight!.toUpperCase(),
                               maxLines: 1,
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineSmall
-                                  ?.copyWith(
+                              style:
+                                  turkishName(
+                                    Theme.of(context).textTheme.headlineSmall,
+                                  ).copyWith(
                                     color: _accent,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.8,
@@ -254,10 +257,13 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
                     Text(
                       widget.subtitle,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.68),
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style:
+                          turkishName(
+                            Theme.of(context).textTheme.titleLarge,
+                          ).copyWith(
+                            color: Colors.white.withValues(alpha: 0.68),
+                            fontWeight: FontWeight.w700,
+                          ),
                     ),
                   ],
                 ),

@@ -8,6 +8,7 @@ import 'package:chaos_wheel_party_game/screens/fate_choice_screen.dart';
 import 'package:chaos_wheel_party_game/screens/game_summary_screen.dart';
 import 'package:chaos_wheel_party_game/screens/picked_reveal_screen.dart';
 import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
+import 'package:chaos_wheel_party_game/util/turkish_name.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:chaos_wheel_party_game/widgets/premium_upsell_dialog.dart';
 import 'package:chaos_wheel_party_game/widgets/pressable_scale.dart';
@@ -507,7 +508,10 @@ void _showPlayerControlsSheet(BuildContext context, Player player) {
                   player.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  style:
+                      turkishName(
+                        Theme.of(context).textTheme.titleLarge,
+                      ).copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
                   ),

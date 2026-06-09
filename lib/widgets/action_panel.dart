@@ -1,4 +1,5 @@
 import 'package:chaos_wheel_party_game/models/player.dart';
+import 'package:chaos_wheel_party_game/util/turkish_name.dart';
 import 'package:flutter/material.dart';
 
 class ActionPanel extends StatelessWidget {
@@ -68,10 +69,13 @@ class ActionPanel extends StatelessWidget {
                 alignment: Alignment.center,
                 child: Text(
                   player.name.isEmpty ? '?' : player.name[0].toUpperCase(),
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style:
+                      turkishName(
+                        Theme.of(context).textTheme.titleLarge,
+                      ).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                      ),
                 ),
               ),
               const SizedBox(width: 14),
@@ -81,8 +85,10 @@ class ActionPanel extends StatelessWidget {
                   children: [
                     Text(
                       '${player.name}, choose your fate',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(
+                      style:
+                          turkishName(
+                            Theme.of(context).textTheme.headlineSmall,
+                          ).copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
                           ),

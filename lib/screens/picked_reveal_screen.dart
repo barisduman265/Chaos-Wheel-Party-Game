@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
+import 'package:chaos_wheel_party_game/util/turkish_name.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -102,8 +103,10 @@ class _PickedRevealScreenState extends State<PickedRevealScreen>
                           widget.playerName.toUpperCase(),
                           maxLines: 1,
                           textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.displayLarge
-                              ?.copyWith(
+                          style:
+                              turkishName(
+                                Theme.of(context).textTheme.displayLarge,
+                              ).copyWith(
                                 color: const Color(0xFFFF5D98),
                                 fontWeight: FontWeight.w900,
                                 height: 0.95,
