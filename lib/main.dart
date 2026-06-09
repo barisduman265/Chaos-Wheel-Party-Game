@@ -93,9 +93,13 @@ class ChaosWheelApp extends StatelessWidget {
 
     final bodyColor = isDark ? Colors.white : const Color(0xFF130D1D);
     // Fredoka is missing some Turkish glyphs (e.g. ş, ı), which made names like
-    // "Barış" render as "Baris,". Fall back to Nunito Sans for those glyphs.
+    // "Barış" render as "Baris,". Fall back to Nunito Sans first, then the
+    // platform fonts (all of which carry full Turkish) for those glyphs.
     final turkishFallback = <String>[
-      GoogleFonts.nunitoSans().fontFamily ?? 'sans-serif',
+      GoogleFonts.nunitoSans().fontFamily ?? 'Roboto',
+      'Roboto',
+      'Noto Sans',
+      'sans-serif',
     ];
     final baseTextTheme = GoogleFonts.nunitoSansTextTheme(base.textTheme);
     final textTheme = _withTurkishFallback(

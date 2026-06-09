@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chaos_wheel_party_game/providers/game_provider.dart';
+import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
 import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -138,6 +139,11 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
   void dispose() {
     _timer?.cancel();
     _controller.dispose();
+    // Stop the No Escape sting when leaving this screen (e.g. tapping next
+    // turn) so it does not bleed into the following turn.
+    if (widget.type == ActionFeedbackType.noEscape) {
+      ChaosAudioService.instance.stopSfx();
+    }
     super.dispose();
   }
 

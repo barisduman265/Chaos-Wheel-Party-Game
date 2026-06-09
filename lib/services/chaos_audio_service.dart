@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
 
 enum ChaosSfx {
   buttonTap,
@@ -19,12 +20,19 @@ enum ChaosSfx {
 }
 
 class ChaosAudioService {
-  ChaosAudioService._();
+  ChaosAudioService._() {
+    _initVibrator();
+  }
 
   static final ChaosAudioService instance = ChaosAudioService._();
 
   final AudioPlayer _sfxPlayer = AudioPlayer();
   final AudioPlayer _musicPlayer = AudioPlayer();
+
+  // Whether the device has a real vibrator. When true we drive it directly
+  // (bypassing the system "touch vibration" setting that mutes HapticFeedback);
+  // otherwise we fall back to HapticFeedback.
+  bool _hasVibrator = false;
 
   bool _soundEnabled = true;
   bool _hapticsEnabled = true;
@@ -123,11 +131,27 @@ class ChaosAudioService {
     }
   }
 
+  /// Immediately stops any one-shot sound effect (e.g. so the No Escape sting
+  /// does not bleed into the next turn).
+  Future<void> stopSfx() async {
+    try {
+      await _sfxPlayer.stop();
+    } catch (_) {}
+  }
+
   Future<void> dispose() async {
     await _sfxPlayer.dispose();
     await _musicPlayer.dispose();
     _musicStarted = false;
     _currentMusicAsset = null;
+  }
+
+  Future<void> _initVibrator() async {
+    try {
+      _hasVibrator = await Vibration.hasVibrator();
+    } catch (_) {
+      _hasVibrator = false;
+    }
   }
 
   /// Fires only the haptic for [sfx] (no sound), respecting the haptics
@@ -140,27 +164,41 @@ class ChaosAudioService {
   }
 
   void _triggerHaptic(ChaosSfx sfx) {
-    switch (sfx) {
-      case ChaosSfx.buttonTap:
-        HapticFeedback.selectionClick();
-      // Choosing your fate, spending a shot and redirecting a target are key
-      // moments — give them a clearly felt medium buzz.
-      case ChaosSfx.truthSelected:
-      case ChaosSfx.dareSelected:
-      case ChaosSfx.wheelSpinStart:
-      case ChaosSfx.targetUsed:
-      case ChaosSfx.shotTaken:
-        HapticFeedback.mediumImpact();
-      case ChaosSfx.wheelStop:
-      case ChaosSfx.targetedReveal:
-      case ChaosSfx.noEscape:
-      case ChaosSfx.evilActivated:
-      case ChaosSfx.evilReveal:
-      case ChaosSfx.revengeActivated:
-        HapticFeedback.heavyImpact();
-      case ChaosSfx.premiumLocked:
-      case ChaosSfx.revengeAvailable:
-        HapticFeedback.lightImpact();
+    // (duration ms, amplitude 1-255) per event intensity.
+    final (ms, amp) = switch (sfx) {
+      ChaosSfx.buttonTap => (14, 90),
+      ChaosSfx.truthSelected ||
+      ChaosSfx.dareSelected ||
+      ChaosSfx.wheelSpinStart ||
+      ChaosSfx.targetUsed ||
+      ChaosSfx.shotTaken ||
+      ChaosSfx.premiumLocked ||
+      ChaosSfx.revengeAvailable => (35, 180),
+      ChaosSfx.wheelStop ||
+      ChaosSfx.targetedReveal ||
+      ChaosSfx.noEscape ||
+      ChaosSfx.evilActivated ||
+      ChaosSfx.evilReveal ||
+      ChaosSfx.revengeActivated => (60, 255),
+    };
+
+    if (_hasVibrator) {
+      // Drive the vibrator directly so it fires regardless of the system
+      // "touch vibration" setting that mutes HapticFeedback.
+      try {
+        Vibration.vibrate(duration: ms, amplitude: amp);
+        return;
+      } catch (_) {
+        // Fall through to platform haptics.
+      }
+    }
+
+    if (amp >= 255) {
+      HapticFeedback.heavyImpact();
+    } else if (amp >= 180) {
+      HapticFeedback.mediumImpact();
+    } else {
+      HapticFeedback.selectionClick();
     }
   }
 
@@ -174,7 +212,7 @@ class ChaosAudioService {
       ChaosSfx.shotTaken => 'audio/shot_real.mp3',
       ChaosSfx.targetUsed => 'audio/target_real.mp3',
       ChaosSfx.targetedReveal => 'audio/targeted_real.mp3',
-      ChaosSfx.noEscape => 'audio/no_escape_real.mp3',
+      ChaosSfx.noEscape => 'audio/evil_activated_real.mp3',
       ChaosSfx.premiumLocked => 'audio/premium_locked_real.mp3',
       ChaosSfx.evilActivated => 'audio/evil_activated_real.mp3',
       ChaosSfx.evilReveal => 'audio/evil_activated_real.mp3',
