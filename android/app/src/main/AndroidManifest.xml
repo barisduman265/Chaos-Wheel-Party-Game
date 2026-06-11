@@ -3,7 +3,7 @@
          device during gameplay; without it Android silently ignores them. -->
     <uses-permission android:name="android.permission.VIBRATE"/>
     <application
-        android:label="chaos_wheel_party_game"
+        android:label="Chaos Wheel"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
