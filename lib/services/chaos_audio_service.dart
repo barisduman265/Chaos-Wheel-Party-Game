@@ -113,6 +113,29 @@ class ChaosAudioService {
     _currentMusicAsset = null;
   }
 
+  /// Pauses background music when the app is sent to the background (or another
+  /// app takes the foreground) so it doesn't keep playing off-screen. The
+  /// "started" state is kept so [resumeMusicFromBackground] can pick it back up.
+  Future<void> pauseMusicForBackground() async {
+    if (!_musicStarted) {
+      return;
+    }
+    try {
+      await _musicPlayer.pause();
+    } catch (_) {}
+  }
+
+  /// Resumes background music when the app returns to the foreground, but only
+  /// if it was actually playing and the current screen still wants it.
+  Future<void> resumeMusicFromBackground() async {
+    if (!_musicStarted || !_backgroundMusicEnabled || !_wantsMusic) {
+      return;
+    }
+    try {
+      await _musicPlayer.resume();
+    } catch (_) {}
+  }
+
   Future<void> play(ChaosSfx sfx) async {
     if (_hapticsEnabled) {
       _triggerHaptic(sfx);

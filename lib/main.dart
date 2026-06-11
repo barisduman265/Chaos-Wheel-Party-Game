@@ -9,6 +9,7 @@ import 'package:chaos_wheel/screens/premium_screen.dart';
 import 'package:chaos_wheel/screens/settings_screen.dart';
 import 'package:chaos_wheel/screens/splash_screen.dart';
 import 'package:chaos_wheel/screens/target_selection_screen.dart';
+import 'package:chaos_wheel/services/chaos_audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -22,8 +23,42 @@ void main() {
   );
 }
 
-class ChaosWheelApp extends StatelessWidget {
+class ChaosWheelApp extends StatefulWidget {
   const ChaosWheelApp({super.key});
+
+  @override
+  State<ChaosWheelApp> createState() => _ChaosWheelAppState();
+}
+
+class _ChaosWheelAppState extends State<ChaosWheelApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Pause background music whenever the app leaves the foreground (home
+    // button, app switcher, another app) and resume it on return, so music
+    // never keeps playing off-screen.
+    switch (state) {
+      case AppLifecycleState.resumed:
+        ChaosAudioService.instance.resumeMusicFromBackground();
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        ChaosAudioService.instance.pauseMusicForBackground();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
