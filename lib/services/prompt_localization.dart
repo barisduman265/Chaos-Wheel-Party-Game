@@ -1,4 +1,4 @@
-import 'package:chaos_wheel_party_game/models/prompt_models.dart';
+import 'package:chaos_wheel/models/prompt_models.dart';
 
 /// Localized prompt text keyed by prompt id, per language.
 ///

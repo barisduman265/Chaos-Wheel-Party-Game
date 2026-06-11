@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 
-import 'package:chaos_wheel_party_game/core/player_colors.dart';
-import 'package:chaos_wheel_party_game/models/player.dart';
-import 'package:chaos_wheel_party_game/providers/game_provider.dart';
-import 'package:chaos_wheel_party_game/screens/game_setup_screen.dart';
-import 'package:chaos_wheel_party_game/util/turkish_name.dart';
-import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel/core/player_colors.dart';
+import 'package:chaos_wheel/models/player.dart';
+import 'package:chaos_wheel/providers/game_provider.dart';
+import 'package:chaos_wheel/screens/game_setup_screen.dart';
+import 'package:chaos_wheel/util/turkish_name.dart';
+import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

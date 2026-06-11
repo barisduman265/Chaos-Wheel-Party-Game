@@ -1,5 +1,5 @@
-import 'package:chaos_wheel_party_game/models/player.dart';
-import 'package:chaos_wheel_party_game/models/prompt_models.dart';
+import 'package:chaos_wheel/models/player.dart';
+import 'package:chaos_wheel/models/prompt_models.dart';
 
 class GameStateModel {
   const GameStateModel({

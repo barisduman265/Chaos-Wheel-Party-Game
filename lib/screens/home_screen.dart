@@ -1,10 +1,10 @@
-import 'package:chaos_wheel_party_game/screens/add_players_screen.dart';
-import 'package:chaos_wheel_party_game/screens/how_to_play_screen.dart';
-import 'package:chaos_wheel_party_game/screens/premium_screen.dart';
-import 'package:chaos_wheel_party_game/providers/game_provider.dart';
-import 'package:chaos_wheel_party_game/services/app_localization_service.dart';
-import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
-import 'package:chaos_wheel_party_game/widgets/primary_button.dart';
+import 'package:chaos_wheel/screens/add_players_screen.dart';
+import 'package:chaos_wheel/screens/how_to_play_screen.dart';
+import 'package:chaos_wheel/screens/premium_screen.dart';
+import 'package:chaos_wheel/providers/game_provider.dart';
+import 'package:chaos_wheel/services/app_localization_service.dart';
+import 'package:chaos_wheel/widgets/chaos_background.dart';
+import 'package:chaos_wheel/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -501,7 +501,7 @@ void _showInfoDialog(
 
 Future<void> _openRateApp(BuildContext context) async {
   final uri = Uri.parse(
-    'https://play.google.com/store/apps/details?id=com.example.chaos_wheel_party_game',
+    'https://play.google.com/store/apps/details?id=com.barisduman.chaoswheel',
   );
   final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
   if (!opened && context.mounted) {

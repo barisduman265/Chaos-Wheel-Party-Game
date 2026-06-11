@@ -1,14 +1,14 @@
 import 'dart:math';
 
-import 'package:chaos_wheel_party_game/models/game_state.dart';
-import 'package:chaos_wheel_party_game/models/player.dart';
-import 'package:chaos_wheel_party_game/models/prompt_models.dart';
-import 'package:chaos_wheel_party_game/services/app_localization_service.dart';
-import 'package:chaos_wheel_party_game/services/game_logic_service.dart';
-import 'package:chaos_wheel_party_game/services/chaos_audio_service.dart';
-import 'package:chaos_wheel_party_game/services/premium_purchase_service.dart';
-import 'package:chaos_wheel_party_game/services/prompt_engine.dart';
-import 'package:chaos_wheel_party_game/services/prompt_localization.dart';
+import 'package:chaos_wheel/models/game_state.dart';
+import 'package:chaos_wheel/models/player.dart';
+import 'package:chaos_wheel/models/prompt_models.dart';
+import 'package:chaos_wheel/services/app_localization_service.dart';
+import 'package:chaos_wheel/services/game_logic_service.dart';
+import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/services/premium_purchase_service.dart';
+import 'package:chaos_wheel/services/prompt_engine.dart';
+import 'package:chaos_wheel/services/prompt_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -1,5 +1,5 @@
-import 'package:chaos_wheel_party_game/models/player.dart';
-import 'package:chaos_wheel_party_game/util/turkish_name.dart';
+import 'package:chaos_wheel/models/player.dart';
+import 'package:chaos_wheel/util/turkish_name.dart';
 import 'package:flutter/material.dart';
 
 class PlayerStatusCard extends StatelessWidget {

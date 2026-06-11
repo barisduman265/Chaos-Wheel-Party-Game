@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:chaos_wheel_party_game/models/game_state.dart';
-import 'package:chaos_wheel_party_game/models/player.dart';
+import 'package:chaos_wheel/models/game_state.dart';
+import 'package:chaos_wheel/models/player.dart';
 
 class GameLogicService {
   GameLogicService({Random? random}) : _random = random ?? Random();

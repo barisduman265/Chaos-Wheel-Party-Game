@@ -1,10 +1,10 @@
-import 'package:chaos_wheel_party_game/models/player.dart';
-import 'package:chaos_wheel_party_game/providers/game_provider.dart';
-import 'package:chaos_wheel_party_game/screens/add_players_screen.dart';
-import 'package:chaos_wheel_party_game/screens/game_screen.dart';
-import 'package:chaos_wheel_party_game/screens/home_screen.dart';
-import 'package:chaos_wheel_party_game/services/share_service.dart';
-import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel/models/player.dart';
+import 'package:chaos_wheel/providers/game_provider.dart';
+import 'package:chaos_wheel/screens/add_players_screen.dart';
+import 'package:chaos_wheel/screens/game_screen.dart';
+import 'package:chaos_wheel/screens/home_screen.dart';
+import 'package:chaos_wheel/services/share_service.dart';
+import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';

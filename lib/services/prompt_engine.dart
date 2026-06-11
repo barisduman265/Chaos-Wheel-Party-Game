@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:chaos_wheel_party_game/models/prompt_models.dart';
-import 'package:chaos_wheel_party_game/services/prompt_repository.dart';
+import 'package:chaos_wheel/models/prompt_models.dart';
+import 'package:chaos_wheel/services/prompt_repository.dart';
 
 class PromptEngine {
   PromptEngine({PromptRepository? repository, Random? random})

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:chaos_wheel_party_game/main.dart';
-import 'package:chaos_wheel_party_game/providers/game_provider.dart';
+import 'package:chaos_wheel/main.dart';
+import 'package:chaos_wheel/providers/game_provider.dart';
 
 void main() {
   testWidgets('shows splash branding and opens home', (

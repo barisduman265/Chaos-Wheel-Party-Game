@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:chaos_wheel_party_game/screens/home_screen.dart';
-import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
+import 'package:chaos_wheel/screens/home_screen.dart';
+import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {

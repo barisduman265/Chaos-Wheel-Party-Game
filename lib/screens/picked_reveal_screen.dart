@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:chaos_wheel_party_game/providers/game_provider.dart';
-import 'package:chaos_wheel_party_game/util/turkish_name.dart';
+import 'package:chaos_wheel/providers/game_provider.dart';
+import 'package:chaos_wheel/util/turkish_name.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

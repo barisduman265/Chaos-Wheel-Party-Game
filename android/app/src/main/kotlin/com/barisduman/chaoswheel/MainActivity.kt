@@ -1,4 +1,4 @@
-package com.example.chaos_wheel_party_game
+package com.barisduman.chaoswheel
 
 import io.flutter.embedding.android.FlutterActivity
 

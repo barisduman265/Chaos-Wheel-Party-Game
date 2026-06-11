@@ -1,6 +1,6 @@
 {
-    "name": "chaos_wheel_party_game",
-    "short_name": "chaos_wheel_party_game",
+    "name": "Chaos Wheel",
+    "short_name": "Chaos Wheel",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#000000",

@@ -1,8 +1,8 @@
-import 'package:chaos_wheel_party_game/providers/game_provider.dart';
-import 'package:chaos_wheel_party_game/services/share_service.dart';
-import 'package:chaos_wheel_party_game/widgets/chaos_background.dart';
-import 'package:chaos_wheel_party_game/widgets/premium_plan_cards.dart';
-import 'package:chaos_wheel_party_game/widgets/pressable_scale.dart';
+import 'package:chaos_wheel/providers/game_provider.dart';
+import 'package:chaos_wheel/services/share_service.dart';
+import 'package:chaos_wheel/widgets/chaos_background.dart';
+import 'package:chaos_wheel/widgets/premium_plan_cards.dart';
+import 'package:chaos_wheel/widgets/pressable_scale.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

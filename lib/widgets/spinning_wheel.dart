@@ -1,7 +1,7 @@
 import 'dart:math';
 
-import 'package:chaos_wheel_party_game/core/player_colors.dart';
-import 'package:chaos_wheel_party_game/models/player.dart';
+import 'package:chaos_wheel/core/player_colors.dart';
+import 'package:chaos_wheel/models/player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

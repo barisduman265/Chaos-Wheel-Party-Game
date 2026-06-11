@@ -1,5 +1,5 @@
-import 'package:chaos_wheel_party_game/models/player.dart';
-import 'package:chaos_wheel_party_game/services/share_file_saver.dart';
+import 'package:chaos_wheel/models/player.dart';
+import 'package:chaos_wheel/services/share_file_saver.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 

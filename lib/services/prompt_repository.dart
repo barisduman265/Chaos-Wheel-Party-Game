@@ -1,4 +1,4 @@
-import 'package:chaos_wheel_party_game/models/prompt_models.dart';
+import 'package:chaos_wheel/models/prompt_models.dart';
 
 class PromptRepository {
   PromptRepository() : _prompts = _buildPrompts();
