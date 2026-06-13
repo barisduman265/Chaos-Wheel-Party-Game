@@ -4,14 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
-/// A bottom-anchored AdMob banner used as a Scaffold `bottomNavigationBar`.
+/// Where a [BannerAdSlot] sits, so its safe-area inset is applied on the
+/// correct edge (below the status bar for a top banner, above the system
+/// navigation bar for a bottom banner).
+enum BannerPosition { top, bottom }
+
+/// An AdMob banner used either as a Scaffold `bottomNavigationBar` (bottom) or
+/// as the first child of the body `Column` (top).
 ///
-/// - Takes no space (and loads nothing) for premium users.
+/// - Loads nothing and takes no space for premium users.
 /// - Stays invisible until the ad actually loads, so there's never an empty
 ///   grey strip.
 /// - Disposes the ad when the screen is torn down.
 class BannerAdSlot extends StatefulWidget {
-  const BannerAdSlot({super.key});
+  const BannerAdSlot({super.key, this.position = BannerPosition.bottom});
+
+  final BannerPosition position;
 
   @override
   State<BannerAdSlot> createState() => _BannerAdSlotState();
@@ -63,8 +71,10 @@ class _BannerAdSlotState extends State<BannerAdSlot> {
     if (isPremium || !_loaded || ad == null) {
       return const SizedBox.shrink();
     }
+    final isTop = widget.position == BannerPosition.top;
     return SafeArea(
-      top: false,
+      top: isTop,
+      bottom: !isTop,
       child: SizedBox(
         width: double.infinity,
         height: ad.size.height.toDouble(),

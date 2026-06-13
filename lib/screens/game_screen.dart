@@ -56,9 +56,13 @@ class _GameScreenState extends State<GameScreen> {
 
     return Scaffold(
       bottomNavigationBar: const BannerAdSlot(),
-      body: Stack(
+      body: Column(
         children: [
-          const ChaosBackground(child: SizedBox.expand()),
+          const BannerAdSlot(position: BannerPosition.top),
+          Expanded(
+            child: Stack(
+              children: [
+                const ChaosBackground(child: SizedBox.expand()),
           if (noEscape)
             Positioned.fill(
               child: DecoratedBox(
@@ -185,6 +189,9 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
             ),
           ),
         ],

@@ -107,8 +107,12 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
 
     return Scaffold(
       bottomNavigationBar: const BannerAdSlot(),
-      body: ChaosBackground(
-        child: SafeArea(
+      body: Column(
+        children: [
+          const BannerAdSlot(position: BannerPosition.top),
+          Expanded(
+            child: ChaosBackground(
+              child: SafeArea(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(22, 16, 22, 22),
             children: [
@@ -233,6 +237,9 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
             ],
           ),
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

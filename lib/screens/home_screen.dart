@@ -33,10 +33,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final provider = context.watch<GameProvider>();
     return Scaffold(
       bottomNavigationBar: const BannerAdSlot(),
-      body: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: _tryStartMusic,
-        child: ChaosBackground(
+      body: Column(
+        children: [
+          const BannerAdSlot(position: BannerPosition.top),
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: _tryStartMusic,
+              child: ChaosBackground(
           child: Stack(
             children: [
               const _HomeAmbientPulse(),
@@ -167,6 +171,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
+      ),
+          ),
+        ],
       ),
     );
   }
