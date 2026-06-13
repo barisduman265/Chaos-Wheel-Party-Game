@@ -82,7 +82,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(26, 16, 26, 18),
+              padding: const EdgeInsets.fromLTRB(26, 8, 26, 10),
               child: Column(
                 children: [
                   _TopControls(
@@ -94,7 +94,7 @@ class _GameScreenState extends State<GameScreen> {
                     noEscape: noEscape,
                     onMenuTap: () => _showGameControlsSheet(context),
                   ),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 12),
                   Text(
                     noEscape
                         ? provider.l('noEscapeMode')
@@ -104,20 +104,21 @@ class _GameScreenState extends State<GameScreen> {
                     style: Theme.of(context).textTheme.labelLarge?.copyWith(
                       color: Colors.white.withValues(alpha: 0.48),
                       fontWeight: FontWeight.w800,
-                      letterSpacing: 5,
+                      letterSpacing: 4,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   Text(
                     provider.l('whosNext'),
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
+                      fontSize: 30,
                       height: 0.95,
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 4),
                   Expanded(
                     child: Center(
                       child: SpinningWheel(
@@ -171,14 +172,14 @@ class _GameScreenState extends State<GameScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 6),
                   _AutoRosterStrip(
                     players: state.players,
                     selectedPlayerId: state.selectedPlayer?.id,
                     noEscape: noEscape,
                     isSpinning: state.isSpinning,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   _SpinBar(
                     isSpinning: state.isSpinning,
                     hasSelection: state.selectedPlayer != null,
@@ -935,7 +936,7 @@ class _TopControls extends StatelessWidget {
               ),
             const Spacer(),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(999),
                 color: Colors.white.withValues(alpha: 0.08),
@@ -946,7 +947,7 @@ class _TopControls extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w900,
-                    letterSpacing: 3,
+                    letterSpacing: 2,
                   ),
                   children: [
                     TextSpan(
@@ -966,7 +967,7 @@ class _TopControls extends StatelessWidget {
             _RoundIconButton(icon: Icons.more_horiz_rounded, onTap: onMenuTap),
           ],
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 12),
         ClipRRect(
           borderRadius: BorderRadius.circular(999),
           child: LinearProgressIndicator(
@@ -1288,7 +1289,7 @@ class _SpinBar extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         width: double.infinity,
-        height: 68,
+        height: 58,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(999),
           gradient: canSpin

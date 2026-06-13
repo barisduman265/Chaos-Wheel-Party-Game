@@ -47,8 +47,12 @@ class _BannerAdSlotState extends State<BannerAdSlot> {
     // Use a full-width anchored adaptive banner so it spans the screen instead
     // of leaving black bars beside a fixed 320px banner.
     final width = MediaQuery.of(context).size.width.truncate();
+    // Standard anchored adaptive: full screen width at the regular ~50dp height
+    // (the "large" variant is too tall and overflows the home layout). The API
+    // is deprecated but still functional and gives exactly the size we want.
     final adaptiveSize =
-        await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width) ??
+        // ignore: deprecated_member_use
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width) ??
         AdSize.banner;
     if (!mounted) {
       return;
