@@ -24,9 +24,12 @@ class AdHelper {
   // it falls back to the test banner so an iOS release still shows ads.
   static const String _iosBanner = _testBanner;
 
-  // TODO: Replace with your real AdMob *interstitial* ad unit ids before
-  // release. Until then they fall back to the test interstitial.
-  static const String _androidInterstitial = _testInterstitial;
+  // Real AdMob interstitial unit for Android. Only used in release builds;
+  // debug always serves the test interstitial.
+  static const String _androidInterstitial =
+      'ca-app-pub-5960894143182893/1457951272';
+
+  // TODO: Create an iOS interstitial unit in AdMob and paste its id here.
   static const String _iosInterstitial = _testInterstitial;
 
   static String get bannerAdUnitId {
