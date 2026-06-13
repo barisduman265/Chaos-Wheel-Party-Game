@@ -57,11 +57,13 @@ class GameProvider extends ChangeNotifier {
   static const double _revengeChance = 0.35;
 
   /// Free players see the premium pop-up once every this many completed turns.
-  static const int _upsellEveryTurns = 3;
+  /// Kept off the interstitial's 3-turn cadence so the ad (which takes
+  /// priority) doesn't permanently suppress it.
+  static const int _upsellEveryTurns = 5;
   int _turnsSinceUpsell = 0;
 
   /// Free players see a full-screen interstitial ad once every this many turns.
-  static const int _interstitialEveryTurns = 4;
+  static const int _interstitialEveryTurns = 3;
   int _turnsSinceInterstitial = 0;
 
   /// Counts a completed turn and reports whether the in-game premium pop-up

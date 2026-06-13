@@ -154,18 +154,18 @@ class _GameScreenState extends State<GameScreen> {
                             return;
                           }
 
-                          // Advance both counters every turn; if the premium
-                          // pop-up shows this turn it takes priority over the
-                          // interstitial so they never stack.
-                          final showUpsell = provider.consumeUpsellTrigger();
+                          // Advance both counters every turn. The interstitial
+                          // (every 3 turns) takes priority over the premium
+                          // pop-up (every 5) so they never stack.
                           final showAd = provider.consumeInterstitialTrigger();
-                          if (showUpsell) {
+                          final showUpsell = provider.consumeUpsellTrigger();
+                          if (showAd) {
+                            provider.showInterstitial();
+                          } else if (showUpsell) {
                             await showPremiumUpsell(context);
                             if (!context.mounted) {
                               return;
                             }
-                          } else if (showAd) {
-                            provider.showInterstitial();
                           }
                           await FateChoiceScreen.show(context, player: player);
                         },
