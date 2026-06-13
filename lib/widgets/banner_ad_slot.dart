@@ -32,16 +32,30 @@ class _BannerAdSlotState extends State<BannerAdSlot> {
   @override
   void initState() {
     super.initState();
-    // Premium users never see ads, so don't even request one.
+    // Premium users never see ads, so don't even request one. The adaptive
+    // size needs the screen width from MediaQuery, so defer to the first frame.
     if (!context.read<GameProvider>().isPremiumUser) {
-      _loadAd();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _loadAd();
+        }
+      });
     }
   }
 
-  void _loadAd() {
+  Future<void> _loadAd() async {
+    // Use a full-width anchored adaptive banner so it spans the screen instead
+    // of leaving black bars beside a fixed 320px banner.
+    final width = MediaQuery.of(context).size.width.truncate();
+    final adaptiveSize =
+        await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width) ??
+        AdSize.banner;
+    if (!mounted) {
+      return;
+    }
     final banner = BannerAd(
       adUnitId: AdHelper.bannerAdUnitId,
-      size: AdSize.banner,
+      size: adaptiveSize,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (_) {
