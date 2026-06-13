@@ -921,10 +921,18 @@ class _TopControls extends StatelessWidget {
       children: [
         Row(
           children: [
-            _RoundIconButton(
-              icon: Icons.chevron_left_rounded,
-              onTap: () => Navigator.maybePop(context),
-            ),
+            // No back button mid-game (leaving the wheel screen has no meaning).
+            // In its place, free players get a small "go premium" button; for
+            // premium users a same-sized spacer keeps the counter centered.
+            if (context.watch<GameProvider>().isPremiumUser)
+              const SizedBox(width: 50, height: 50)
+            else
+              _RoundIconButton(
+                icon: Icons.workspace_premium_rounded,
+                iconColor: const Color(0xFFFFD66B),
+                borderColor: const Color(0xFFFFD66B).withValues(alpha: 0.40),
+                onTap: () => showPremiumUpsell(context),
+              ),
             const Spacer(),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -976,10 +984,17 @@ class _TopControls extends StatelessWidget {
 }
 
 class _RoundIconButton extends StatelessWidget {
-  const _RoundIconButton({required this.icon, required this.onTap});
+  const _RoundIconButton({
+    required this.icon,
+    required this.onTap,
+    this.iconColor,
+    this.borderColor,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final Color? iconColor;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -992,9 +1007,11 @@ class _RoundIconButton extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: Colors.white.withValues(alpha: 0.07),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+          border: Border.all(
+            color: borderColor ?? Colors.white.withValues(alpha: 0.10),
+          ),
         ),
-        child: Icon(icon, color: Colors.white, size: 26),
+        child: Icon(icon, color: iconColor ?? Colors.white, size: 26),
       ),
     );
   }
