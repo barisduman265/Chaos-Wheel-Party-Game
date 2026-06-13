@@ -47,6 +47,7 @@ dependencies:
   # Direct Vibrator access so in-game haptics fire even when the device's
   # "touch vibration" system setting is off (HapticFeedback respects it).
   vibration: ^3.1.8
+  google_mobile_ads: ^9.0.0
 
 dev_dependencies:
   flutter_test:
@@ -62,6 +63,7 @@ dev_dependencies:
   # Generates Android/iOS/web launcher icons from assets/AppLogo.png.
   # Run after changing the icon: dart run flutter_launcher_icons
   flutter_launcher_icons: ^0.14.4
+  change_app_package_name: ^1.5.0
 
 # Launcher icon configuration. The source is the same AppLogo.png used as the
 # in-app logo, so the app icon and on-screen logo stay in sync.

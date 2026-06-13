@@ -9,6 +9,7 @@ import 'package:chaos_wheel/screens/game_summary_screen.dart';
 import 'package:chaos_wheel/screens/picked_reveal_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
 import 'package:chaos_wheel/util/turkish_name.dart';
+import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:chaos_wheel/widgets/premium_upsell_dialog.dart';
 import 'package:chaos_wheel/widgets/pressable_scale.dart';
@@ -54,6 +55,7 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     return Scaffold(
+      bottomNavigationBar: const BannerAdSlot(),
       body: Stack(
         children: [
           const ChaosBackground(child: SizedBox.expand()),

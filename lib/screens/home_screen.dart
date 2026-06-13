@@ -3,6 +3,7 @@ import 'package:chaos_wheel/screens/how_to_play_screen.dart';
 import 'package:chaos_wheel/screens/premium_screen.dart';
 import 'package:chaos_wheel/providers/game_provider.dart';
 import 'package:chaos_wheel/services/app_localization_service.dart';
+import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:chaos_wheel/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     return Scaffold(
+      bottomNavigationBar: const BannerAdSlot(),
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: _tryStartMusic,

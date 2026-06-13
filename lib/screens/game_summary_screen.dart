@@ -4,6 +4,7 @@ import 'package:chaos_wheel/screens/add_players_screen.dart';
 import 'package:chaos_wheel/screens/game_screen.dart';
 import 'package:chaos_wheel/screens/home_screen.dart';
 import 'package:chaos_wheel/services/share_service.dart';
+import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -105,6 +106,7 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
     ];
 
     return Scaffold(
+      bottomNavigationBar: const BannerAdSlot(),
       body: ChaosBackground(
         child: SafeArea(
           child: ListView(
