@@ -13,10 +13,13 @@ class AdHelper {
   // Google's public test banner unit (safe to click during development).
   static const String _testBanner = 'ca-app-pub-3940256099942544/6300978111';
 
-  // TODO: Replace these with your real AdMob *banner* ad unit IDs (the ones
-  // that look like ca-app-pub-5960894143182893/XXXXXXXXXX) before publishing.
-  // Until then they fall back to the test banner so release still shows ads.
-  static const String _androidBanner = _testBanner;
+  // Real AdMob banner unit for Android. Only used in release builds; debug
+  // always serves the test banner above.
+  static const String _androidBanner =
+      'ca-app-pub-5960894143182893/3564104393';
+
+  // TODO: Create an iOS banner unit in AdMob and paste its id here. Until then
+  // it falls back to the test banner so an iOS release still shows ads.
   static const String _iosBanner = _testBanner;
 
   static String get bannerAdUnitId {
