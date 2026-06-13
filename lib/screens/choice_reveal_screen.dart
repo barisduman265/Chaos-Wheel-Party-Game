@@ -386,6 +386,8 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
         GameSummaryScreen.routeName,
         (route) => false,
       );
+      // Interstitial when the game ends.
+      provider.showInterstitial();
       return;
     }
 

@@ -449,7 +449,8 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                         );
                         return;
                       }
-                      context.read<GameProvider>().initializeGame(
+                      final provider = context.read<GameProvider>();
+                      provider.initializeGame(
                         roundCount: _effectiveRoundCount,
                         balanceRuleEnabled: _balanceRuleEnabled,
                         randomButtonEnabled: _randomButtonEnabled,
@@ -473,6 +474,8 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                         GameScreen.routeName,
                         (route) => false,
                       );
+                      // Interstitial when a new game starts.
+                      provider.showInterstitial();
                     },
                   ),
                 ],

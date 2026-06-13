@@ -10,6 +10,7 @@ import 'package:chaos_wheel/screens/settings_screen.dart';
 import 'package:chaos_wheel/screens/splash_screen.dart';
 import 'package:chaos_wheel/screens/target_selection_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/services/interstitial_ad_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,6 +20,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await MobileAds.instance.initialize();
+  // Warm up the first interstitial so it's ready by the time gameplay needs it.
+  InterstitialAdManager.instance.preload();
   runApp(
     ChangeNotifierProvider(
       create: (_) => GameProvider(),

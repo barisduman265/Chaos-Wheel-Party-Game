@@ -207,12 +207,15 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
                 ],
                 glowColor: const Color(0xFF39D2FF),
                 onTap: () {
-                  context.read<GameProvider>().resetGameSamePlayers();
+                  final provider = context.read<GameProvider>();
+                  provider.resetGameSamePlayers();
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     GameScreen.routeName,
                     (route) => false,
                   );
+                  // Interstitial when a new game starts.
+                  provider.showInterstitial();
                 },
               ),
               const SizedBox(height: 10),

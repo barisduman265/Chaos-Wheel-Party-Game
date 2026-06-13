@@ -10,8 +10,10 @@ import 'package:flutter/foundation.dart';
 class AdHelper {
   AdHelper._();
 
-  // Google's public test banner unit (safe to click during development).
+  // Google's public test units (safe to click during development).
   static const String _testBanner = 'ca-app-pub-3940256099942544/6300978111';
+  static const String _testInterstitial =
+      'ca-app-pub-3940256099942544/1033173712';
 
   // Real AdMob banner unit for Android. Only used in release builds; debug
   // always serves the test banner above.
@@ -22,6 +24,11 @@ class AdHelper {
   // it falls back to the test banner so an iOS release still shows ads.
   static const String _iosBanner = _testBanner;
 
+  // TODO: Replace with your real AdMob *interstitial* ad unit ids before
+  // release. Until then they fall back to the test interstitial.
+  static const String _androidInterstitial = _testInterstitial;
+  static const String _iosInterstitial = _testInterstitial;
+
   static String get bannerAdUnitId {
     if (kDebugMode) {
       return _testBanner;
@@ -30,5 +37,15 @@ class AdHelper {
       return _iosBanner;
     }
     return _androidBanner;
+  }
+
+  static String get interstitialAdUnitId {
+    if (kDebugMode) {
+      return _testInterstitial;
+    }
+    if (Platform.isIOS) {
+      return _iosInterstitial;
+    }
+    return _androidInterstitial;
   }
 }

@@ -6,6 +6,7 @@ import 'package:chaos_wheel/models/prompt_models.dart';
 import 'package:chaos_wheel/services/app_localization_service.dart';
 import 'package:chaos_wheel/services/game_logic_service.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/services/interstitial_ad_manager.dart';
 import 'package:chaos_wheel/services/premium_purchase_service.dart';
 import 'package:chaos_wheel/services/prompt_engine.dart';
 import 'package:chaos_wheel/services/prompt_localization.dart';
@@ -59,6 +60,10 @@ class GameProvider extends ChangeNotifier {
   static const int _upsellEveryTurns = 3;
   int _turnsSinceUpsell = 0;
 
+  /// Free players see a full-screen interstitial ad once every this many turns.
+  static const int _interstitialEveryTurns = 4;
+  int _turnsSinceInterstitial = 0;
+
   /// Counts a completed turn and reports whether the in-game premium pop-up
   /// should be shown now. Returns false for premium users.
   bool consumeUpsellTrigger() {
@@ -71,6 +76,28 @@ class GameProvider extends ChangeNotifier {
     }
     _turnsSinceUpsell = 0;
     return true;
+  }
+
+  /// Counts a completed turn and reports whether an interstitial ad should be
+  /// shown now (every [_interstitialEveryTurns] turns). False for premium users.
+  bool consumeInterstitialTrigger() {
+    if (_isPremiumUser) {
+      return false;
+    }
+    _turnsSinceInterstitial++;
+    if (_turnsSinceInterstitial < _interstitialEveryTurns) {
+      return false;
+    }
+    _turnsSinceInterstitial = 0;
+    return true;
+  }
+
+  /// Shows a full-screen interstitial ad unless the player owns premium.
+  void showInterstitial() {
+    if (_isPremiumUser) {
+      return;
+    }
+    InterstitialAdManager.instance.show();
   }
 
   GameStateModel _state = const GameStateModel();
