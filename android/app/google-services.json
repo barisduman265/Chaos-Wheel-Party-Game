@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "845159211048",
+    "project_id": "chaos-wheel-party-game",
+    "storage_bucket": "chaos-wheel-party-game.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:845159211048:android:d82c0f62f9ecbe772ed51d",
+        "android_client_info": {
+          "package_name": "com.skyroonlabs.chaoswheel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAsbFdnl4JMifcc_Y9dGGXRSi651q5unc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

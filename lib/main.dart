@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:chaos_wheel/firebase_options.dart';
 import 'package:chaos_wheel/providers/game_provider.dart';
 import 'package:chaos_wheel/screens/add_players_screen.dart';
 import 'package:chaos_wheel/screens/game_screen.dart';
@@ -11,13 +14,19 @@ import 'package:chaos_wheel/screens/splash_screen.dart';
 import 'package:chaos_wheel/screens/target_selection_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
 import 'package:chaos_wheel/services/interstitial_ad_manager.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await _initFirebase();
 
   await MobileAds.instance.initialize();
   // Warm up the first interstitial so it's ready by the time gameplay needs it.
@@ -28,6 +37,39 @@ void main() async {
       child: const ChaosWheelApp(),
     ),
   );
+}
+
+/// Initializes Firebase and wires up Crashlytics, Analytics and Remote Config.
+/// Any failure is swallowed so a Firebase hiccup never blocks app start-up.
+Future<void> _initFirebase() async {
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Send Flutter framework errors and uncaught async errors to Crashlytics.
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    WidgetsBinding.instance.platformDispatcher.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+
+    // Analytics: log that the app was opened.
+    unawaited(FirebaseAnalytics.instance.logAppOpen());
+
+    // Remote Config: fetch server-side values (e.g. ad frequency) in the
+    // background so they're available on the next launch.
+    final remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.setConfigSettings(
+      RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(hours: 1),
+      ),
+    );
+    unawaited(remoteConfig.fetchAndActivate());
+  } catch (_) {
+    // Never let a Firebase error stop the app from launching.
+  }
 }
 
 class ChaosWheelApp extends StatefulWidget {
