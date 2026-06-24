@@ -259,6 +259,7 @@ class AppLocalizationService {
     'shareTheChaos': 'SHARE THE CHAOS',
     'playAgain': 'PLAY AGAIN',
     'newGame': 'NEW GAME',
+    'home': 'HOME',
     'howChaosWorks': 'How Chaos Works',
     'howChaosIntro':
         'Spin the wheel, get picked, face the prompt, or spend your shot.',
@@ -824,6 +825,7 @@ class AppLocalizationService {
       'shareTheChaos': 'KAOSU PAYLAŞ',
       'playAgain': 'TEKRAR OYNA',
       'newGame': 'YENİ OYUN',
+      'home': 'ANA MENÜ',
       'ok': 'TAMAM',
       'chooseTarget': 'Bir\nhedef seç.',
       'noActivePlayer': 'Aktif oyuncu seçilmedi.',

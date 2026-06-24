@@ -230,9 +230,30 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
                 glowColor: const Color(0xFF1FC98A),
                 onTap: () {
                   context.read<GameProvider>().startNewGame();
+                  // Rebuild the stack as [Home -> AddPlayers] so the back
+                  // button on the players screen returns to the home menu.
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    AddPlayersScreen.routeName,
+                    HomeScreen.routeName,
+                    (route) => false,
+                  );
+                  Navigator.pushNamed(context, AddPlayersScreen.routeName);
+                },
+              ),
+              const SizedBox(height: 10),
+              _SummaryActionButton(
+                label: provider.l('home'),
+                icon: Icons.home_rounded,
+                gradientColors: const [
+                  Color(0xFF6A4DBC),
+                  Color(0xFF8A63E8),
+                  Color(0xFFA85BFF),
+                ],
+                glowColor: const Color(0xFFA85BFF),
+                onTap: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    HomeScreen.routeName,
                     (route) => false,
                   );
                 },

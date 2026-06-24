@@ -58,7 +58,6 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
     final targetRights = _customModeSelected
         ? _customTargetRights
         : provider.calculateTargetRights(_roundCount);
-    final playerRange = _playerRangeFor(_effectiveRoundCount);
     final playerCount = provider.players.length;
     final isPremium = provider.isPremiumUser;
 
@@ -436,19 +435,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                       _effectiveRoundCount,
                     ),
                     onPressed: () {
-                      if (playerCount < playerRange.min ||
-                          playerCount > playerRange.max) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            behavior: SnackBarBehavior.floating,
-                            backgroundColor: const Color(0xFF23142D),
-                            content: Text(
-                              'This mode is built for ${playerRange.min}-${playerRange.max} players.',
-                            ),
-                          ),
-                        );
-                        return;
-                      }
+                      // Any player count can play any mode (no per-mode range).
                       final provider = context.read<GameProvider>();
                       provider.initializeGame(
                         roundCount: _effectiveRoundCount,
@@ -485,15 +472,6 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
         ],
       ),
     );
-  }
-
-  ({int min, int max}) _playerRangeFor(int roundCount) {
-    return switch (roundCount) {
-      15 => (min: 3, max: 5),
-      25 => (min: 5, max: 7),
-      40 => (min: 7, max: 10),
-      _ => (min: 2, max: 10),
-    };
   }
 
   Color get _vibeAccent {
