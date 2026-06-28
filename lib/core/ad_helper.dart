@@ -20,17 +20,20 @@ class AdHelper {
   static const String _androidBanner =
       'ca-app-pub-5960894143182893/3564104393';
 
-  // TODO: Create an iOS banner unit in AdMob and paste its id here. Until then
-  // it falls back to the test banner so an iOS release still shows ads.
-  static const String _iosBanner = _testBanner;
+  // Real AdMob banner unit for iOS. Only used in release builds; debug always
+  // serves the test banner above.
+  static const String _iosBanner =
+      'ca-app-pub-5960894143182893/5905364101';
 
   // Real AdMob interstitial unit for Android. Only used in release builds;
   // debug always serves the test interstitial.
   static const String _androidInterstitial =
       'ca-app-pub-5960894143182893/1457951272';
 
-  // TODO: Create an iOS interstitial unit in AdMob and paste its id here.
-  static const String _iosInterstitial = _testInterstitial;
+  // Real AdMob interstitial unit for iOS. Only used in release builds; debug
+  // always serves the test interstitial.
+  static const String _iosInterstitial =
+      'ca-app-pub-5960894143182893/9366096960';
 
   static String get bannerAdUnitId {
     if (kDebugMode) {
