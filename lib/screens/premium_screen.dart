@@ -29,6 +29,7 @@ class _PremiumScreenState extends State<PremiumScreen> {
     final provider = context.watch<GameProvider>();
     final isPremium = provider.isPremiumUser;
     final lifetimeNow = provider.premiumPriceLabel ?? _lifetimeNewPrice;
+    final weeklyNow = provider.weeklyPriceLabel ?? _weeklyPrice;
 
     return Scaffold(
       body: ChaosBackground(
@@ -74,12 +75,16 @@ class _PremiumScreenState extends State<PremiumScreen> {
                 const SizedBox(height: 10),
                 PremiumWeeklyCard(
                   selected: _plan == PremiumPlan.weekly,
-                  price: _weeklyPrice,
+                  price: weeklyNow,
                   onTap: () => setState(() => _plan = PremiumPlan.weekly),
                 ),
                 const SizedBox(height: 14),
               ],
               _PremiumCta(isPremium: isPremium, plan: _plan),
+              if (!isPremium) ...[
+                const SizedBox(height: 6),
+                const _RestoreButton(),
+              ],
               const SizedBox(height: 12),
               _InviteFriendsButton(
                 onTap: () => const ChaosShareService().shareInvite(),
@@ -246,9 +251,9 @@ class _PremiumCta extends StatelessWidget {
     return PressableScale(
       enabled: !isPremium && !provider.premiumPurchaseInProgress,
       onTap: () async {
-        final message = await context
-            .read<GameProvider>()
-            .purchasePremiumLifetime();
+        final message = await context.read<GameProvider>().purchasePremium(
+          weekly: plan == PremiumPlan.weekly,
+        );
         if (!context.mounted) {
           return;
         }
@@ -422,6 +427,51 @@ class _InviteFriendsButton extends StatelessWidget {
             fontWeight: FontWeight.w900,
             letterSpacing: 0.8,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RestoreButton extends StatelessWidget {
+  const _RestoreButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<GameProvider>();
+    return TextButton(
+      onPressed: provider.premiumPurchaseInProgress
+          ? null
+          : () async {
+              final messenger = ScaffoldMessenger.of(context);
+              messenger.showSnackBar(
+                SnackBar(content: Text(provider.l('restoringPurchases'))),
+              );
+              final message = await context
+                  .read<GameProvider>()
+                  .restorePurchases();
+              if (!context.mounted) {
+                return;
+              }
+              messenger.hideCurrentSnackBar();
+              final restored = context.read<GameProvider>().isPremiumUser;
+              messenger.showSnackBar(
+                SnackBar(
+                  content: Text(
+                    message ??
+                        (restored
+                            ? provider.l('premiumRestored')
+                            : provider.l('restoringPurchases')),
+                  ),
+                ),
+              );
+            },
+      child: Text(
+        provider.l('restorePurchases'),
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Colors.white.withValues(alpha: 0.66),
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.4,
         ),
       ),
     );

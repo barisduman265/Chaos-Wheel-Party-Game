@@ -30,6 +30,10 @@ class GameProvider extends ChangeNotifier {
         _premiumPurchaseMessage = message;
         notifyListeners();
       },
+      onCanceled: () {
+        _premiumPurchaseInProgress = false;
+        notifyListeners();
+      },
     );
     _restorePremiumEntitlementOnStartup();
     _loadUserSettings();
@@ -115,6 +119,7 @@ class GameProvider extends ChangeNotifier {
   bool _premiumPurchaseInProgress = false;
   String? _premiumPurchaseMessage;
   String? _premiumPriceLabel;
+  String? _weeklyPriceLabel;
   bool _defaultBalanceRuleEnabled = true;
   bool _defaultRandomButtonEnabled = true;
   String _promptLanguage = 'English';
@@ -137,6 +142,7 @@ class GameProvider extends ChangeNotifier {
   bool get premiumPurchaseInProgress => _premiumPurchaseInProgress;
   String? get premiumPurchaseMessage => _premiumPurchaseMessage;
   String? get premiumPriceLabel => _premiumPriceLabel;
+  String? get weeklyPriceLabel => _weeklyPriceLabel;
   String get promptLanguage => _promptLanguage;
   bool get defaultBalanceRuleEnabled => _defaultBalanceRuleEnabled;
   bool get defaultRandomButtonEnabled => _defaultRandomButtonEnabled;
@@ -344,7 +350,13 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> purchasePremiumLifetime() async {
+  Future<String?> purchasePremiumLifetime() => purchasePremium(weekly: false);
+
+  /// Starts the Apple/Google purchase flow for the lifetime non-consumable or
+  /// the weekly subscription. Returns null when the flow started (success is
+  /// delivered asynchronously via the purchase stream) or an error message to
+  /// show the user.
+  Future<String?> purchasePremium({required bool weekly}) async {
     if (_isPremiumUser || _premiumPurchaseInProgress) {
       return null;
     }
@@ -353,7 +365,9 @@ class GameProvider extends ChangeNotifier {
     _premiumPurchaseMessage = null;
     notifyListeners();
 
-    final result = await _premiumPurchaseService.buyLifetime();
+    final result = weekly
+        ? await _premiumPurchaseService.buyWeekly()
+        : await _premiumPurchaseService.buyLifetime();
     if (result == PremiumPurchaseStartResult.started) {
       return null;
     }
@@ -385,6 +399,28 @@ class GameProvider extends ChangeNotifier {
     await _loadPremiumEntitlement();
   }
 
+  /// User-triggered "Restore Purchases". Returns null on success (premium
+  /// re-activated via the purchase stream) or a message when nothing was
+  /// found to restore.
+  Future<String?> restorePurchases() async {
+    if (_isPremiumUser) {
+      return null;
+    }
+    _premiumPurchaseInProgress = true;
+    _premiumPurchaseMessage = null;
+    notifyListeners();
+
+    await _premiumPurchaseService.restorePurchases();
+    // Restored purchases are delivered through the purchase stream (which
+    // grants the entitlement); give them a moment, then reload from disk.
+    await Future<void>.delayed(const Duration(seconds: 2));
+    await _loadPremiumEntitlement();
+
+    _premiumPurchaseInProgress = false;
+    notifyListeners();
+    return _isPremiumUser ? null : l('noPurchasesToRestore');
+  }
+
   Future<void> _restorePremiumEntitlementOnStartup() async {
     await _loadPremiumEntitlement();
     if (_isPremiumUser) {
@@ -394,11 +430,17 @@ class GameProvider extends ChangeNotifier {
   }
 
   Future<void> _loadPremiumProductDetails() async {
-    final product = await _premiumPurchaseService.queryLifetimeProduct();
-    if (product == null) {
+    final products = await _premiumPurchaseService.queryProducts();
+    if (products.isEmpty) {
       return;
     }
-    _premiumPriceLabel = product.price;
+    for (final product in products) {
+      if (product.id == PremiumPurchaseService.lifetimeProductId) {
+        _premiumPriceLabel = product.price;
+      } else if (product.id == PremiumPurchaseService.weeklyProductId) {
+        _weeklyPriceLabel = product.price;
+      }
+    }
     notifyListeners();
   }
 

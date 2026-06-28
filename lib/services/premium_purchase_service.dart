@@ -9,11 +9,18 @@ enum PremiumPurchaseStartResult {
   failedToStart,
 }
 
+/// Wraps StoreKit / Play billing for the two premium products: a lifetime
+/// non-consumable and a weekly auto-renewable subscription. Both unlock the
+/// same unified premium entitlement. Works against the StoreKit sandbox
+/// (and TestFlight) automatically when signed into a sandbox account.
 class PremiumPurchaseService {
   PremiumPurchaseService({InAppPurchase? inAppPurchase})
     : _inAppPurchaseOverride = inAppPurchase;
 
-  static const lifetimeProductId = 'chaos_premium_lifetime';
+  // App Store Connect / Play Console product ids.
+  static const lifetimeProductId = 'com.skyroonlabs.chaoswheel.lifetimepremium';
+  static const weeklyProductId = 'com.skyroonlabs.chaoswheel.weeklypremium';
+  static const Set<String> _productIds = {lifetimeProductId, weeklyProductId};
 
   final InAppPurchase? _inAppPurchaseOverride;
   StreamSubscription<List<PurchaseDetails>>? _purchaseSubscription;
@@ -36,6 +43,7 @@ class PremiumPurchaseService {
   void start({
     required Future<void> Function() onEntitlementGranted,
     required void Function(String message) onError,
+    required void Function() onCanceled,
   }) {
     final store = _inAppPurchase;
     if (store == null) {
@@ -45,17 +53,17 @@ class PremiumPurchaseService {
     try {
       _purchaseSubscription ??= store.purchaseStream.listen((purchases) async {
         for (final purchase in purchases) {
-          if (purchase.productID != lifetimeProductId) {
+          if (!_productIds.contains(purchase.productID)) {
             continue;
           }
 
           if (purchase.status == PurchaseStatus.purchased ||
               purchase.status == PurchaseStatus.restored) {
             await onEntitlementGranted();
-          }
-
-          if (purchase.status == PurchaseStatus.error) {
+          } else if (purchase.status == PurchaseStatus.error) {
             onError(purchase.error?.message ?? 'Purchase failed.');
+          } else if (purchase.status == PurchaseStatus.canceled) {
+            onCanceled();
           }
 
           if (purchase.pendingCompletePurchase) {
@@ -70,80 +78,89 @@ class PremiumPurchaseService {
     }
   }
 
-  Future<ProductDetailsResponse?> queryLifetimeProductDetails() async {
+  Future<ProductDetailsResponse?> _queryProductDetails() async {
     final store = _inAppPurchase;
     if (store == null) {
       return null;
     }
     try {
-      return await store.queryProductDetails({lifetimeProductId});
+      return await store.queryProductDetails(_productIds);
     } catch (_) {
       return null;
     }
   }
 
-  Future<ProductDetails?> queryLifetimeProduct() async {
+  /// Returns the [ProductDetails] for the available plans (may be empty when
+  /// the store is unavailable or the products aren't configured yet).
+  Future<List<ProductDetails>> queryProducts() async {
     final store = _inAppPurchase;
     if (store == null) {
-      return null;
+      return const [];
     }
-
-    final available = await _isStoreAvailable(store);
-    if (!available) {
-      return null;
+    if (!await _isStoreAvailable(store)) {
+      return const [];
     }
-
-    final response = await queryLifetimeProductDetails();
-    if (response == null ||
-        response.error != null ||
-        response.productDetails.isEmpty) {
-      return null;
+    final response = await _queryProductDetails();
+    if (response == null || response.error != null) {
+      return const [];
     }
-    return response.productDetails.first;
+    return response.productDetails;
   }
 
-  Future<PremiumPurchaseStartResult> buyLifetime() async {
+  Future<PremiumPurchaseStartResult> buyLifetime() => _buy(lifetimeProductId);
+
+  Future<PremiumPurchaseStartResult> buyWeekly() => _buy(weeklyProductId);
+
+  Future<PremiumPurchaseStartResult> _buy(String productId) async {
     final store = _inAppPurchase;
     if (store == null) {
       return PremiumPurchaseStartResult.storeUnavailable;
     }
-
-    final available = await _isStoreAvailable(store);
-    if (!available) {
+    if (!await _isStoreAvailable(store)) {
       return PremiumPurchaseStartResult.storeUnavailable;
     }
 
-    final response = await queryLifetimeProductDetails();
+    final response = await _queryProductDetails();
     if (response == null || response.error != null) {
       return PremiumPurchaseStartResult.failedToStart;
     }
-    if (response.productDetails.isEmpty) {
+
+    ProductDetails? product;
+    for (final details in response.productDetails) {
+      if (details.id == productId) {
+        product = details;
+        break;
+      }
+    }
+    if (product == null) {
       return PremiumPurchaseStartResult.productUnavailable;
     }
 
-    final product = response.productDetails.first;
     final purchaseParam = PurchaseParam(productDetails: product);
-    final started = await _startNonConsumablePurchase(store, purchaseParam);
+    final started = await _startPurchase(store, purchaseParam);
     return started
         ? PremiumPurchaseStartResult.started
         : PremiumPurchaseStartResult.failedToStart;
   }
 
-  Future<void> restoreSilently() async {
+  /// Replays the user's past purchases through [start]'s stream as `restored`,
+  /// re-granting the entitlement. Used by the "Restore Purchases" button.
+  Future<void> restorePurchases() async {
     final store = _inAppPurchase;
     if (store == null) {
       return;
     }
-
-    final available = await _isStoreAvailable(store);
-    if (available) {
+    if (await _isStoreAvailable(store)) {
       try {
         await store.restorePurchases();
       } catch (_) {
-        // Silent restore should never block app startup on unsupported targets.
+        // Restore should never crash the app on unsupported targets.
       }
     }
   }
+
+  /// Restore attempted quietly at start-up (no UI feedback).
+  Future<void> restoreSilently() => restorePurchases();
 
   Future<bool> _isStoreAvailable(InAppPurchase store) async {
     try {
@@ -153,11 +170,13 @@ class PremiumPurchaseService {
     }
   }
 
-  Future<bool> _startNonConsumablePurchase(
+  Future<bool> _startPurchase(
     InAppPurchase store,
     PurchaseParam purchaseParam,
   ) async {
     try {
+      // buyNonConsumable drives both non-consumables and (auto-renewable)
+      // subscriptions through StoreKit / Play billing.
       return await store.buyNonConsumable(purchaseParam: purchaseParam);
     } catch (_) {
       return false;

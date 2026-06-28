@@ -63,7 +63,9 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
 
   Future<void> _purchase() async {
     final provider = context.read<GameProvider>();
-    final message = await provider.purchasePremiumLifetime();
+    final message = await provider.purchasePremium(
+      weekly: _plan == PremiumPlan.weekly,
+    );
     if (!mounted) {
       return;
     }
@@ -88,6 +90,7 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
     }
 
     final lifetimeNow = provider.premiumPriceLabel ?? _lifetimeNewPrice;
+    final weeklyNow = provider.weeklyPriceLabel ?? _weeklyPrice;
     final maxHeight = MediaQuery.of(context).size.height * 0.92;
 
     return Dialog(
@@ -185,7 +188,7 @@ class _PremiumUpsellDialogState extends State<_PremiumUpsellDialog> {
                       const SizedBox(height: 8),
                       PremiumWeeklyCard(
                         selected: _plan == PremiumPlan.weekly,
-                        price: _weeklyPrice,
+                        price: weeklyNow,
                         onTap: () => setState(() => _plan = PremiumPlan.weekly),
                       ),
                       const SizedBox(height: 12),
