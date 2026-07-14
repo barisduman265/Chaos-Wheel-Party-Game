@@ -11,6 +11,7 @@ import 'package:chaos_wheel/services/chaos_audio_service.dart';
 import 'package:chaos_wheel/util/turkish_name.dart';
 import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
+import 'package:chaos_wheel/widgets/no_internet.dart';
 import 'package:chaos_wheel/widgets/premium_upsell_dialog.dart';
 import 'package:chaos_wheel/widgets/pressable_scale.dart';
 import 'package:chaos_wheel/widgets/spinning_wheel.dart';
@@ -199,6 +200,7 @@ class _GameScreenState extends State<GameScreen> {
               ),
             ),
           ),
+          const OfflineGuard(),
         ],
             ),
           ),

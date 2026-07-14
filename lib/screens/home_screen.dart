@@ -5,6 +5,7 @@ import 'package:chaos_wheel/providers/game_provider.dart';
 import 'package:chaos_wheel/services/app_localization_service.dart';
 import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
+import 'package:chaos_wheel/widgets/no_internet.dart';
 import 'package:chaos_wheel/widgets/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -104,7 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               trailingIcon: Icons.chevron_right_rounded,
                               expanded: true,
                               large: true,
-                              onPressed: () {
+                              onPressed: () async {
+                                // Gate play behind connectivity so the game
+                                // (and its ads) only ever runs online.
+                                if (!await ensureOnline(context)) {
+                                  return;
+                                }
+                                if (!context.mounted) {
+                                  return;
+                                }
                                 Navigator.pushNamed(
                                   context,
                                   AddPlayersScreen.routeName,
