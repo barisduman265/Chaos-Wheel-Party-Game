@@ -1,4 +1,5 @@
 import 'package:chaos_wheel/providers/game_provider.dart';
+import 'package:chaos_wheel/util/drinking_mode.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -93,7 +94,7 @@ class HowToPlayScreen extends StatelessWidget {
                     color: Color(0xFFFF5D98),
                   ),
                   _RuleItem(
-                    icon: Icons.local_bar_outlined,
+                    icon: shotIcon(provider.drinkingModeEnabled),
                     title: provider.l('shot').toUpperCase(),
                     text: provider.l('shotRule'),
                     color: Color(0xFF62D8FF),

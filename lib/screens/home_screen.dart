@@ -311,6 +311,17 @@ void showAppSettingsSheet(BuildContext context) {
                         .read<GameProvider>()
                         .setExtremePromptsEnabled,
                   ),
+                  _SettingsSwitchRow(
+                    icon: provider.drinkingModeEnabled
+                        ? Icons.local_bar_rounded
+                        : Icons.fast_forward_rounded,
+                    title: provider.l('drinkingMode'),
+                    subtitle: provider.l('drinkingModeDesc'),
+                    value: provider.drinkingModeEnabled,
+                    onChanged: context
+                        .read<GameProvider>()
+                        .setDrinkingModeEnabled,
+                  ),
                   _SettingsActionRow(
                     icon: Icons.language_rounded,
                     title: provider.l('language'),
@@ -594,10 +605,12 @@ class _SettingsSwitchRow extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
+    this.subtitle,
   });
 
   final IconData icon;
   final String title;
+  final String? subtitle;
   final bool value;
   final ValueChanged<bool>? onChanged;
 
@@ -606,6 +619,7 @@ class _SettingsSwitchRow extends StatelessWidget {
     return _SettingsShell(
       icon: icon,
       title: title,
+      subtitle: subtitle,
       child: Switch(
         value: value,
         onChanged: onChanged,

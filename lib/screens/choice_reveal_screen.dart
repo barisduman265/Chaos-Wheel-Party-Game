@@ -8,6 +8,7 @@ import 'package:chaos_wheel/screens/action_feedback_screen.dart';
 import 'package:chaos_wheel/screens/game_summary_screen.dart';
 import 'package:chaos_wheel/screens/target_selection_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/util/drinking_mode.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -240,7 +241,7 @@ class _ChoiceRevealScreenState extends State<ChoiceRevealScreen> {
                         children: [
                           Expanded(
                             child: _MiniStatusCard(
-                              icon: Icons.local_bar_outlined,
+                              icon: shotIcon(provider.drinkingModeEnabled),
                               title: provider.l('shot'),
                               value: '${activePlayer.passRights}',
                               subtitle: canPass

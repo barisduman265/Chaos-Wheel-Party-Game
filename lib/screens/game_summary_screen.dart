@@ -4,6 +4,7 @@ import 'package:chaos_wheel/screens/add_players_screen.dart';
 import 'package:chaos_wheel/screens/game_screen.dart';
 import 'package:chaos_wheel/screens/home_screen.dart';
 import 'package:chaos_wheel/services/share_service.dart';
+import 'package:chaos_wheel/util/drinking_mode.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,7 +47,7 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
       _StatData(
         title: provider.l('biggestEscaper'),
         subtitle: provider.l('mostShotsUsed'),
-        icon: Icons.local_bar_rounded,
+        icon: shotIconFilled(provider.drinkingModeEnabled),
         color: const Color(0xFF71D2FF),
         surface: const Color(0xFF153A6B),
         value: _winner(players, (player) => player.passUsed),

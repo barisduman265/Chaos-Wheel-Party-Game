@@ -8,6 +8,7 @@ import 'package:chaos_wheel/screens/fate_choice_screen.dart';
 import 'package:chaos_wheel/screens/game_summary_screen.dart';
 import 'package:chaos_wheel/screens/picked_reveal_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/util/drinking_mode.dart';
 import 'package:chaos_wheel/util/turkish_name.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:chaos_wheel/widgets/no_internet.dart';
@@ -531,7 +532,7 @@ void _showPlayerControlsSheet(BuildContext context, Player player) {
                 ),
                 const SizedBox(height: 18),
                 _ControlRow(
-                  icon: Icons.local_bar_outlined,
+                  icon: shotIcon(provider.drinkingModeEnabled),
                   title: provider.l('giveExtraShot'),
                   subtitle: provider.l('plusOneShotToken'),
                   onTap: () {
@@ -1202,7 +1203,9 @@ class _MiniPlayerCard extends StatelessWidget {
               Row(
                 children: [
                   _MiniRight(
-                    icon: Icons.local_bar_outlined,
+                    icon: shotIcon(
+                      context.read<GameProvider>().drinkingModeEnabled,
+                    ),
                     label: '${player.passRights}',
                     color: colors.primary,
                   ),

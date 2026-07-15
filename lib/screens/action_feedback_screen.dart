@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:chaos_wheel/providers/game_provider.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/util/drinking_mode.dart';
 import 'package:chaos_wheel/util/turkish_name.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
@@ -80,7 +81,9 @@ class _ActionFeedbackScreenState extends State<ActionFeedbackScreen>
 
   IconData get _icon {
     return switch (widget.type) {
-      ActionFeedbackType.shot => Icons.local_bar_outlined,
+      ActionFeedbackType.shot => shotIcon(
+        context.read<GameProvider>().drinkingModeEnabled,
+      ),
       ActionFeedbackType.target => Icons.gps_fixed_rounded,
       ActionFeedbackType.revenge => Icons.crisis_alert_rounded,
       ActionFeedbackType.nextTurn => Icons.double_arrow_rounded,

@@ -49,6 +49,7 @@ class GameProvider extends ChangeNotifier {
   static const _reduceAnimationsEnabledKey = 'settings_reduce_animations';
   static const _drinkingPromptsEnabledKey = 'settings_drinking_prompts';
   static const _extremePromptsEnabledKey = 'settings_extreme_prompts';
+  static const _drinkingModeEnabledKey = 'settings_drinking_mode';
   static const _promptLanguageKey = 'settings_prompt_language';
 
   final GameLogicService _gameLogicService;
@@ -114,6 +115,7 @@ class GameProvider extends ChangeNotifier {
   bool _reduceAnimationsEnabled = false;
   bool _drinkingPromptsEnabled = true;
   bool _extremePromptsEnabled = true;
+  bool _drinkingModeEnabled = false;
   bool _gamePaused = false;
   bool _isPremiumUser = false;
   bool _premiumPurchaseInProgress = false;
@@ -137,6 +139,7 @@ class GameProvider extends ChangeNotifier {
   bool get reduceAnimationsEnabled => _reduceAnimationsEnabled;
   bool get drinkingPromptsEnabled => _drinkingPromptsEnabled;
   bool get extremePromptsEnabled => _extremePromptsEnabled;
+  bool get drinkingModeEnabled => _drinkingModeEnabled;
   bool get gamePaused => _gamePaused;
   bool get isPremiumUser => _isPremiumUser;
   bool get premiumPurchaseInProgress => _premiumPurchaseInProgress;
@@ -149,12 +152,41 @@ class GameProvider extends ChangeNotifier {
   bool get revengeModeEnabled => _state.revengeModeEnabled;
   bool get isEvilModeActive => _state.vibeMode == PromptVibeMode.evil;
 
+  // When Drinking Mode is off (the default), shot/drink wording is swapped for
+  // neutral "pass" wording. Centralized here so every screen that uses l()/lf()
+  // gets the right term automatically, with no per-screen conditionals.
+  static const Map<String, String> _passOverrides = {
+    'shot': 'passLabel',
+    'shots': 'passesLabel',
+    'shotTaken': 'passUsed',
+    'shotUsed': 'passUsedShort',
+    'spendsOneShotToken': 'usesOnePass',
+    'noShotsLeft': 'noPassesLeft',
+    'plusOneShotToken': 'plusOnePass',
+    'gotExtraShot': 'gotExtraPass',
+    'giveExtraShot': 'giveExtraPass',
+    'mostShotsUsed': 'mostPassesUsed',
+    'leastShotsUsed': 'leastPassesUsed',
+    'shotRule': 'passRule',
+  };
+
+  String _effectiveKey(String key) {
+    if (!_drinkingModeEnabled) {
+      return _passOverrides[key] ?? key;
+    }
+    return key;
+  }
+
   String l(String key) {
-    return AppLocalizationService.text(key, _promptLanguage);
+    return AppLocalizationService.text(_effectiveKey(key), _promptLanguage);
   }
 
   String lf(String key, Map<String, Object> values) {
-    return AppLocalizationService.format(key, _promptLanguage, values);
+    return AppLocalizationService.format(
+      _effectiveKey(key),
+      _promptLanguage,
+      values,
+    );
   }
 
   /// Prompt text translated into the current language, falling back to the
@@ -303,6 +335,12 @@ class GameProvider extends ChangeNotifier {
   void setDrinkingPromptsEnabled(bool value) {
     _drinkingPromptsEnabled = value;
     _saveSetting(_drinkingPromptsEnabledKey, value);
+    notifyListeners();
+  }
+
+  void setDrinkingModeEnabled(bool value) {
+    _drinkingModeEnabled = value;
+    _saveSetting(_drinkingModeEnabledKey, value);
     notifyListeners();
   }
 
@@ -1037,6 +1075,8 @@ class GameProvider extends ChangeNotifier {
         prefs.getBool(_drinkingPromptsEnabledKey) ?? _drinkingPromptsEnabled;
     _extremePromptsEnabled =
         prefs.getBool(_extremePromptsEnabledKey) ?? _extremePromptsEnabled;
+    _drinkingModeEnabled =
+        prefs.getBool(_drinkingModeEnabledKey) ?? _drinkingModeEnabled;
     final language = prefs.getString(_promptLanguageKey);
     if (language != null &&
         AppLocalizationService.supportedLanguages.contains(language)) {

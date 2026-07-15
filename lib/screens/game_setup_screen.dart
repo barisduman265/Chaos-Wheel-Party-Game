@@ -2,6 +2,7 @@ import 'package:chaos_wheel/models/prompt_models.dart';
 import 'package:chaos_wheel/providers/game_provider.dart';
 import 'package:chaos_wheel/screens/game_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
+import 'package:chaos_wheel/util/drinking_mode.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:chaos_wheel/widgets/premium_upsell_dialog.dart';
 import 'package:flutter/material.dart';
@@ -361,7 +362,7 @@ class _GameSetupScreenState extends State<GameSetupScreen> {
                             children: [
                               Expanded(
                                 child: _RightsCard(
-                                  icon: Icons.local_bar_outlined,
+                                  icon: shotIcon(provider.drinkingModeEnabled),
                                   label: provider.l('shots'),
                                   subtitle: provider.l('perPlayer'),
                                   value: '$passRights',
