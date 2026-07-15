@@ -4,7 +4,6 @@ import 'package:chaos_wheel/screens/add_players_screen.dart';
 import 'package:chaos_wheel/screens/game_screen.dart';
 import 'package:chaos_wheel/screens/home_screen.dart';
 import 'package:chaos_wheel/services/share_service.dart';
-import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -106,13 +105,8 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
     ];
 
     return Scaffold(
-      bottomNavigationBar: const BannerAdSlot(),
-      body: Column(
-        children: [
-          const BannerAdSlot(position: BannerPosition.top),
-          Expanded(
-            child: ChaosBackground(
-              child: SafeArea(
+      body: ChaosBackground(
+        child: SafeArea(
           child: ListView(
             padding: const EdgeInsets.fromLTRB(22, 16, 22, 22),
             children: [
@@ -262,9 +256,6 @@ class _GameSummaryScreenState extends State<GameSummaryScreen> {
           ),
         ),
       ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -379,11 +370,7 @@ class _SummaryActionButton extends StatelessWidget {
                   alpha: _isGradient ? 0.20 : 0.16,
                 ),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 19,
-              ),
+              child: Icon(icon, color: Colors.white, size: 19),
             ),
             const SizedBox(width: 12),
             Flexible(

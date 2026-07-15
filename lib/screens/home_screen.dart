@@ -3,7 +3,6 @@ import 'package:chaos_wheel/screens/how_to_play_screen.dart';
 import 'package:chaos_wheel/screens/premium_screen.dart';
 import 'package:chaos_wheel/providers/game_provider.dart';
 import 'package:chaos_wheel/services/app_localization_service.dart';
-import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:chaos_wheel/widgets/no_internet.dart';
 import 'package:chaos_wheel/widgets/primary_button.dart';
@@ -33,15 +32,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final provider = context.watch<GameProvider>();
     return Scaffold(
-      bottomNavigationBar: const BannerAdSlot(),
-      body: Column(
-        children: [
-          const BannerAdSlot(position: BannerPosition.top),
-          Expanded(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: _tryStartMusic,
-              child: ChaosBackground(
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: _tryStartMusic,
+        child: ChaosBackground(
           child: Stack(
             children: [
               const _HomeAmbientPulse(),
@@ -51,124 +45,118 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: [
                       const Spacer(flex: 2),
-                            ShaderMask(
-                              blendMode: BlendMode.srcIn,
-                              shaderCallback: (bounds) {
-                                return const LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    Color(0xFFFFFFFF),
-                                    Color(0xFFEAD8FF),
-                                    Color(0xFFB985FF),
-                                    Color(0xFFD64CFF),
-                                  ],
-                                  stops: [0.0, 0.38, 0.74, 1.0],
-                                ).createShader(bounds);
-                              },
-                              child: Text(
-                                'CHAOS\nWHEEL',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.displayLarge
-                                    ?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      height: 0.86,
-                                      letterSpacing: 0,
-                                      shadows: [
-                                        Shadow(
-                                          color: const Color(
-                                            0xFFA85BFF,
-                                          ).withValues(alpha: 0.42),
-                                          blurRadius: 32,
-                                        ),
-                                      ],
-                                    ),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            Text(
-                              provider.l('homeTagline'),
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.labelLarge
-                                  ?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.56),
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 3.2,
-                                  ),
-                            ),
-                            const SizedBox(height: 28),
-                            const Spacer(flex: 3),
-                            PrimaryButton(
-                              label: provider.l('startGame'),
-                              subtitle: provider.l('startGameSubtitle'),
-                              trailingIcon: Icons.chevron_right_rounded,
-                              expanded: true,
-                              large: true,
-                              onPressed: () async {
-                                // Gate play behind connectivity so the game
-                                // (and its ads) only ever runs online.
-                                if (!await ensureOnline(context)) {
-                                  return;
-                                }
-                                if (!context.mounted) {
-                                  return;
-                                }
-                                Navigator.pushNamed(
-                                  context,
-                                  AddPlayersScreen.routeName,
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _HomeMenuButton(
-                              title: provider.l('howToPlay'),
-                              subtitle: provider.l('rulesOfChaos'),
-                              icon: Icons.chevron_right_rounded,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  HowToPlayScreen.routeName,
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            _HomeMenuButton(
-                              title: provider.l('premium'),
-                              subtitle: provider.l('unlockChaosMode'),
-                              leading: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.workspace_premium_rounded,
-                                    color: Color(0xFFFFC83D),
-                                    size: 18,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    provider.l('premium'),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w800,
-                                        ),
+                      ShaderMask(
+                        blendMode: BlendMode.srcIn,
+                        shaderCallback: (bounds) {
+                          return const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFFFFFFFF),
+                              Color(0xFFEAD8FF),
+                              Color(0xFFB985FF),
+                              Color(0xFFD64CFF),
+                            ],
+                            stops: [0.0, 0.38, 0.74, 1.0],
+                          ).createShader(bounds);
+                        },
+                        child: Text(
+                          'CHAOS\nWHEEL',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.displayLarge
+                              ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                height: 0.86,
+                                letterSpacing: 0,
+                                shadows: [
+                                  Shadow(
+                                    color: const Color(
+                                      0xFFA85BFF,
+                                    ).withValues(alpha: 0.42),
+                                    blurRadius: 32,
                                   ),
                                 ],
                               ),
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  PremiumScreen.routeName,
-                                );
-                              },
-                            ),
-                            const Spacer(flex: 1),
-                          ],
                         ),
                       ),
-                    ),
+                      const SizedBox(height: 24),
+                      Text(
+                        provider.l('homeTagline'),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          color: Colors.white.withValues(alpha: 0.56),
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 3.2,
+                        ),
+                      ),
+                      const SizedBox(height: 28),
+                      const Spacer(flex: 3),
+                      PrimaryButton(
+                        label: provider.l('startGame'),
+                        subtitle: provider.l('startGameSubtitle'),
+                        trailingIcon: Icons.chevron_right_rounded,
+                        expanded: true,
+                        large: true,
+                        onPressed: () async {
+                          // Gate play behind connectivity so the game
+                          // (and its ads) only ever runs online.
+                          if (!await ensureOnline(context)) {
+                            return;
+                          }
+                          if (!context.mounted) {
+                            return;
+                          }
+                          Navigator.pushNamed(
+                            context,
+                            AddPlayersScreen.routeName,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _HomeMenuButton(
+                        title: provider.l('howToPlay'),
+                        subtitle: provider.l('rulesOfChaos'),
+                        icon: Icons.chevron_right_rounded,
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            HowToPlayScreen.routeName,
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _HomeMenuButton(
+                        title: provider.l('premium'),
+                        subtitle: provider.l('unlockChaosMode'),
+                        leading: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.workspace_premium_rounded,
+                              color: Color(0xFFFFC83D),
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              provider.l('premium'),
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(context, PremiumScreen.routeName);
+                        },
+                      ),
+                      const Spacer(flex: 1),
+                    ],
+                  ),
+                ),
+              ),
               Positioned(
                 top: MediaQuery.paddingOf(context).top + 16,
                 right: 18,
@@ -180,9 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-      ),
-          ),
-        ],
       ),
     );
   }

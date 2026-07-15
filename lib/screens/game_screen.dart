@@ -9,7 +9,6 @@ import 'package:chaos_wheel/screens/game_summary_screen.dart';
 import 'package:chaos_wheel/screens/picked_reveal_screen.dart';
 import 'package:chaos_wheel/services/chaos_audio_service.dart';
 import 'package:chaos_wheel/util/turkish_name.dart';
-import 'package:chaos_wheel/widgets/banner_ad_slot.dart';
 import 'package:chaos_wheel/widgets/chaos_background.dart';
 import 'package:chaos_wheel/widgets/no_internet.dart';
 import 'package:chaos_wheel/widgets/premium_upsell_dialog.dart';
@@ -56,14 +55,9 @@ class _GameScreenState extends State<GameScreen> {
     });
 
     return Scaffold(
-      bottomNavigationBar: const BannerAdSlot(),
-      body: Column(
+      body: Stack(
         children: [
-          const BannerAdSlot(position: BannerPosition.top),
-          Expanded(
-            child: Stack(
-              children: [
-                const ChaosBackground(child: SizedBox.expand()),
+          const ChaosBackground(child: SizedBox.expand()),
           if (noEscape)
             Positioned.fill(
               child: DecoratedBox(
@@ -201,9 +195,6 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           const OfflineGuard(),
-        ],
-            ),
-          ),
         ],
       ),
     );
@@ -527,13 +518,9 @@ void _showPlayerControlsSheet(BuildContext context, Player player) {
                   player.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style:
-                      turkishName(
-                        Theme.of(context).textTheme.titleLarge,
-                      ).copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: turkishName(
+                    Theme.of(context).textTheme.titleLarge,
+                  ).copyWith(color: Colors.white, fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 6),
                 Text(
