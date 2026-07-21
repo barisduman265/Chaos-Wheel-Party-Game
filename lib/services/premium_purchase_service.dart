@@ -53,17 +53,18 @@ class PremiumPurchaseService {
     try {
       _purchaseSubscription ??= store.purchaseStream.listen((purchases) async {
         for (final purchase in purchases) {
-          if (!_productIds.contains(purchase.productID)) {
-            continue;
-          }
-
-          if (purchase.status == PurchaseStatus.purchased ||
-              purchase.status == PurchaseStatus.restored) {
-            await onEntitlementGranted();
+          // Canceled/error events (especially from Play billing) often arrive
+          // with an empty or mismatched productID, so they must be handled
+          // BEFORE the product filter — otherwise a user who backs out of the
+          // store sheet would leave the purchase stuck "in progress" forever.
+          if (purchase.status == PurchaseStatus.canceled) {
+            onCanceled();
           } else if (purchase.status == PurchaseStatus.error) {
             onError(purchase.error?.message ?? 'Purchase failed.');
-          } else if (purchase.status == PurchaseStatus.canceled) {
-            onCanceled();
+          } else if ((purchase.status == PurchaseStatus.purchased ||
+                  purchase.status == PurchaseStatus.restored) &&
+              _productIds.contains(purchase.productID)) {
+            await onEntitlementGranted();
           }
 
           if (purchase.pendingCompletePurchase) {
