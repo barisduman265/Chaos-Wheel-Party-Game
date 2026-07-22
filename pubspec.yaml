@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.8+15
+version: 1.0.8+16
 
 environment:
   sdk: ^3.10.8
@@ -39,7 +39,11 @@ dependencies:
   google_fonts: ^8.1.0
   share_plus: ^13.1.0
   shared_preferences: ^2.5.5
-  in_app_purchase: ^3.2.3
+  in_app_purchase: ^3.3.0
+  # Pin the Android platform implementation to the Play Billing Library 8.x line
+  # (0.5.0+) required for Play Console compliance. Kept explicit so the resolved
+  # version can't silently fall back to the Billing 7 (0.4.x) branch.
+  in_app_purchase_android: ^0.5.0
   screenshot: ^3.0.0
   path_provider: ^2.1.5
   audioplayers: ^6.6.0
